@@ -18,7 +18,7 @@ export default function Main(props: { arguments: Arguments }) {
   useEffect(() => {
     async function getAnswer() {
       const toast = await showToast({
-        title: "Loading...",
+        title: "Initializing...",
         style: Toast.Style.Animated,
       });
 
@@ -78,7 +78,7 @@ export default function Main(props: { arguments: Arguments }) {
   }, []);
 
   const markdown = `
-# ${isLoading ? "Getting your answers... " : question}
+# ${isLoading ? "Answering your question... " : question}
 
 ${answer}
 `;
