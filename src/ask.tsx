@@ -22,7 +22,7 @@ export default function Main(props: { arguments: Arguments }) {
         style: Toast.Style.Animated,
       });
 
-      async function signIn() {
+      async function signIn(api: ChatGPTAPI) {
         try {
           toast.title = "Signing in...";
           toast.style = Toast.Style.Animated;
@@ -42,12 +42,11 @@ export default function Main(props: { arguments: Arguments }) {
         }
       }
 
-      const api = new ChatGPTAPI();
-      await api.init();
-
-      const isSignedIn = cache.get("isSignedIn") === "true" && api.getIsSignedIn();
+      const isSignedIn = cache.get("isSignedIn") === "true";
 
       if (isSignedIn) {
+        const api = new ChatGPTAPI({ headless: true });
+        await api.init();
         toast.title = "Already signed in!";
         toast.style = Toast.Style.Success;
         toast.title = "Getting your answer...";
@@ -56,14 +55,22 @@ export default function Main(props: { arguments: Arguments }) {
           .sendMessage(question)
           .then((data) => setAnswer(data))
           .then(() => setIsLoading(false))
-          .then(() => api.close())
-          .then(() => {
-            toast.title = "Done!";
-            toast.style = Toast.Style.Success;
+          .catch((err) => {
+            toast.title = "Error";
+            if (err instanceof Error) {
+              toast.message = err?.message;
+            }
+            toast.style = Toast.Style.Failure;
           });
+        if (answer) {
+          toast.title = "Got your answer!";
+          toast.style = Toast.Style.Success;
+        }
         toast.hide();
       } else {
-        signIn();
+        const api = new ChatGPTAPI({ headless: false });
+        await api.init();
+        signIn(api);
       }
     }
 
