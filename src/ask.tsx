@@ -13,6 +13,8 @@ export default function Main(props: { arguments: Arguments }) {
 
   const { question } = props.arguments;
 
+  const isQuestionProvided: boolean = question.length > 0;
+
   const cache = new Cache();
 
   useEffect(() => {
@@ -74,13 +76,15 @@ export default function Main(props: { arguments: Arguments }) {
       }
     }
 
-    getAnswer();
+    if (isQuestionProvided) {
+      getAnswer();
+    }
   }, []);
 
   const markdown = `
-# ${isLoading ? "Answering your question... " : question}
+# ${isQuestionProvided ? (isLoading ? "Answering your question... " : question) : "No question provided!"}
 
 ${answer}
 `;
-  return <Detail isLoading={isLoading} markdown={markdown} navigationTitle="Answer" />;
+  return <Detail isLoading={isQuestionProvided ? isLoading : false} markdown={markdown} navigationTitle="Answer" />;
 }
