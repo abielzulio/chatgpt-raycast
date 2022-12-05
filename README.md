@@ -5,18 +5,35 @@
 > **Warning**
 > This extension was made intentionally to be running on dev environment only. Will submit if there's an official API.
 
-![](/preview.gif)
+
+https://user-images.githubusercontent.com/7030944/205637433-65adb34f-2120-48b6-97cc-4a935371c1c3.mp4
+
 
 ## How it works
 
 > **Note**
-> From [transitive-bullshit/chatgpt-api](https://github.com/transitive-bullshit/chatgpt-api)
+> Modified from [transitive-bullshit/chatgpt-api](https://github.com/transitive-bullshit/chatgpt-api)
 
-It uses headless Chromium via [Playwright](https://playwright.dev) to automate the webapp, so **you still need to have access to ChatGPT**. It just makes building API-like integrations much easier.
+This package requires a valid session token from ChatGPT to access it's unofficial REST API.
 
-Chromium will be opened in non-headless mode by default, which is important because the first time you run `ChatGPTAPI.init()`, you'll need to log in manually. We launch Chromium with a persistent context, however, so you shouldn't need to keep re-logging in after the first time.
+To get a session token:
+1. Go to https://chat.openai.com/chat and log in or sign up.
+2. Open dev tools.
+3. Open `Application` > `Cookies`.
 
-When you log in the first time, we recommend dismissing the welcome modal so you can watch the progress. This isn't strictly necessary, but it helps to understand what's going on.
+   ![ChatGPT cookies](https://github.com/transitive-bullshit/chatgpt-api/blob/main/media/session-token.png?raw=true)
+   
+4. Copy the value for `__Secure-next-auth.session-token` and save it for later.
+
+## How to use
+
+1. For the first time only, you need to input your __session token__ in the session token field. Otherwise, it'll give you an invalid session token error.
+> Session token will be stored using [Cache API](https://developers.raycast.com/api-reference/cache)
+
+![Input session token](https://user-images.githubusercontent.com/7030944/205638580-369ca0a2-d59f-4190-b3bf-46738e9a28e7.png)
+
+2. Type your __question__ in the question field and then you're good to go!
+
 
 ## Install
 
