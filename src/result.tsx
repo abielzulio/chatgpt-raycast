@@ -1,4 +1,4 @@
-import { Cache, Detail, showToast, Toast } from "@raycast/api";
+import { Cache, Detail, showToast, Toast, Action, ActionPanel, Icon } from "@raycast/api";
 import { ChatGPTAPI } from "chatgpt";
 import { useEffect, useState } from "react";
 import { setTimeout } from "timers/promises";
@@ -83,5 +83,19 @@ ${isLoading ? "## Answering your question... " : ` # ${question}`}
 
 ${answer}
 `;
-  return <Detail isLoading={isLoading} markdown={markdown} navigationTitle="Answer" />;
+  return (
+    <Detail
+      isLoading={isLoading}
+      markdown={markdown}
+      navigationTitle="Answer"
+      actions={
+        answer.length > 0 ? (
+          <ActionPanel>
+            <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Answer" content={answer} />
+            <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Question" content={question} />
+          </ActionPanel>
+        ) : undefined
+      }
+    />
+  );
 }
