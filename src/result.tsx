@@ -72,6 +72,7 @@ export default function ChatGPT() {
       title: "Getting your answer...",
       style: Toast.Style.Animated,
     });
+    setSearchText("");
 
 
     const isAuthenticated: boolean = await chatGPT.getIsAuthenticated();
@@ -93,8 +94,6 @@ export default function ChatGPT() {
       question: question,
       conversationId: conversationId,
     };
-
-    setSearchText("");
 
     // Add new answer
     setAnswers((prev) => {
@@ -184,6 +183,7 @@ export default function ChatGPT() {
         icon={Icon.RotateAntiClockwise}
         onAction={() => {
           setAnswers([]);
+          setSearchText("");
           setConversationId(uuidv4());
           setIsLoading(false);
         }}
