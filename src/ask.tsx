@@ -1,90 +1,55 @@
-import { Cache, Detail, showToast, Toast } from "@raycast/api";
-import { ChatGPTAPI } from "chatgpt";
-import { useEffect, useState } from "react";
-import { setTimeout } from "timers/promises";
+import { Form, Action, ActionPanel, Icon, useNavigation } from "@raycast/api";
+import { useState } from "react";
+import Result from "./result";
+import { Question } from "./type";
 
-interface Arguments {
-  question: string;
-}
+export default function Ask(props: { draftValues?: Question }) {
+  const { draftValues } = props;
+  const { push } = useNavigation();
+  const [question, setQuestion] = useState<string>(draftValues?.question ?? "");
+  const [questionError, setQuestionError] = useState<string | undefined>();
 
-export default function Main(props: { arguments: Arguments }) {
-  const [answer, setAnswer] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  const { question } = props.arguments;
-
-  const isQuestionProvided: boolean = question.length > 0;
-
-  const cache = new Cache();
-
-  useEffect(() => {
-    async function getAnswer() {
-      const toast = await showToast({
-        title: "Initializing...",
-        style: Toast.Style.Animated,
-      });
-
-      async function signIn(api: ChatGPTAPI) {
-        try {
-          toast.title = "Signing in...";
-          toast.style = Toast.Style.Animated;
-          await setTimeout(1000);
-          const isSignedIn = await api.getIsSignedIn();
-          if (isSignedIn) {
-            toast.title = "Signed in!";
-            toast.style = Toast.Style.Success;
-            cache.set("isSignedIn", isSignedIn.toString());
-          }
-        } catch (err) {
-          toast.title = "Error";
-          if (err instanceof Error) {
-            toast.message = err?.message;
-          }
-          toast.style = Toast.Style.Failure;
-        }
-      }
-
-      const isSignedIn = cache.get("isSignedIn") === "true";
-
-      if (isSignedIn) {
-        const api = new ChatGPTAPI({ headless: true });
-        await api.init();
-        toast.title = "Already signed in!";
-        toast.style = Toast.Style.Success;
-        toast.title = "Getting your answer...";
-        toast.style = Toast.Style.Animated;
-        await api
-          .sendMessage(question)
-          .then((data) => setAnswer(data))
-          .then(() => setIsLoading(false))
-          .catch((err) => {
-            toast.title = "Error";
-            if (err instanceof Error) {
-              toast.message = err?.message;
-            }
-            toast.style = Toast.Style.Failure;
-          });
-        if (answer) {
-          toast.title = "Got your answer!";
-          toast.style = Toast.Style.Success;
-        }
-        toast.hide();
-      } else {
-        const api = new ChatGPTAPI({ headless: false });
-        await api.init();
-        signIn(api);
-      }
+  function dropQuestionErrorIfNeeded() {
+    if (questionError && questionError.length > 0) {
+      setQuestionError(undefined);
     }
+  }
 
-    if (isQuestionProvided) {
-      getAnswer();
-    }
-  }, []);
-
-  const markdown = `
-# ${isQuestionProvided ? (isLoading ? "Answering your question... " : question) : "No question provided!"}
-
-${answer}
-`;
-  return <Detail isLoading={isQuestionProvided ? isLoading : false} markdown={markdown} navigationTitle="Answer" />;
+  return (
+    <Form
+      enableDrafts
+      navigationTitle="Question Field"
+      actions={
+        <ActionPanel>
+          <Action.SubmitForm
+            icon={Icon.QuestionMark}
+            title="Submit Question"
+            onSubmit={() => {
+              if (question.length === 0) {
+                setQuestionError("Your question is required");
+              } else {
+                push(<Result question={question} />);
+              }
+            }}
+          />
+        </ActionPanel>
+      }
+    >
+      <Form.TextArea
+        id="question"
+        title="Question"
+        value={question}
+        placeholder="Type your question"
+        error={questionError}
+        onChange={setQuestion}
+        onBlur={(event) => {
+          if (event.target.value?.length == 0) {
+            setQuestionError("The field should't be empty!");
+          } else {
+            dropQuestionErrorIfNeeded();
+          }
+        }}
+      />
+    </Form>
+  );
 }

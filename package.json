@@ -12,19 +12,10 @@
   "commands": [
     {
       "name": "ask",
-      "title": "Ask a Question",
+      "title": "Ask Question",
       "subtitle": "Powered by ChatGPT",
       "description": "Ask ChatGPT via Raycast",
-      "mode": "view",
-      "arguments": [
-        {
-          "name": "question",
-          "title": "Question",
-          "description": "Question to ask ChatGPT",
-          "placeholder": "What's your question?",
-          "type": "text"
-        }
-      ]
+      "mode": "view"
     }
   ],
   "dependencies": {
