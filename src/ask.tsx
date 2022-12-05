@@ -22,7 +22,7 @@ export default function Ask(props: { draftValues?: Question }) {
       actions={
         <ActionPanel>
           <Action.SubmitForm
-            icon={Icon.QuestionMark}
+            icon={Icon.MagnifyingGlass}
             title="Submit Question"
             onSubmit={() => {
               if (question.length === 0) {
