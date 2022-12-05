@@ -1,4 +1,15 @@
-# Unofficial ChatGPT Raycast extension
+# Unofficial ChatGPT Raycast extension (Fork)
+
+**This forks includes a couple cool changes**
+* Using list view as UI for better conversation flow
+   * ⚠️ Conversations context not yet working, seems to be an issue with the API wrapper
+* Added progress streaming
+* Added a "Start new conversation" button
+* Added a "Share with shareg.pt" button
+* Use native preferences to store the Session token
+
+---
+
 
 > Run ChatGPT through Raycast extension, powered by [transitive-bullshit/chatgpt-api](https://github.com/transitive-bullshit/chatgpt-api)
 
