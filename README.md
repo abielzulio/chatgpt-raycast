@@ -5,9 +5,7 @@
 > **Warning**
 > This extension was made intentionally to be running on dev environment only. Will submit if there's an official API.
 
-
-https://user-images.githubusercontent.com/7030944/205637433-65adb34f-2120-48b6-97cc-4a935371c1c3.mp4
-
+https://user-images.githubusercontent.com/7030944/205639775-e0bb5a43-b014-449b-8f7c-d126bd6bf786.mp4
 
 ## How it works
 
@@ -30,7 +28,8 @@ To get a session token:
 1. For the first time only, you need to input your __session token__ in the session token field. Otherwise, it'll give you an invalid session token error.
 > Session token will be stored using [Cache API](https://developers.raycast.com/api-reference/cache)
 
-![Input session token](https://user-images.githubusercontent.com/7030944/205638580-369ca0a2-d59f-4190-b3bf-46738e9a28e7.png)
+https://user-images.githubusercontent.com/7030944/205637433-65adb34f-2120-48b6-97cc-4a935371c1c3.mp4
+
 
 2. Type your __question__ in the question field and then you're good to go!
 
