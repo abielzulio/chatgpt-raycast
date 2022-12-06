@@ -205,7 +205,7 @@ export default function ChatGPT() {
               avatarUrl: defaultProfileImage,
               items: answers.flatMap((a): ConversationItem[] => [{
                 value: a.question,
-                from: "user"
+                from: "human"
               }, {
                 value: a.answer,
                 from: "gpt"

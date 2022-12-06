@@ -1,5 +1,5 @@
 export type ConversationItem = {
-  from: "user" | "gpt";
+  from: "human" | "gpt";
   value: string;
 };
 type ConversationData = {
