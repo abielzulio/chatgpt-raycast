@@ -1,29 +1,28 @@
-# Unofficial ChatGPT Raycast extension (Fork)
-
-**This forks includes a couple cool changes**
-* Using list view as UI for better conversation flow
-   * ⚠️ Conversations context not yet working, seems to be an issue with the API wrapper
-* Added progress streaming
-* Added a "Start new conversation" button
-* Added a "Share with shareg.pt" button
-* Use native preferences to store the Session token
+# Unofficial ChatGPT Raycast extension
 
 ---
-
 
 > Run ChatGPT through Raycast extension, powered by [transitive-bullshit/chatgpt-api](https://github.com/transitive-bullshit/chatgpt-api)
 
 > **Warning**
 > This extension was made intentionally to be running on dev environment only. Will submit if there's an official API.
 
-https://user-images.githubusercontent.com/7030944/205639775-e0bb5a43-b014-449b-8f7c-d126bd6bf786.mp4
 
-## How it works
+https://user-images.githubusercontent.com/7030944/205975673-665168f4-c290-4f3d-9ffb-1c5cf87e010f.mp4
 
-> **Note**
-> Modified from [transitive-bullshit/chatgpt-api](https://github.com/transitive-bullshit/chatgpt-api)
 
-This package requires a valid session token from ChatGPT to access it's unofficial REST API.
+## Features
+- Ask question through full text input or [search bar input](https://github.com/abielzulio/chatgpt-raycast/commit/e53e3d6284917729064f52583e8a1a39ff1c3176)
+- Save and search your saved generated answer
+- Copy answer, question, question ID, and conversational ID directly with a hotkey
+- List view as UI for better conversation flow [[@timolins](https://github.com/abielzulio/chatgpt-raycast/commit/e53e3d6284917729064f52583e8a1a39ff1c3176)]
+- Share question and generated answer with [shareg.pt](https://shareg.pt) [[@timolins](https://github.com/abielzulio/chatgpt-raycast/commit/e53e3d6284917729064f52583e8a1a39ff1c3176)]
+- Use native preferences to store the Session token [[@timolins](https://github.com/abielzulio/chatgpt-raycast/commit/e53e3d6284917729064f52583e8a1a39ff1c3176)]
+
+
+## How to use
+
+This package requires a valid session token from ChatGPT to access it's unofficial REST API by [transitive-bullshit/chatgpt-api](https://github.com/transitive-bullshit/chatgpt-api). 
 
 To get a session token:
 1. Go to https://chat.openai.com/chat and log in or sign up.
@@ -32,18 +31,9 @@ To get a session token:
 
    ![ChatGPT cookies](https://github.com/transitive-bullshit/chatgpt-api/blob/main/media/session-token.png?raw=true)
    
-4. Copy the value for `__Secure-next-auth.session-token` and save it for later.
+4. Copy the value for `__Secure-next-auth.session-token` and paste in the initialization set-up!
 
-## How to use
-
-1. For the first time only, you need to input your __session token__ in the session token field. Otherwise, it'll give you an invalid session token error.
-> Session token will be stored using [Cache API](https://developers.raycast.com/api-reference/cache)
-
-https://user-images.githubusercontent.com/7030944/205637433-65adb34f-2120-48b6-97cc-4a935371c1c3.mp4
-
-
-2. Type your __question__ in the question field and then you're good to go!
-
+> Session token will be stored locally using [Preferences API](https://developers.raycast.com/api-reference/preferences)
 
 ## Install
 
