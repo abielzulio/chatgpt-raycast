@@ -116,6 +116,7 @@ export default function ChatGPT() {
       done: false,
       question: question,
       conversationId: conversationId,
+      createdAt: new Date().toISOString(),
     };
 
     // Add new answer
@@ -281,29 +282,37 @@ export default function ChatGPT() {
           setSelectedAnswer(id);
         }
       }}
-      searchBarPlaceholder={answers.length > 0 ? "Ask another question..." : "Ask a question..."}
+      searchBarPlaceholder={
+        answers.length > 0 ? "Ask another question..." : isLoading ? "Generating your answer..." : "Ask a question..."
+      }
     >
       {answers.length == 0 ? (
         <List.EmptyView
           title="Ask anything!"
-          description="Type your question or prompt from the search bar and let ChatGPT answers for you"
+          description={
+            isLoading
+              ? "Hang on tight! This might require some time. You may redo your search if it takes longer"
+              : "Type your question or prompt from the search bar and hit the enter key"
+          }
           icon={Icon.QuestionMark}
         />
       ) : (
-        answers.map((answer, i) => {
-          const currentAnswer = answer.done ? answer.answer : answer.partialAnswer;
-          const markdown = `**${answer.question}**\n\n${currentAnswer}`;
-          return (
-            <List.Item
-              id={answer.id}
-              key={answer.id}
-              accessories={[{ text: `#${i + 1}` }]}
-              title={answer.question}
-              detail={<List.Item.Detail markdown={markdown} />}
-              actions={getActionPanel(answer)}
-            />
-          );
-        })
+        answers
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .map((answer, i) => {
+            const currentAnswer = answer.done ? answer.answer : answer.partialAnswer;
+            const markdown = `**${answer.question}**\n\n${currentAnswer}`;
+            return (
+              <List.Item
+                id={answer.id}
+                key={answer.id}
+                accessories={[{ text: `#${answers.length - i}` }]}
+                title={answer.question}
+                detail={<List.Item.Detail markdown={markdown} />}
+                actions={getActionPanel(answer)}
+              />
+            );
+          })
       )}
     </List>
   );

@@ -13,5 +13,5 @@ export interface Answer {
   question: string;
   answer: string;
   conversationId: string;
-  created_at?: string;
+  createdAt?: string;
 }
