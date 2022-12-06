@@ -153,15 +153,59 @@ export default function ChatGPT() {
       });
   }
 
-  const getActionPanel = () => (
+  const getActionPanel = (answer?: ChatAnswer) => (
     <ActionPanel>
-      <Action
-        title="Get answer"
-        icon={Icon.ArrowRight}
-        onAction={() => {
-          getAnswer(searchText);
-        }}
-      />
+      {searchText.length ? (
+        <>
+          <Action
+            title="Get answer"
+            icon={Icon.ArrowRight}
+            onAction={() => {
+              getAnswer(searchText);
+            }}
+          />
+        </>
+      ) : answer && selectedAnswerId === answer.id ? (
+        <>
+          <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Answer" content={answer.answer} />
+          <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Question" content={answer.question} />
+          <Action
+            title="Share to shareg.pt"
+            shortcut={{ modifiers: ["cmd", "opt"], key: "s" }}
+            icon={Icon.Upload}
+            onAction={async () => {
+              if (answer) {
+                const toast = await showToast({
+                  title: "Sharing your conversation...",
+                  style: Toast.Style.Animated,
+                });
+                await shareConversation({
+                  avatarUrl: defaultProfileImage,
+                  items: answers.flatMap((a): ConversationItem[] => [
+                    {
+                      value: a.question,
+                      from: "human",
+                    },
+                    {
+                      value: a.answer,
+                      from: "gpt",
+                    },
+                  ]),
+                })
+                  .then(({ url }) => {
+                    Clipboard.copy(url);
+                    toast.title = `Copied link to clipboard!`;
+                    toast.style = Toast.Style.Success;
+                  })
+                  .catch(() => {
+                    toast.title = "Error while sharing conversation";
+                    toast.style = Toast.Style.Failure;
+                  });
+              }
+            }}
+          />
+        </>
+      ) : null}
       <Action
         title="Full text input"
         shortcut={{ modifiers: ["cmd"], key: "t" }}
@@ -188,42 +232,6 @@ export default function ChatGPT() {
           setIsLoading(false);
         }}
       />
-      <Action
-        title="Share to shareg.pt"
-        shortcut={{ modifiers: ["cmd"], key: "s" }}
-        icon={Icon.Upload}
-        onAction={async () => {
-          const answer = answers.find((a) => a.id === selectedAnswerId);
-          if (answer) {
-
-            const toast = await showToast({
-              title: "Sharing your conversation...",
-              style: Toast.Style.Animated,
-            });
-
-            await shareConversation({
-              avatarUrl: defaultProfileImage,
-              items: answers.flatMap((a): ConversationItem[] => [{
-                value: a.question,
-                from: "human"
-              }, {
-                value: a.answer,
-                from: "gpt"
-              }])
-            }).then(({ url }) => {
-              Clipboard.copy(url)
-              toast.title = `Copied link to clipboard!`;
-              toast.style = Toast.Style.Success;
-            }).catch(() => {
-              toast.title = "Error while sharing conversation";
-              toast.style = Toast.Style.Failure;
-            })
-
-
-
-          }
-        }
-        } />
     </ActionPanel>
   );
 
@@ -254,7 +262,7 @@ export default function ChatGPT() {
             accessories={[{ text: `#${i + 1}` }]}
             title={answer.question}
             detail={<List.Item.Detail markdown={markdown} />}
-            actions={getActionPanel()}
+            actions={getActionPanel(answer)}
           />
         );
       })}
