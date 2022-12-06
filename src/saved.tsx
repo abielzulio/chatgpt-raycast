@@ -49,12 +49,6 @@ export default function SavedAnswer() {
     <ActionPanel>
       <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Answer" content={answer.answer} />
       <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Question" content={answer.question} />
-      <Action
-        icon={Icon.Star}
-        title="Unsave Answer"
-        onAction={() => handleUnsaveAnswer(answer)}
-        shortcut={{ modifiers: ["cmd"], key: "s" }}
-      />
       <Action.CreateSnippet
         icon={Icon.Snippets}
         title="Save as a Snippet"
@@ -63,6 +57,13 @@ export default function SavedAnswer() {
       />
       <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy ID" content={answer.id} />
       <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Conversation ID" content={answer.conversationId} />
+      <Action
+        style={Action.Style.Destructive}
+        icon={Icon.Star}
+        title="Unsave Answer"
+        onAction={() => handleUnsaveAnswer(answer)}
+        shortcut={{ modifiers: ["cmd"], key: "s" }}
+      />
     </ActionPanel>
   );
 
@@ -108,10 +109,12 @@ export default function SavedAnswer() {
                   metadata={
                     <List.Item.Detail.Metadata>
                       <List.Item.Detail.Metadata.Label title="Question" text={answer.question} />
+                      <List.Item.Detail.Metadata.Separator />
                       <List.Item.Detail.Metadata.Label
-                        title="Saved"
+                        title="Date"
                         text={new Date(answer.createdAt).toLocaleString()}
                       />
+                      <List.Item.Detail.Metadata.Separator />
                       <List.Item.Detail.Metadata.Label title="ID" text={answer.id} />
                       <List.Item.Detail.Metadata.Label title="Conversation ID" text={answer.conversationId} />
                     </List.Item.Detail.Metadata>
