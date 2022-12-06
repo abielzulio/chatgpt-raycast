@@ -30,7 +30,7 @@
   "dependencies": {
     "@raycast/api": "^1.44.0",
     "@types/uuid": "^9.0.0",
-    "chatgpt": "^1.1.1",
+    "chatgpt": "^1.2.2",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
