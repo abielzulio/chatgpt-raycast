@@ -55,6 +55,12 @@ export default function SavedAnswer() {
         onAction={() => handleUnsaveAnswer(answer)}
         shortcut={{ modifiers: ["cmd"], key: "s" }}
       />
+      <Action.CreateSnippet
+        icon={Icon.Snippets}
+        title="Save as a Snippet"
+        snippet={{ text: answer.answer, name: answer.question }}
+        shortcut={{ modifiers: ["cmd"], key: "n" }}
+      />
       <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy ID" content={answer.id} />
       <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Conversation ID" content={answer.conversationId} />
     </ActionPanel>

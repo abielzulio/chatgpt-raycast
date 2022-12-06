@@ -199,6 +199,12 @@ export default function ChatGPT() {
             onAction={() => handleSaveAnswer(answer)}
             shortcut={{ modifiers: ["cmd"], key: "s" }}
           />
+          <Action.CreateSnippet
+            icon={Icon.Snippets}
+            title="Save as a Snippet"
+            snippet={{ text: answer.answer, name: answer.question }}
+            shortcut={{ modifiers: ["cmd"], key: "n" }}
+          />
           <Action
             title="Share to shareg.pt"
             shortcut={{ modifiers: ["cmd", "opt"], key: "s" }}
