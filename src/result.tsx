@@ -10,22 +10,14 @@ import {
   Form,
   useNavigation,
   Clipboard,
+  LocalStorage,
 } from "@raycast/api";
 import { ChatGPTAPI } from "chatgpt";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { defaultProfileImage } from "./profile-image";
-
-import { ConversationItem, shareConversation } from "./share-gpt"
-
-interface ChatAnswer {
-  id: string;
-  question: string;
-  answer: string;
-  partialAnswer: string;
-  done: boolean;
-  conversationId: string;
-}
+import { ConversationItem, shareConversation } from "./share-gpt";
+import { Answer, ChatAnswer } from "./type";
 
 const FullTextInput = ({ onSubmit }: { onSubmit: (text: string) => void }) => {
   const [text, setText] = useState<string>("");
@@ -53,11 +45,43 @@ export default function ChatGPT() {
     return uuidv4();
   });
   const [answers, setAnswers] = useState<ChatAnswer[]>([]);
+  const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
   const [selectedAnswerId, setSelectedAnswer] = useState<string | null>(null);
 
   const { pop, push } = useNavigation();
+
+  useEffect(() => {
+    (async () => {
+      const storedSavedAnswers = await LocalStorage.getItem<string>("savedAnswers");
+
+      if (!storedSavedAnswers) {
+        setSavedAnswers([]);
+      } else {
+        const answers: Answer[] = JSON.parse(storedSavedAnswers);
+        setSavedAnswers((previous) => [...previous, ...answers]);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    LocalStorage.setItem("savedAnswers", JSON.stringify(savedAnswers));
+  }, [savedAnswers]);
+
+  const handleSaveAnswer = useCallback(
+    async (answer: Answer) => {
+      const toast = await showToast({
+        title: "Saving your answer...",
+        style: Toast.Style.Animated,
+      });
+      answer.created_at = new Date().toISOString();
+      setSavedAnswers([...savedAnswers, answer]);
+      toast.title = "Answer saved!";
+      toast.style = Toast.Style.Success;
+    },
+    [setSavedAnswers, savedAnswers]
+  );
 
   const [chatGPT] = useState(() => {
     const sessionToken = getPreferenceValues<{
@@ -73,7 +97,6 @@ export default function ChatGPT() {
       style: Toast.Style.Animated,
     });
     setSearchText("");
-
 
     const isAuthenticated: boolean = await chatGPT.getIsAuthenticated();
 
@@ -169,6 +192,12 @@ export default function ChatGPT() {
         <>
           <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Answer" content={answer.answer} />
           <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Question" content={answer.question} />
+          <Action
+            icon={Icon.Star}
+            title="Save Answer"
+            onAction={() => handleSaveAnswer(answer)}
+            shortcut={{ modifiers: ["cmd"], key: "s" }}
+          />
           <Action
             title="Share to shareg.pt"
             shortcut={{ modifiers: ["cmd", "opt"], key: "s" }}

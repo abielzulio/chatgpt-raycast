@@ -16,6 +16,13 @@
       "subtitle": "Powered by ChatGPT",
       "description": "Ask ChatGPT via Raycast",
       "mode": "view"
+    },
+    {
+      "name": "saved",
+      "title": "Saved Answer",
+      "subtitle": "Powered by ChatGPT",
+      "description": "See Answered Question History powered ChatGPT via Raycast",
+      "mode": "view"
     }
   ],
   "preferences": [
