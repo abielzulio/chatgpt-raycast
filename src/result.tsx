@@ -268,7 +268,7 @@ export default function ChatGPT() {
 
   return (
     <List
-      isShowingDetail
+      isShowingDetail={answers.length > 0 ? true : false}
       filtering={false}
       isLoading={isLoading}
       onSearchTextChange={setSearchText}
@@ -281,22 +281,30 @@ export default function ChatGPT() {
           setSelectedAnswer(id);
         }
       }}
-      searchBarPlaceholder="Ask another question..."
+      searchBarPlaceholder={answers.length > 0 ? "Ask another question..." : "Ask a question..."}
     >
-      {answers.map((answer, i) => {
-        const currentAnswer = answer.done ? answer.answer : answer.partialAnswer;
-        const markdown = `**${answer.question}**\n\n${currentAnswer}`;
-        return (
-          <List.Item
-            id={answer.id}
-            key={answer.id}
-            accessories={[{ text: `#${i + 1}` }]}
-            title={answer.question}
-            detail={<List.Item.Detail markdown={markdown} />}
-            actions={getActionPanel(answer)}
-          />
-        );
-      })}
+      {answers.length == 0 ? (
+        <List.EmptyView
+          title="Ask anything!"
+          description="Type your question or prompt from the search bar and let ChatGPT answers for you"
+          icon={Icon.QuestionMark}
+        />
+      ) : (
+        answers.map((answer, i) => {
+          const currentAnswer = answer.done ? answer.answer : answer.partialAnswer;
+          const markdown = `**${answer.question}**\n\n${currentAnswer}`;
+          return (
+            <List.Item
+              id={answer.id}
+              key={answer.id}
+              accessories={[{ text: `#${i + 1}` }]}
+              title={answer.question}
+              detail={<List.Item.Detail markdown={markdown} />}
+              actions={getActionPanel(answer)}
+            />
+          );
+        })
+      )}
     </List>
   );
 }
