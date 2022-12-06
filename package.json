@@ -11,16 +11,27 @@
   "license": "MIT",
   "commands": [
     {
-      "name": "ask",
+      "name": "result",
       "title": "Ask Question",
       "subtitle": "Powered by ChatGPT",
       "description": "Ask ChatGPT via Raycast",
       "mode": "view"
     }
   ],
+  "preferences": [
+    {
+      "name": "sessionToken",
+      "description": "Enter your ChatGPT session token",
+      "type": "textfield",
+      "title": "Session Token",
+      "required": true
+    }
+  ],
   "dependencies": {
     "@raycast/api": "^1.44.0",
-    "chatgpt": "^1.1.1"
+    "@types/uuid": "^9.0.0",
+    "chatgpt": "^1.2.2",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/node": "18.8.3",
