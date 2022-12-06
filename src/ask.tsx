@@ -1,103 +1,99 @@
-import { Action, ActionPanel, Cache, Form, Icon, useNavigation } from "@raycast/api";
-import { useEffect, useState } from "react";
-import Result from "./result";
-import { Question } from "./type";
+import {
+  Action,
+  ActionPanel,
+  Form,
+  getPreferenceValues,
+  Icon,
+  openExtensionPreferences,
+  showToast,
+  Toast,
+} from "@raycast/api";
+import { ChatGPTAPI } from "chatgpt";
+import { Fragment, useEffect, useRef, useState } from "react";
 
-export default function Ask(props: { draftValues?: Question }) {
-  const { draftValues } = props;
-  const { pop, push } = useNavigation();
-  const [question, setQuestion] = useState<string>(draftValues?.question ?? "");
-  const [sessionToken, setSessionToken] = useState<string>(draftValues?.sessionToken ?? "");
-  const [sessionTokenError, setSessionTokenError] = useState<string | undefined>();
-  const [questionError, setQuestionError] = useState<string | undefined>();
+export default function Ask(props: { arguments: { question: string } }) {
+  const { sessionToken } = getPreferenceValues();
 
-  function dropQuestionErrorIfNeeded() {
-    if (questionError && questionError.length > 0) {
-      setQuestionError(undefined);
+  const [question, setQuestion] = useState(props.arguments.question);
+  const [error, setError] = useState("");
+  const [dialog, setDialog] = useState<{ question: string; answer: string }[]>([]);
+  const chatGPTAPI = useRef(new ChatGPTAPI({ sessionToken: sessionToken }));
+  const [isAuth, setIsAuth] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const askQuestion = async () => {
+    if (question.length === 0) {
+      setError("Question is required!");
+    } else {
+      setIsLoading(true);
+      try {
+        console.log(`asking question: ${question}...`);
+        const answer = await chatGPTAPI.current.sendMessage(question);
+        setQuestion("");
+        setDialog([{ question: question, answer: answer }, ...dialog]);
+      } catch (error) {
+        await showToast(Toast.Style.Failure, "An error occurred", "Please check your network connection.");
+      }
+      setIsLoading(false);
     }
-  }
-
-  function dropSessionTokenError() {
-    if (sessionTokenError && sessionTokenError.length > 0) {
-      setSessionTokenError(undefined);
-    }
-  }
-
-  const cache = new Cache();
-  const isSessionTokenValid: boolean = cache.has("isSessionTokenValid") && cache.get("isSessionTokenValid") === "true";
+  };
 
   useEffect(() => {
-    if (isSessionTokenValid) {
-      setSessionToken(cache.get("sessionToken") ?? "");
-    }
-  }, [isSessionTokenValid]);
+    chatGPTAPI.current.getIsAuthenticated().then(async (isAuthenticated) => {
+      if (!isAuthenticated) {
+        showToast(Toast.Style.Failure, "Your session token is invalid!");
+        const toast = new Toast({
+          title: "Your session token is invalid!",
+          message: "Please update your session token in the preferences",
+          primaryAction: {
+            title: "Open Preferences",
+            onAction: () => openExtensionPreferences(),
+          },
+        });
+        await toast.show();
+        return;
+      }
+      setIsAuth(true);
+
+      if (props.arguments.question) {
+        askQuestion();
+      } else {
+        setIsLoading(false);
+      }
+    });
+  }, []);
 
   return (
     <Form
-      enableDrafts
-      navigationTitle="Question Field"
+      isLoading={isLoading}
       actions={
         <ActionPanel>
-          <Action.SubmitForm
-            icon={isSessionTokenValid ? Icon.Bubble : Icon.SaveDocument}
-            title={isSessionTokenValid ? "Submit Question" : "Save Session Token & Ask"}
-            onSubmit={() => {
-              if (question.length === 0) {
-                setQuestionError("Question is required");
-                if (!isSessionTokenValid) {
-                  if (sessionToken.length === 0) {
-                    setSessionTokenError("Session token is required");
-                  }
-                }
-              } else {
-                push(<Result question={question} sessionToken={sessionToken} />);
-              }
-            }}
-          />
-          {isSessionTokenValid && (
-            <Action
-              icon={Icon.WrenchScrewdriver}
-              title="Change Session Token"
-              onAction={() => {
-                cache.set("isSessionTokenValid", "false");
-                pop();
-              }}
-            />
-          )}
+          {isAuth && !isLoading && <Action.SubmitForm icon={Icon.Bubble} title="Ask Question" onSubmit={askQuestion} />}
         </ActionPanel>
       }
     >
       <Form.TextArea
         id="question"
-        title="Question"
         value={question}
-        placeholder="Type your question"
-        error={questionError}
-        onChange={setQuestion}
-        onBlur={(event) => {
-          if (event.target.value?.length == 0) {
-            setQuestionError("The field should't be empty!");
-          } else {
-            dropQuestionErrorIfNeeded();
+        error={error}
+        onChange={(question) => {
+          if (question.length > 0) {
+            setError("");
           }
+          setQuestion(question);
         }}
+        placeholder="Type your question"
       />
-      {!isSessionTokenValid && (
-        <Form.PasswordField
-          id="sessionToken"
-          title="Session Token"
-          placeholder="Type your session token"
-          error={sessionTokenError}
-          onChange={setSessionToken}
-          onBlur={(event) => {
-            if (event.target.value?.length == 0) {
-              setSessionTokenError("The field should't be empty!");
-            } else {
-              dropSessionTokenError();
-            }
-          }}
-        />
-      )}
+      {dialog.map(({ question, answer }, index) => {
+        const exchangeId = dialog.length - index;
+        return (
+          <Fragment key={exchangeId}>
+            <Form.Separator />
+            <Form.Description title="Question" text={question} />
+            <Form.Description title="Answer" text={answer} />
+          </Fragment>
+        );
+      })}
     </Form>
   );
 }

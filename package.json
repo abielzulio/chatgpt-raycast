@@ -2,19 +2,35 @@
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "chatgpt",
   "title": "ChatGPT",
-  "description": "ChatGPT",
+  "description": "Chat with a chatbot powered by GPT-3",
   "icon": "command-icon.png",
   "author": "abielzulio",
   "categories": [
     "Applications"
   ],
   "license": "MIT",
+  "preferences": [
+    {
+      "type": "password",
+      "name": "sessionToken",
+      "title": "Session Token",
+      "required": true,
+      "description": "Your ChatGPT session token"
+    }
+  ],
   "commands": [
     {
       "name": "ask",
       "title": "Ask Question",
-      "subtitle": "Powered by ChatGPT",
       "description": "Ask ChatGPT via Raycast",
+      "arguments": [
+        {
+          "name": "question",
+          "type": "text",
+          "placeholder": "question",
+          "required": false
+        }
+      ],
       "mode": "view"
     }
   ],
