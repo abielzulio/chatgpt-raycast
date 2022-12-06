@@ -29,7 +29,7 @@
     {
       "name": "sessionToken",
       "description": "Enter your ChatGPT session token",
-      "type": "textfield",
+      "type": "password",
       "title": "Session Token",
       "required": true
     }
