@@ -208,7 +208,7 @@ export default function ChatGPT() {
           />
           <Action
             title="Share to shareg.pt"
-            shortcut={{ modifiers: ["cmd", "opt"], key: "s" }}
+            shortcut={{ modifiers: ["cmd", "shift"], key: "s" }}
             icon={Icon.Upload}
             onAction={async () => {
               if (answer) {
@@ -261,7 +261,7 @@ export default function ChatGPT() {
       {answers.length > 1 && (
         <Action
           title="Start new conversation"
-          shortcut={{ modifiers: ["cmd"], key: "n" }}
+          shortcut={{ modifiers: ["cmd", "shift"], key: "n" }}
           icon={Icon.RotateAntiClockwise}
           onAction={() => {
             setAnswers([]);
