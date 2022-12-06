@@ -5,6 +5,7 @@ export interface ChatAnswer {
   partialAnswer: string;
   done: boolean;
   conversationId: string;
+  createdAt: string;
 }
 
 export interface Answer {

@@ -75,7 +75,7 @@ export default function ChatGPT() {
         title: "Saving your answer...",
         style: Toast.Style.Animated,
       });
-      answer.created_at = new Date().toISOString();
+      answer.createdAt = new Date().toISOString();
       setSavedAnswers([...savedAnswers, answer]);
       toast.title = "Answer saved!";
       toast.style = Toast.Style.Success;
