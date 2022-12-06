@@ -250,17 +250,19 @@ export default function ChatGPT() {
           );
         }}
       />
-      <Action
-        title="Start new conversation"
-        shortcut={{ modifiers: ["cmd"], key: "n" }}
-        icon={Icon.RotateAntiClockwise}
-        onAction={() => {
-          setAnswers([]);
-          setSearchText("");
-          setConversationId(uuidv4());
-          setIsLoading(false);
-        }}
-      />
+      {answers.length > 1 && (
+        <Action
+          title="Start new conversation"
+          shortcut={{ modifiers: ["cmd"], key: "n" }}
+          icon={Icon.RotateAntiClockwise}
+          onAction={() => {
+            setAnswers([]);
+            setSearchText("");
+            setConversationId(uuidv4());
+            setIsLoading(false);
+          }}
+        />
+      )}
     </ActionPanel>
   );
 
