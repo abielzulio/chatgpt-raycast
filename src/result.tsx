@@ -20,6 +20,7 @@ import { defaultProfileImage } from "./profile-image";
 import { ConversationItem, shareConversation } from "./share-gpt";
 import { Answer, ChatAnswer } from "./type";
 import say from "say";
+import { AnswerDetailView } from "./answer-detail";
 
 const FullTextInput = ({ onSubmit }: { onSubmit: (text: string) => void }) => {
   const [text, setText] = useState<string>("");
@@ -359,24 +360,7 @@ export default function ChatGPT() {
                 key={answer.id}
                 accessories={[{ text: `#${answers.length - i}` }]}
                 title={answer.question}
-                detail={
-                  <List.Item.Detail
-                    markdown={markdown}
-                    metadata={
-                      <List.Item.Detail.Metadata>
-                        <List.Item.Detail.Metadata.Label title="Question" text={answer.question} />
-                        <List.Item.Detail.Metadata.Separator />
-                        <List.Item.Detail.Metadata.Label
-                          title="Date"
-                          text={new Date(answer.createdAt).toLocaleString()}
-                        />
-                        <List.Item.Detail.Metadata.Separator />
-                        <List.Item.Detail.Metadata.Label title="ID" text={answer.id} />
-                        <List.Item.Detail.Metadata.Label title="Conversation ID" text={answer.conversationId} />
-                      </List.Item.Detail.Metadata>
-                    }
-                  />
-                }
+                detail={<AnswerDetailView answer={answer} markdown={markdown} />}
                 actions={isLoading ? undefined : getActionPanel(answer)}
               />
             );

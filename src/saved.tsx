@@ -2,6 +2,7 @@ import { ActionPanel, List, LocalStorage, Action, Icon, showToast, Toast } from 
 import { useCallback, useEffect, useState } from "react";
 import { Answer } from "./type";
 import say from "say";
+import { AnswerDetailView } from "./answer-detail";
 
 export default function SavedAnswer() {
   const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
@@ -56,12 +57,10 @@ export default function SavedAnswer() {
       <Action
         icon={Icon.SpeechBubble}
         title="Speak"
-        onAction={() => 
-          { 
-            say.stop();
-            say.speak(answer.answer);
-          }
-        }
+        onAction={() => {
+          say.stop();
+          say.speak(answer.answer);
+        }}
         shortcut={{ modifiers: ["cmd"], key: "p" }}
       />
 
@@ -111,24 +110,7 @@ export default function SavedAnswer() {
               key={answer.id}
               title={answer.question}
               accessories={[{ text: new Date(answer.createdAt ?? 0).toLocaleDateString() }]}
-              detail={
-                <List.Item.Detail
-                  markdown={answer.answer}
-                  metadata={
-                    <List.Item.Detail.Metadata>
-                      <List.Item.Detail.Metadata.Label title="Question" text={answer.question} />
-                      <List.Item.Detail.Metadata.Separator />
-                      <List.Item.Detail.Metadata.Label
-                        title="Date"
-                        text={new Date(answer.createdAt ?? 0).toLocaleString()}
-                      />
-                      <List.Item.Detail.Metadata.Separator />
-                      <List.Item.Detail.Metadata.Label title="ID" text={answer.id} />
-                      <List.Item.Detail.Metadata.Label title="Conversation ID" text={answer.conversationId} />
-                    </List.Item.Detail.Metadata>
-                  }
-                />
-              }
+              detail={<AnswerDetailView answer={answer} />}
               actions={answer && selectedAnswerId === answer.id ? getActionPanel(answer) : undefined}
             />
           ))
