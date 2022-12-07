@@ -15,12 +15,12 @@ import {
 } from "@raycast/api";
 import { ChatGPTAPI, ChatGPTConversation } from "chatgpt";
 import { useCallback, useEffect, useState } from "react";
+import say from "say";
 import { v4 as uuidv4 } from "uuid";
+import { AnswerDetailView } from "./answer-detail";
 import { defaultProfileImage } from "./profile-image";
 import { shareConversation } from "./share-gpt";
 import { Answer, ChatAnswer, ConversationItem } from "./type";
-import say from "say";
-import { AnswerDetailView } from "./answer-detail";
 
 const FullTextInput = ({ onSubmit }: { onSubmit: (text: string) => void }) => {
   const [text, setText] = useState<string>("");

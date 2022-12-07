@@ -1,8 +1,8 @@
-import { ActionPanel, List, LocalStorage, Action, Icon, showToast, Toast } from "@raycast/api";
+import { Action, ActionPanel, Icon, List, LocalStorage, showToast, Toast } from "@raycast/api";
 import { useCallback, useEffect, useState } from "react";
-import { Answer } from "./type";
 import say from "say";
 import { AnswerDetailView } from "./answer-detail";
+import { Answer } from "./type";
 
 export default function SavedAnswer() {
   const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
