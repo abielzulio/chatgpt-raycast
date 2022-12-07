@@ -13,7 +13,7 @@ import {
   Toast,
   useNavigation,
 } from "@raycast/api";
-import { ChatGPTAPI } from "chatgpt";
+import { ChatGPTAPI, ChatGPTConversation } from "chatgpt";
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { defaultProfileImage } from "./profile-image";
@@ -45,6 +45,7 @@ export default function ChatGPT() {
   const [conversationId, setConversationId] = useState<string>(() => {
     return uuidv4();
   });
+  const [conversation, setConversation] = useState<ChatGPTConversation>();
   const [answers, setAnswers] = useState<ChatAnswer[]>([]);
   const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -69,6 +70,13 @@ export default function ChatGPT() {
   useEffect(() => {
     LocalStorage.setItem("savedAnswers", JSON.stringify(savedAnswers));
   }, [savedAnswers]);
+
+  useEffect(() => {
+    (async () => {
+      const initConversation = await chatGPT.getConversation();
+      setConversation(initConversation);
+    })();
+  }, []);
 
   const handleSaveAnswer = useCallback(
     async (answer: Answer) => {
@@ -129,53 +137,53 @@ export default function ChatGPT() {
       setSelectedAnswer(answerId);
     }, 50);
 
-    await chatGPT
-      .sendMessage(question, {
-        converstationId: conversationId,
-        onProgress: (progress) => {
+    conversation &&
+      (await conversation
+        .sendMessage(question, {
+          onProgress: (progress) => {
+            setAnswers((prev) => {
+              const newAnswers = prev.map((a) => {
+                if (a.id === answerId) {
+                  return {
+                    ...a,
+                    partialAnswer: progress,
+                  };
+                }
+                return a;
+              });
+              return newAnswers;
+            });
+          },
+        })
+        .then((data) => {
+          const newAnswer: ChatAnswer = {
+            ...baseAnswer,
+            answer: data,
+            partialAnswer: data,
+            done: true,
+          };
           setAnswers((prev) => {
-            const newAnswers = prev.map((a) => {
+            return prev.map((a) => {
               if (a.id === answerId) {
-                return {
-                  ...a,
-                  partialAnswer: progress,
-                };
+                return newAnswer;
               }
               return a;
             });
-            return newAnswers;
           });
-        },
-      })
-      .then((data) => {
-        const newAnswer: ChatAnswer = {
-          ...baseAnswer,
-          answer: data,
-          partialAnswer: data,
-          done: true,
-        };
-        setAnswers((prev) => {
-          return prev.map((a) => {
-            if (a.id === answerId) {
-              return newAnswer;
-            }
-            return a;
-          });
-        });
-      })
-      .then(() => {
-        clearSearchBar();
-        setIsLoading(false);
-        toast.title = "Got your answer!";
-        toast.style = Toast.Style.Success;
-      })
-      .catch((err) => {
-        toast.title = "Error";
-        if (err instanceof Error) {
-          toast.message = err?.message;
-        }
-        toast.style = Toast.Style.Failure;
-      });
+        })
+        .then(() => {
+          clearSearchBar();
+          setIsLoading(false);
+          toast.title = "Got your answer!";
+          toast.style = Toast.Style.Success;
+        })
+        .catch((err) => {
+          toast.title = "Error";
+          if (err instanceof Error) {
+            toast.message = err?.message;
+          }
+          toast.style = Toast.Style.Failure;
+        }));
   }
 
   const getActionPanel = (answer?: ChatAnswer) => (
