@@ -53,8 +53,8 @@ export default function SavedAnswer() {
       <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Conversation ID" content={answer.conversationId} />
       <Action
         style={Action.Style.Destructive}
-        icon={Icon.Star}
-        title="Unsave Answer"
+        icon={Icon.Trash}
+        title="Remove Answer"
         onAction={() => handleUnsaveAnswer(answer)}
         shortcut={{ modifiers: ["cmd"], key: "s" }}
       />

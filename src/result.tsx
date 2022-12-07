@@ -188,7 +188,7 @@ export default function ChatGPT() {
 
   const getActionPanel = (answer?: ChatAnswer) => (
     <ActionPanel>
-      {searchText.length ? (
+      {searchText.length > 0 ? (
         <>
           <Action
             title="Get answer"
@@ -266,8 +266,9 @@ export default function ChatGPT() {
           );
         }}
       />
-      {answers.length > 1 && (
+      {answers.length > 0 && (
         <Action
+          style={Action.Style.Destructive}
           title="Start new conversation"
           shortcut={{ modifiers: ["cmd", "shift"], key: "n" }}
           icon={Icon.RotateAntiClockwise}
@@ -341,7 +342,7 @@ export default function ChatGPT() {
                     }
                   />
                 }
-                actions={getActionPanel(answer)}
+                actions={isLoading ? undefined : getActionPanel(answer)}
               />
             );
           })
