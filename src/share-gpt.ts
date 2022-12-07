@@ -1,3 +1,5 @@
+import fetch from 'node-fetch';
+
 export type ConversationItem = {
   from: "human" | "gpt";
   value: string;
