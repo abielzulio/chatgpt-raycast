@@ -93,27 +93,29 @@ export default function SavedAnswer() {
       {savedAnswers.length === 0 ? (
         <List.EmptyView title="No saved answers" icon={Icon.Stars} />
       ) : (
-        savedAnswers
-          .sort((a, b) => new Date(b.savedAt ?? 0).getTime() - new Date(a.savedAt ?? 0).getTime())
-          .filter((answer) => {
-            if (searchText === "") {
-              return true;
-            }
-            return (
-              answer.question.toLowerCase().includes(searchText.toLowerCase()) ||
-              answer.answer.toLowerCase().includes(searchText.toLowerCase())
-            );
-          })
-          .map((answer) => (
-            <List.Item
-              id={answer.id}
-              key={answer.id}
-              title={answer.question}
-              accessories={[{ text: new Date(answer.createdAt ?? 0).toLocaleDateString() }]}
-              detail={<AnswerDetailView answer={answer} />}
-              actions={answer && selectedAnswerId === answer.id ? getActionPanel(answer) : undefined}
-            />
-          ))
+        <List.Section title="Saved" subtitle={savedAnswers.length.toLocaleString()}>
+          {savedAnswers
+            .sort((a, b) => new Date(b.savedAt ?? 0).getTime() - new Date(a.savedAt ?? 0).getTime())
+            .filter((answer) => {
+              if (searchText === "") {
+                return true;
+              }
+              return (
+                answer.question.toLowerCase().includes(searchText.toLowerCase()) ||
+                answer.answer.toLowerCase().includes(searchText.toLowerCase())
+              );
+            })
+            .map((answer) => (
+              <List.Item
+                id={answer.id}
+                key={answer.id}
+                title={answer.question}
+                accessories={[{ text: new Date(answer.createdAt ?? 0).toLocaleDateString() }]}
+                detail={<AnswerDetailView answer={answer} />}
+                actions={answer && selectedAnswerId === answer.id ? getActionPanel(answer) : undefined}
+              />
+            ))}
+        </List.Section>
       )}
     </List>
   );

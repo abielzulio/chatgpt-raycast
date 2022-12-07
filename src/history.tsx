@@ -92,7 +92,7 @@ export default function History() {
       {history.length === 0 ? (
         <List.EmptyView title="No history" icon={Icon.Stars} />
       ) : (
-        <List.Section title="Recent questions" subtitle={history.length.toLocaleString()}>
+        <List.Section title="Recent" subtitle={history.length.toLocaleString()}>
           {history
             .sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime())
             .filter((answer) => {
