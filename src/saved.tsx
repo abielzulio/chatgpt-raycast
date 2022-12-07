@@ -3,12 +3,6 @@ import { useCallback, useEffect, useState } from "react";
 import { Answer } from "./type";
 import say from "say";
 
-type SavedAnswer = {
-  isLoading: boolean;
-  searchText: string;
-  savedAnswers: Answer[];
-};
-
 export default function SavedAnswer() {
   const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
   const [searchText, setSearchText] = useState<string>("");
@@ -68,8 +62,8 @@ export default function SavedAnswer() {
 
       <Action
         style={Action.Style.Destructive}
-        icon={Icon.Star}
-        title="Unsave Answer"
+        icon={Icon.Trash}
+        title="Remove Answer"
         onAction={() => handleUnsaveAnswer(answer)}
         shortcut={{ modifiers: ["cmd"], key: "s" }}
       />
@@ -96,7 +90,7 @@ export default function SavedAnswer() {
         <List.EmptyView title="No saved answers" icon={Icon.Stars} />
       ) : (
         savedAnswers
-          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt))
           .filter((answer) => {
             if (searchText === "") {
               return true;

@@ -13,7 +13,7 @@ import {
   Toast,
   useNavigation,
 } from "@raycast/api";
-import { ChatGPTAPI } from "chatgpt";
+import { ChatGPTAPI, ChatGPTConversation } from "chatgpt";
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { defaultProfileImage } from "./profile-image";
@@ -44,6 +44,7 @@ const FullTextInput = ({ onSubmit }: { onSubmit: (text: string) => void }) => {
 
 export default function ChatGPT() {
   const [conversationId, setConversationId] = useState<string>(uuidv4());
+  const [conversation, setConversation] = useState<ChatGPTConversation>();
   const [answers, setAnswers] = useState<ChatAnswer[]>([]);
   const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -69,13 +70,20 @@ export default function ChatGPT() {
     LocalStorage.setItem("savedAnswers", JSON.stringify(savedAnswers));
   }, [savedAnswers]);
 
+  useEffect(() => {
+    (async () => {
+      const initConversation = await chatGPT.getConversation();
+      setConversation(initConversation);
+    })();
+  }, []);
+
   const handleSaveAnswer = useCallback(
     async (answer: Answer) => {
       const toast = await showToast({
         title: "Saving your answer...",
         style: Toast.Style.Animated,
       });
-      answer.createdAt = new Date().toISOString();
+      answer.savedAt = new Date().toISOString();
       setSavedAnswers([...savedAnswers, answer]);
       toast.title = "Answer saved!";
       toast.style = Toast.Style.Success;
@@ -128,58 +136,58 @@ export default function ChatGPT() {
       setSelectedAnswer(answerId);
     }, 50);
 
-    await chatGPT
-      .sendMessage(question, {
-        converstationId: conversationId,
-        onProgress: (progress) => {
+    conversation &&
+      (await conversation
+        .sendMessage(question, {
+          onProgress: (progress) => {
+            setAnswers((prev) => {
+              const newAnswers = prev.map((a) => {
+                if (a.id === answerId) {
+                  return {
+                    ...a,
+                    partialAnswer: progress,
+                  };
+                }
+                return a;
+              });
+              return newAnswers;
+            });
+          },
+        })
+        .then((data) => {
+          const newAnswer: ChatAnswer = {
+            ...baseAnswer,
+            answer: data,
+            partialAnswer: data,
+            done: true,
+          };
           setAnswers((prev) => {
-            const newAnswers = prev.map((a) => {
+            return prev.map((a) => {
               if (a.id === answerId) {
-                return {
-                  ...a,
-                  partialAnswer: progress,
-                };
+                return newAnswer;
               }
               return a;
             });
-            return newAnswers;
           });
-        },
-      })
-      .then((data) => {
-        const newAnswer: ChatAnswer = {
-          ...baseAnswer,
-          answer: data,
-          partialAnswer: data,
-          done: true,
-        };
-        setAnswers((prev) => {
-          return prev.map((a) => {
-            if (a.id === answerId) {
-              return newAnswer;
-            }
-            return a;
-          });
-        });
-      })
-      .then(() => {
-        clearSearchBar();
-        setIsLoading(false);
-        toast.title = "Got your answer!";
-        toast.style = Toast.Style.Success;
-      })
-      .catch((err) => {
-        toast.title = "Error";
-        if (err instanceof Error) {
-          toast.message = err?.message;
-        }
-        toast.style = Toast.Style.Failure;
-      });
+        })
+        .then(() => {
+          clearSearchBar();
+          setIsLoading(false);
+          toast.title = "Got your answer!";
+          toast.style = Toast.Style.Success;
+        })
+        .catch((err) => {
+          toast.title = "Error";
+          if (err instanceof Error) {
+            toast.message = err?.message;
+          }
+          toast.style = Toast.Style.Failure;
+        }));
   }
 
   const getActionPanel = (answer?: ChatAnswer) => (
     <ActionPanel>
-      {searchText.length ? (
+      {searchText.length > 0 ? (
         <>
           <Action
             title="Get answer"
@@ -264,8 +272,9 @@ export default function ChatGPT() {
           );
         }}
       />
-      {answers.length > 1 && (
+      {answers.length > 0 && (
         <Action
+          style={Action.Style.Destructive}
           title="Start new conversation"
           shortcut={{ modifiers: ["cmd", "shift"], key: "n" }}
           icon={Icon.RotateAntiClockwise}
@@ -339,7 +348,7 @@ export default function ChatGPT() {
                     }
                   />
                 }
-                actions={getActionPanel(answer)}
+                actions={isLoading ? undefined : getActionPanel(answer)}
               />
             );
           })
