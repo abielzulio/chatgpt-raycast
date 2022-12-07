@@ -243,7 +243,6 @@ export default function ChatGPT() {
             }}
             shortcut={{ modifiers: ["cmd"], key: "p" }}
           />
-
           <Action.CreateSnippet
             icon={Icon.Snippets}
             title="Save as a Snippet"

@@ -32,8 +32,8 @@ export default function History() {
         title: "Removing answer...",
         style: Toast.Style.Animated,
       });
-      const newSavedAnswer = history.filter((item) => item.id !== answer.id);
-      setHistory(newSavedAnswer);
+      const newHistory = history.filter((item) => item.id !== answer.id);
+      setHistory(newHistory);
       toast.title = "Answer removed!";
       toast.style = Toast.Style.Success;
     },
@@ -62,7 +62,6 @@ export default function History() {
         }}
         shortcut={{ modifiers: ["cmd"], key: "p" }}
       />
-
       <Action
         style={Action.Style.Destructive}
         icon={Icon.Trash}
