@@ -7,8 +7,7 @@
 > **Warning**
 > This extension was made intentionally to be running on dev environment only. Will submit if there's an official API.
 
-
-https://user-images.githubusercontent.com/7030944/205975673-665168f4-c290-4f3d-9ffb-1c5cf87e010f.mp4
+https://user-images.githubusercontent.com/7030944/206215928-9ad7d35b-02c0-4db9-b25d-9b40b18b9830.mp4
 
 
 ## Features
