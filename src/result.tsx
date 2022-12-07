@@ -47,6 +47,7 @@ export default function ChatGPT() {
   const [conversation, setConversation] = useState<ChatGPTConversation>();
   const [answers, setAnswers] = useState<ChatAnswer[]>([]);
   const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
+  const [history, setHistory] = useState<Answer[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
   const [selectedAnswerId, setSelectedAnswer] = useState<string | null>(null);
@@ -67,8 +68,25 @@ export default function ChatGPT() {
   }, []);
 
   useEffect(() => {
+    (async () => {
+      const storedHistory = await LocalStorage.getItem<string>("history");
+
+      if (!storedHistory) {
+        setHistory([]);
+      } else {
+        const answers: Answer[] = JSON.parse(storedHistory);
+        setHistory((previous) => [...previous, ...answers]);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
     LocalStorage.setItem("savedAnswers", JSON.stringify(savedAnswers));
   }, [savedAnswers]);
+
+  useEffect(() => {
+    LocalStorage.setItem("history", JSON.stringify(history));
+  }, [history]);
 
   useEffect(() => {
     (async () => {
@@ -89,6 +107,13 @@ export default function ChatGPT() {
       toast.style = Toast.Style.Success;
     },
     [setSavedAnswers, savedAnswers]
+  );
+
+  const handleUpdateHistory = useCallback(
+    async (answer: Answer) => {
+      setHistory([...history, answer]);
+    },
+    [setHistory, history]
   );
 
   const [chatGPT] = useState(() => {
@@ -170,6 +195,7 @@ export default function ChatGPT() {
               return a;
             });
           });
+          handleUpdateHistory(newAnswer);
         })
         .then(() => {
           clearSearchBar();

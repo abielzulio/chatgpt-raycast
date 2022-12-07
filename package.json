@@ -23,6 +23,13 @@
       "subtitle": "Powered by ChatGPT",
       "description": "Collection of your saved answer",
       "mode": "view"
+    },
+    {
+      "name": "history",
+      "title": "History",
+      "subtitle": "Powered by ChatGPT",
+      "description": "History generated answer",
+      "mode": "view"
     }
   ],
   "preferences": [
