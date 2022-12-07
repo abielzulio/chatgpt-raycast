@@ -1,9 +1,6 @@
-import fetch from 'node-fetch';
+import fetch from "node-fetch";
+import { ConversationItem } from "./type";
 
-export type ConversationItem = {
-  from: "human" | "gpt";
-  value: string;
-};
 type ConversationData = {
   avatarUrl: string;
   items: ConversationItem[];

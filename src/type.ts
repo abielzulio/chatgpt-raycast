@@ -11,3 +11,8 @@ export interface ChatAnswer extends Answer {
   partialAnswer: string;
   done: boolean;
 }
+
+export type ConversationItem = {
+  from: "human" | "gpt";
+  value: string;
+};

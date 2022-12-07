@@ -17,8 +17,8 @@ import { ChatGPTAPI, ChatGPTConversation } from "chatgpt";
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { defaultProfileImage } from "./profile-image";
-import { ConversationItem, shareConversation } from "./share-gpt";
-import { Answer, ChatAnswer } from "./type";
+import { shareConversation } from "./share-gpt";
+import { Answer, ChatAnswer, ConversationItem } from "./type";
 import say from "say";
 import { AnswerDetailView } from "./answer-detail";
 
