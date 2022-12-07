@@ -81,7 +81,7 @@ export default function SavedAnswer() {
         <List.EmptyView title="No saved answers" icon={Icon.Stars} />
       ) : (
         savedAnswers
-          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt))
           .filter((answer) => {
             if (searchText === "") {
               return true;
