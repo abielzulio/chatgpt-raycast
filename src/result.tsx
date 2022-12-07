@@ -139,6 +139,7 @@ export default function ChatGPT() {
     conversation &&
       (await conversation
         .sendMessage(question, {
+          timeoutMs: 2 * 60 * 1000,
           onProgress: (progress) => {
             setAnswers((prev) => {
               const newAnswers = prev.map((a) => {
