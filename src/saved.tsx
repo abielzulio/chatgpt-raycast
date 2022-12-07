@@ -95,7 +95,7 @@ export default function SavedAnswer() {
         <List.EmptyView title="No saved answers" icon={Icon.Stars} />
       ) : (
         savedAnswers
-          .sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt))
+          .sort((a, b) => new Date(b.savedAt ?? 0).getTime() - new Date(a.savedAt ?? 0).getTime())
           .filter((answer) => {
             if (searchText === "") {
               return true;
@@ -110,7 +110,7 @@ export default function SavedAnswer() {
               id={answer.id}
               key={answer.id}
               title={answer.question}
-              accessories={[{ text: new Date(answer.createdAt).toLocaleDateString() }]}
+              accessories={[{ text: new Date(answer.createdAt ?? 0).toLocaleDateString() }]}
               detail={
                 <List.Item.Detail
                   markdown={answer.answer}
@@ -120,7 +120,7 @@ export default function SavedAnswer() {
                       <List.Item.Detail.Metadata.Separator />
                       <List.Item.Detail.Metadata.Label
                         title="Date"
-                        text={new Date(answer.createdAt).toLocaleString()}
+                        text={new Date(answer.createdAt ?? 0).toLocaleString()}
                       />
                       <List.Item.Detail.Metadata.Separator />
                       <List.Item.Detail.Metadata.Label title="ID" text={answer.id} />

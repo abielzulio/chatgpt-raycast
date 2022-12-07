@@ -324,7 +324,7 @@ export default function ChatGPT() {
         />
       ) : (
         answers
-          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
           .map((answer, i) => {
             const currentAnswer = answer.done ? answer.answer : answer.partialAnswer;
             const markdown = `${currentAnswer}`;
