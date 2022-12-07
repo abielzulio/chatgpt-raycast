@@ -211,7 +211,10 @@ export default function ChatGPT() {
           <Action
             icon={Icon.SpeechBubble}
             title="Speak"
-            onAction={() => say.speak(answer.answer)}
+            onAction={() => {
+              say.stop();
+              say.speak(answer.answer);
+            }}
             shortcut={{ modifiers: ["cmd"], key: "p" }}
           />
 
