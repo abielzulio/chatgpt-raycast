@@ -19,6 +19,7 @@ import { v4 as uuidv4 } from "uuid";
 import { defaultProfileImage } from "./profile-image";
 import { ConversationItem, shareConversation } from "./share-gpt";
 import { Answer, ChatAnswer } from "./type";
+import say from "say";
 
 const FullTextInput = ({ onSubmit }: { onSubmit: (text: string) => void }) => {
   const [text, setText] = useState<string>("");
@@ -42,9 +43,7 @@ const FullTextInput = ({ onSubmit }: { onSubmit: (text: string) => void }) => {
 };
 
 export default function ChatGPT() {
-  const [conversationId, setConversationId] = useState<string>(() => {
-    return uuidv4();
-  });
+  const [conversationId, setConversationId] = useState<string>(uuidv4());
   const [conversation, setConversation] = useState<ChatGPTConversation>();
   const [answers, setAnswers] = useState<ChatAnswer[]>([]);
   const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
@@ -208,6 +207,13 @@ export default function ChatGPT() {
             onAction={() => handleSaveAnswer(answer)}
             shortcut={{ modifiers: ["cmd"], key: "s" }}
           />
+          <Action
+            icon={Icon.SpeechBubble}
+            title="Speak"
+            onAction={() => say.speak(answer.answer)}
+            shortcut={{ modifiers: ["cmd"], key: "p" }}
+          />
+
           <Action.CreateSnippet
             icon={Icon.Snippets}
             title="Save as a Snippet"
