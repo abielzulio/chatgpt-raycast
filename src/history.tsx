@@ -73,9 +73,19 @@ export default function History() {
     </ActionPanel>
   );
 
+  const filteredHistory = history.filter((answer) => {
+    if (searchText === "") {
+      return true;
+    }
+    return (
+      answer.question.toLowerCase().includes(searchText.toLowerCase()) ||
+      answer.answer.toLowerCase().includes(searchText.toLowerCase())
+    );
+  });
+
   return (
     <List
-      isShowingDetail={history.length === 0 ? false : true}
+      isShowingDetail={filteredHistory.length === 0 ? false : true}
       filtering={false}
       throttle={false}
       navigationTitle={"Saved Answers"}
@@ -92,18 +102,9 @@ export default function History() {
       {history.length === 0 ? (
         <List.EmptyView title="No history" icon={Icon.Stars} />
       ) : (
-        <List.Section title="Recent" subtitle={history.length.toLocaleString()}>
-          {history
+        <List.Section title="Recent" subtitle={filteredHistory.length.toLocaleString()}>
+          {filteredHistory
             .sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime())
-            .filter((answer) => {
-              if (searchText === "") {
-                return true;
-              }
-              return (
-                answer.question.toLowerCase().includes(searchText.toLowerCase()) ||
-                answer.answer.toLowerCase().includes(searchText.toLowerCase())
-              );
-            })
             .map((answer) => (
               <List.Item
                 id={answer.id}

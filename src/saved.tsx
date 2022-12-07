@@ -74,9 +74,19 @@ export default function SavedAnswer() {
     </ActionPanel>
   );
 
+  const filteredAnswers = savedAnswers.filter((answer) => {
+    if (searchText === "") {
+      return true;
+    }
+    return (
+      answer.question.toLowerCase().includes(searchText.toLowerCase()) ||
+      answer.answer.toLowerCase().includes(searchText.toLowerCase())
+    );
+  });
+
   return (
     <List
-      isShowingDetail={savedAnswers.length === 0 ? false : true}
+      isShowingDetail={filteredAnswers.length === 0 ? false : true}
       filtering={false}
       throttle={false}
       navigationTitle={"Saved Answers"}
@@ -93,18 +103,10 @@ export default function SavedAnswer() {
       {savedAnswers.length === 0 ? (
         <List.EmptyView title="No saved answers" icon={Icon.Stars} />
       ) : (
-        <List.Section title="Saved" subtitle={savedAnswers.length.toLocaleString()}>
-          {savedAnswers
+        <List.Section title="Saved" subtitle={filteredAnswers.length.toLocaleString()}>
+          {filteredAnswers
             .sort((a, b) => new Date(b.savedAt ?? 0).getTime() - new Date(a.savedAt ?? 0).getTime())
-            .filter((answer) => {
-              if (searchText === "") {
-                return true;
-              }
-              return (
-                answer.question.toLowerCase().includes(searchText.toLowerCase()) ||
-                answer.answer.toLowerCase().includes(searchText.toLowerCase())
-              );
-            })
+
             .map((answer) => (
               <List.Item
                 id={answer.id}
