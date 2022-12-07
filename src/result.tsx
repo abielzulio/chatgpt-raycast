@@ -308,14 +308,31 @@ export default function ChatGPT() {
           .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
           .map((answer, i) => {
             const currentAnswer = answer.done ? answer.answer : answer.partialAnswer;
-            const markdown = `**${answer.question}**\n\n${currentAnswer}`;
+            const markdown = `${currentAnswer}`;
             return (
               <List.Item
                 id={answer.id}
                 key={answer.id}
                 accessories={[{ text: `#${answers.length - i}` }]}
                 title={answer.question}
-                detail={<List.Item.Detail markdown={markdown} />}
+                detail={
+                  <List.Item.Detail
+                    markdown={markdown}
+                    metadata={
+                      <List.Item.Detail.Metadata>
+                        <List.Item.Detail.Metadata.Label title="Question" text={answer.question} />
+                        <List.Item.Detail.Metadata.Separator />
+                        <List.Item.Detail.Metadata.Label
+                          title="Date"
+                          text={new Date(answer.createdAt).toLocaleString()}
+                        />
+                        <List.Item.Detail.Metadata.Separator />
+                        <List.Item.Detail.Metadata.Label title="ID" text={answer.id} />
+                        <List.Item.Detail.Metadata.Label title="Conversation ID" text={answer.conversationId} />
+                      </List.Item.Detail.Metadata>
+                    }
+                  />
+                }
                 actions={getActionPanel(answer)}
               />
             );
