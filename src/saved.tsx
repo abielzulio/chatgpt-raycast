@@ -2,12 +2,6 @@ import { ActionPanel, List, LocalStorage, Action, Icon, showToast, Toast } from 
 import { useCallback, useEffect, useState } from "react";
 import { Answer } from "./type";
 
-type SavedAnswer = {
-  isLoading: boolean;
-  searchText: string;
-  savedAnswers: Answer[];
-};
-
 export default function SavedAnswer() {
   const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
   const [searchText, setSearchText] = useState<string>("");
