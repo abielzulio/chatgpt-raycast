@@ -1,6 +1,7 @@
 import { ActionPanel, List, LocalStorage, Action, Icon, showToast, Toast } from "@raycast/api";
 import { useCallback, useEffect, useState } from "react";
 import { Answer } from "./type";
+import say from "say";
 
 type SavedAnswer = {
   isLoading: boolean;
@@ -57,6 +58,14 @@ export default function SavedAnswer() {
       />
       <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy ID" content={answer.id} />
       <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Conversation ID" content={answer.conversationId} />
+
+      <Action
+        icon={Icon.SpeechBubble}
+        title="Speak"
+        onAction={() => say.speak(answer.answer)}
+        shortcut={{ modifiers: ["cmd"], key: "p" }}
+      />
+
       <Action
         style={Action.Style.Destructive}
         icon={Icon.Star}
