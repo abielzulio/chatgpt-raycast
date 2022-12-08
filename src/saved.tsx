@@ -1,4 +1,4 @@
-import { Action, ActionPanel, Icon, List, LocalStorage, showToast, Toast } from "@raycast/api";
+import { Action, ActionPanel, Alert, confirmAlert, Icon, List, LocalStorage, showToast, Toast } from "@raycast/api";
 import { useCallback, useEffect, useState } from "react";
 import say from "say";
 import { AnswerDetailView } from "./answer-detail";
@@ -68,7 +68,20 @@ export default function SavedAnswer() {
         style={Action.Style.Destructive}
         icon={Icon.Trash}
         title="Remove Answer"
-        onAction={() => handleUnsaveAnswer(answer)}
+        onAction={async () => {
+          await confirmAlert({
+            title: "Are you sure you want to remove this answer from your collection?",
+            message: "This action cannot be undone.",
+            icon: Icon.Trash,
+            primaryAction: {
+              title: "Remove",
+              style: Alert.ActionStyle.Destructive,
+              onAction: () => {
+                handleUnsaveAnswer(answer);
+              },
+            },
+          });
+        }}
         shortcut={{ modifiers: ["cmd"], key: "s" }}
       />
     </ActionPanel>

@@ -1,4 +1,4 @@
-import { ActionPanel, List, LocalStorage, Action, Icon, showToast, Toast } from "@raycast/api";
+import { ActionPanel, List, LocalStorage, Action, Icon, showToast, Toast, confirmAlert, Alert } from "@raycast/api";
 import { useCallback, useEffect, useState } from "react";
 import { Answer } from "./type";
 import say from "say";
@@ -67,7 +67,20 @@ export default function History() {
         style={Action.Style.Destructive}
         icon={Icon.Trash}
         title="Remove Answer"
-        onAction={() => handleRemoveAnswer(answer)}
+        onAction={async () => {
+          await confirmAlert({
+            title: "Are you sure you want to remove this answer from your history?",
+            message: "This action cannot be undone.",
+            icon: Icon.Trash,
+            primaryAction: {
+              title: "Remove",
+              style: Alert.ActionStyle.Destructive,
+              onAction: () => {
+                handleRemoveAnswer(answer);
+              },
+            },
+          });
+        }}
         shortcut={{ modifiers: ["cmd"], key: "s" }}
       />
     </ActionPanel>

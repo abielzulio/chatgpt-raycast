@@ -1,8 +1,10 @@
 import {
   Action,
   ActionPanel,
+  Alert,
   clearSearchBar,
   Clipboard,
+  confirmAlert,
   Form,
   getPreferenceValues,
   Icon,
@@ -308,11 +310,22 @@ export default function ChatGPT() {
           title="Start new conversation"
           shortcut={{ modifiers: ["cmd", "shift"], key: "n" }}
           icon={Icon.RotateAntiClockwise}
-          onAction={() => {
-            setAnswers([]);
-            clearSearchBar();
-            setConversationId(uuidv4());
-            setIsLoading(false);
+          onAction={async () => {
+            await confirmAlert({
+              title: "Are you sure you want to start a new conversation?",
+              message: "This action cannot be undone.",
+              icon: Icon.RotateAntiClockwise,
+              primaryAction: {
+                title: "Start New",
+                style: Alert.ActionStyle.Destructive,
+                onAction: () => {
+                  setAnswers([]);
+                  clearSearchBar();
+                  setConversationId(uuidv4());
+                  setIsLoading(false);
+                },
+              },
+            });
           }}
         />
       )}
