@@ -41,6 +41,16 @@ export default function History() {
     [setHistory, history]
   );
 
+  const handleClearHistory = useCallback(async () => {
+    const toast = await showToast({
+      title: "Clearing history...",
+      style: Toast.Style.Animated,
+    });
+    setHistory([]);
+    toast.title = "History cleared!";
+    toast.style = Toast.Style.Success;
+  }, [setHistory]);
+
   const getActionPanel = (answer: Answer) => (
     <ActionPanel>
       <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Answer" content={answer.answer} />
@@ -77,6 +87,26 @@ export default function History() {
               style: Alert.ActionStyle.Destructive,
               onAction: () => {
                 handleRemoveAnswer(answer);
+              },
+            },
+          });
+        }}
+        shortcut={{ modifiers: ["cmd"], key: "s" }}
+      />
+      <Action
+        style={Action.Style.Destructive}
+        icon={Icon.Trash}
+        title="Clear History"
+        onAction={async () => {
+          await confirmAlert({
+            title: "Are you sure you want to clear your history?",
+            message: "This action cannot be undone.",
+            icon: Icon.Trash,
+            primaryAction: {
+              title: "Remove",
+              style: Alert.ActionStyle.Destructive,
+              onAction: () => {
+                handleClearHistory();
               },
             },
           });
