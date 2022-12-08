@@ -23,13 +23,6 @@
       "subtitle": "Powered by ChatGPT",
       "description": "Collection of your saved answer",
       "mode": "view"
-    },
-    {
-      "name": "history",
-      "title": "History",
-      "subtitle": "Powered by ChatGPT",
-      "description": "History generated answer",
-      "mode": "view"
     }
   ],
   "preferences": [
@@ -43,10 +36,11 @@
   ],
   "dependencies": {
     "@raycast/api": "^1.44.0",
+    "@raycast/utils": "^1.4.11",
     "@types/uuid": "^9.0.0",
-    "say": "^0.16.0",
     "chatgpt": "^2.0.1",
     "node-fetch": "^3.3.0",
+    "say": "^0.16.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

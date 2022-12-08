@@ -15,8 +15,9 @@ import {
   Toast,
   useNavigation,
 } from "@raycast/api";
+import { usePromise } from "@raycast/utils";
 import { ChatGPTAPI, ChatGPTConversation } from "chatgpt";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import say from "say";
 import { v4 as uuidv4 } from "uuid";
 import { AnswerDetailView } from "./answer-detail";
@@ -49,48 +50,20 @@ export default function ChatGPT() {
   const [conversationId, setConversationId] = useState<string>(uuidv4());
   const [conversation, setConversation] = useState<ChatGPTConversation>();
   const [answers, setAnswers] = useState<ChatAnswer[]>([]);
-  const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
-  const [history, setHistory] = useState<Answer[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedAnswerId, setSelectedAnswer] = useState<string | null>(null);
 
-  const { pop, push } = useNavigation();
-
-  useEffect(() => {
-    (async () => {
-      const storedSavedAnswers = await LocalStorage.getItem<string>("savedAnswers");
-
-      if (!storedSavedAnswers) {
-        setSavedAnswers([]);
-      } else {
-        const answers: Answer[] = JSON.parse(storedSavedAnswers);
-        setSavedAnswers((previous) => [...previous, ...answers]);
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      const storedHistory = await LocalStorage.getItem<string>("history");
-
-      if (!storedHistory) {
-        setHistory([]);
-      } else {
-        const answers: Answer[] = JSON.parse(storedHistory);
-        setHistory((previous) => [...previous, ...answers]);
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
-    LocalStorage.setItem("savedAnswers", JSON.stringify(savedAnswers));
-  }, [savedAnswers]);
-
-  useEffect(() => {
-    LocalStorage.setItem("history", JSON.stringify(history));
-  }, [history]);
-
+  const savedAnswers = usePromise(async () => {
+    const storedSavedAnswers = await LocalStorage.getItem<string>("savedAnswers");
+    const savedAnswers = storedSavedAnswers ? JSON.parse(storedSavedAnswers) : [];
+    return savedAnswers as Answer[];
+  });
+  const history = usePromise(async () => {
+    const storedHistory = await LocalStorage.getItem<string>("history");
+    const history = storedHistory ? JSON.parse(storedHistory) : [];
+    return history as Answer[];
+  });
   useEffect(() => {
     (async () => {
       const initConversation = await chatGPT.getConversation();
@@ -98,26 +71,16 @@ export default function ChatGPT() {
     })();
   }, []);
 
-  const handleSaveAnswer = useCallback(
-    async (answer: Answer) => {
-      const toast = await showToast({
-        title: "Saving your answer...",
-        style: Toast.Style.Animated,
-      });
-      answer.savedAt = new Date().toISOString();
-      setSavedAnswers([...savedAnswers, answer]);
-      toast.title = "Answer saved!";
-      toast.style = Toast.Style.Success;
-    },
-    [setSavedAnswers, savedAnswers]
-  );
-
-  const handleUpdateHistory = useCallback(
-    async (answer: Answer) => {
-      setHistory([...history, answer]);
-    },
-    [setHistory, history]
-  );
+  const saveAnswer = async (answer: Answer) => {
+    const toast = await showToast({
+      title: "Saving your answer...",
+      style: Toast.Style.Animated,
+    });
+    answer.savedAt = new Date().toISOString();
+    await LocalStorage.setItem("savedAnswers", JSON.stringify([...(savedAnswers.data || []), answer]));
+    toast.title = "Answer saved!";
+    toast.style = Toast.Style.Success;
+  };
 
   const [chatGPT] = useState(() => {
     const sessionToken = getPreferenceValues<{
@@ -198,7 +161,7 @@ export default function ChatGPT() {
               return a;
             });
           });
-          handleUpdateHistory(newAnswer);
+          LocalStorage.setItem("history", JSON.stringify([newAnswer, ...(history.data || [])]));
         })
         .then(() => {
           clearSearchBar();
@@ -215,10 +178,10 @@ export default function ChatGPT() {
         }));
   }
 
-  const getActionPanel = (answer?: ChatAnswer) => (
-    <ActionPanel>
-      {searchText.length > 0 ? (
-        <>
+  const SearchActions = () => {
+    return (
+      <>
+        {searchText.length > 0 && (
           <Action
             title="Get answer"
             icon={Icon.ArrowRight}
@@ -226,121 +189,98 @@ export default function ChatGPT() {
               getAnswer(searchText);
             }}
           />
-        </>
-      ) : answer && selectedAnswerId === answer.id ? (
-        <>
-          <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Answer" content={answer.answer} />
-          <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Question" content={answer.question} />
-          <Action
-            icon={Icon.Star}
-            title="Save Answer"
-            onAction={() => handleSaveAnswer(answer)}
-            shortcut={{ modifiers: ["cmd"], key: "s" }}
-          />
-          <Action
-            icon={Icon.SpeechBubble}
-            title="Speak"
-            onAction={() => {
-              say.stop();
-              say.speak(answer.answer);
-            }}
-            shortcut={{ modifiers: ["cmd"], key: "p" }}
-          />
-          <Action.CreateSnippet
-            icon={Icon.Snippets}
-            title="Save as a Snippet"
-            snippet={{ text: answer.answer, name: answer.question }}
-            shortcut={{ modifiers: ["cmd"], key: "n" }}
-          />
-          <Action
-            title="Share to shareg.pt"
-            shortcut={{ modifiers: ["cmd", "shift"], key: "s" }}
-            icon={Icon.Upload}
-            onAction={async () => {
-              if (answer) {
-                const toast = await showToast({
-                  title: "Sharing your conversation...",
-                  style: Toast.Style.Animated,
-                });
-                await shareConversation({
-                  avatarUrl: defaultProfileImage,
-                  items: answers.flatMap((a): ConversationItem[] => [
-                    {
-                      value: a.question,
-                      from: "human",
-                    },
-                    {
-                      value: a.answer,
-                      from: "gpt",
-                    },
-                  ]),
-                })
-                  .then(({ url }) => {
-                    Clipboard.copy(url);
-                    toast.title = `Copied link to clipboard!`;
-                    toast.style = Toast.Style.Success;
-                  })
-                  .catch(() => {
-                    toast.title = "Error while sharing conversation";
-                    toast.style = Toast.Style.Failure;
-                  });
-              }
-            }}
-          />
-        </>
-      ) : null}
-      <Action
-        title="Full text input"
-        shortcut={{ modifiers: ["cmd"], key: "t" }}
-        icon={Icon.Text}
-        onAction={() => {
-          push(
-            <FullTextInput
-              onSubmit={(text) => {
-                getAnswer(text);
-                pop();
-              }}
-            />
-          );
-        }}
-      />
-      {answers.length > 0 && (
+        )}
         <Action
-          style={Action.Style.Destructive}
-          title="Start new conversation"
-          shortcut={{ modifiers: ["cmd", "shift"], key: "n" }}
-          icon={Icon.RotateAntiClockwise}
-          onAction={async () => {
-            await confirmAlert({
-              title: "Are you sure you want to start a new conversation?",
-              message: "This action cannot be undone.",
-              icon: Icon.RotateAntiClockwise,
-              primaryAction: {
-                title: "Start New",
-                style: Alert.ActionStyle.Destructive,
-                onAction: () => {
-                  setAnswers([]);
-                  clearSearchBar();
-                  setConversationId(uuidv4());
-                  setIsLoading(false);
-                },
-              },
-            });
+          title="Full text input"
+          shortcut={{ modifiers: ["cmd"], key: "t" }}
+          icon={Icon.Text}
+          onAction={() => {
+            const { pop, push } = useNavigation();
+
+            push(
+              <FullTextInput
+                onSubmit={(text) => {
+                  getAnswer(text);
+                  pop();
+                }}
+              />
+            );
           }}
         />
-      )}
-    </ActionPanel>
+      </>
+    );
+  };
+  const AnswerActions = (props: { answer: Answer }) => (
+    <>
+      <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Answer" content={props.answer.answer} />
+      <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Question" content={props.answer.question} />
+      <Action
+        icon={Icon.Star}
+        title="Save Answer"
+        onAction={() => saveAnswer(props.answer)}
+        shortcut={{ modifiers: ["cmd"], key: "s" }}
+      />
+      <Action
+        icon={Icon.SpeechBubble}
+        title="Speak"
+        onAction={() => {
+          say.stop();
+          say.speak(props.answer.answer);
+        }}
+        shortcut={{ modifiers: ["cmd"], key: "p" }}
+      />
+      <Action.CreateSnippet
+        icon={Icon.Snippets}
+        title="Save as a Snippet"
+        snippet={{ text: props.answer.answer, name: props.answer.question }}
+        shortcut={{ modifiers: ["cmd"], key: "n" }}
+      />
+      <Action
+        title="Share to shareg.pt"
+        shortcut={{ modifiers: ["cmd", "shift"], key: "s" }}
+        icon={Icon.Upload}
+        onAction={async () => {
+          if (props.answer) {
+            const toast = await showToast({
+              title: "Sharing your conversation...",
+              style: Toast.Style.Animated,
+            });
+            await shareConversation({
+              avatarUrl: defaultProfileImage,
+              items: answers.flatMap((a): ConversationItem[] => [
+                {
+                  value: a.question,
+                  from: "human",
+                },
+                {
+                  value: a.answer,
+                  from: "gpt",
+                },
+              ]),
+            })
+              .then(({ url }) => {
+                Clipboard.copy(url);
+                toast.title = `Copied link to clipboard!`;
+                toast.style = Toast.Style.Success;
+              })
+              .catch(() => {
+                toast.title = "Error while sharing conversation";
+                toast.style = Toast.Style.Failure;
+              });
+          }
+        }}
+      />
+    </>
   );
 
   return (
     <List
-      isShowingDetail={answers.length > 0 ? true : false}
+      isShowingDetail
       filtering={false}
-      isLoading={isLoading}
+      isLoading={isLoading && history.isLoading && savedAnswers.isLoading}
       onSearchTextChange={setSearchText}
       throttle={false}
       navigationTitle={"ChatGPT"}
-      actions={getActionPanel()}
       selectedItemId={selectedAnswerId || undefined}
       onSelectionChange={(id) => {
         if (id !== selectedAnswerId) {
@@ -351,18 +291,22 @@ export default function ChatGPT() {
         answers.length > 0 ? "Ask another question..." : isLoading ? "Generating your answer..." : "Ask a question..."
       }
     >
-      {answers.length == 0 ? (
-        <List.EmptyView
-          title="Ask anything!"
-          description={
-            isLoading
-              ? "Hang on tight! This might require some time. You may redo your search if it takes longer"
-              : "Type your question or prompt from the search bar and hit the enter key"
-          }
-          icon={Icon.QuestionMark}
-        />
-      ) : (
-        answers
+      <List.EmptyView
+        title="Ask anything!"
+        description={
+          isLoading
+            ? "Hang on tight! This might require some time. You may redo your search if it takes longer"
+            : "Type your question or prompt from the search bar and hit the enter key"
+        }
+        icon={Icon.QuestionMark}
+        actions={
+          <ActionPanel>
+            <SearchActions />
+          </ActionPanel>
+        }
+      />
+      <List.Section title="Answers">
+        {answers
           .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
           .map((answer, i) => {
             const currentAnswer = answer.done ? answer.answer : answer.partialAnswer;
@@ -374,11 +318,72 @@ export default function ChatGPT() {
                 accessories={[{ text: `#${answers.length - i}` }]}
                 title={answer.question}
                 detail={<AnswerDetailView answer={answer} markdown={markdown} />}
-                actions={isLoading ? undefined : getActionPanel(answer)}
+                actions={
+                  <ActionPanel>
+                    <SearchActions />
+                    <AnswerActions answer={answer} />
+                    {answers.length > 0 && (
+                      <Action
+                        style={Action.Style.Destructive}
+                        title="Start new conversation"
+                        shortcut={{ modifiers: ["cmd", "shift"], key: "n" }}
+                        icon={Icon.RotateAntiClockwise}
+                        onAction={async () => {
+                          await confirmAlert({
+                            title: "Are you sure you want to start a new conversation?",
+                            message: "This action cannot be undone.",
+                            icon: Icon.RotateAntiClockwise,
+                            primaryAction: {
+                              title: "Start New",
+                              style: Alert.ActionStyle.Destructive,
+                              onAction: () => {
+                                setAnswers([]);
+                                clearSearchBar();
+                                setConversationId(uuidv4());
+                                setIsLoading(false);
+                              },
+                            },
+                          });
+                        }}
+                      />
+                    )}
+                  </ActionPanel>
+                }
               />
             );
-          })
-      )}
+          })}
+      </List.Section>
+      <List.Section title="Past Answers">
+        {history.data
+          ?.filter((answer) => !answers.find((a) => a.id === answer.id)) // Filter out answers that are already in the answers list
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .map((answer) => {
+            return (
+              <List.Item
+                id={answer.id}
+                key={answer.id}
+                title={answer.question}
+                detail={<AnswerDetailView answer={answer} markdown={answer.answer} />}
+                actions={
+                  <ActionPanel>
+                    <SearchActions />
+                    <AnswerActions answer={answer} />
+                    <Action
+                      title="Clear History"
+                      onAction={async () => {
+                        await history.mutate(LocalStorage.removeItem("history"), {
+                          optimisticUpdate() {
+                            return [];
+                          },
+                        });
+                      }}
+                    />
+                  </ActionPanel>
+                }
+              />
+            );
+          })}
+      </List.Section>
     </List>
   );
 }
