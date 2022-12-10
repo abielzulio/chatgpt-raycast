@@ -46,8 +46,6 @@ export default function SavedAnswer() {
     <ActionPanel>
       <CopyActionSection answer={answer.answer} question={answer.question} />
       <SaveAsSnippetAction text={answer.answer} name={answer.question} />
-      <CopyToClipboardAction title="Copy ID" content={answer.id} />
-      <CopyToClipboardAction title="Copy Conversation ID" content={answer.conversationId} />
       <TextToSpeechAction content={answer.answer} />
       <DestructiveAction
         title="Remove Answer"
