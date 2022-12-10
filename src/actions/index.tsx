@@ -16,3 +16,7 @@ export const TextToSpeechAction = ({ content }: { content: string }) => (
     shortcut={{ modifiers: ["cmd"], key: "p" }}
   />
 );
+
+export const SaveAnswerAction = ({ onAction }: { onAction: () => void }) => (
+  <Action icon={Icon.Star} title="Save Answer" onAction={onAction} shortcut={{ modifiers: ["cmd"], key: "s" }} />
+);

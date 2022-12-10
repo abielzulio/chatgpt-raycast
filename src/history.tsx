@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Answer } from "./type";
 import say from "say";
 import { AnswerDetailView } from "./views/answer-detail";
-import { CopyToClipboardAction, TextToSpeechAction } from "./actions";
+import { CopyToClipboardAction, SaveAnswerAction, TextToSpeechAction } from "./actions";
 
 export default function History() {
   const [history, setHistory] = useState<Answer[]>([]);
@@ -87,12 +87,7 @@ export default function History() {
     <ActionPanel>
       <CopyToClipboardAction title="Copy Answer" content={answer.answer} />
       <CopyToClipboardAction title="Copy Question" content={answer.question} />
-      <Action
-        icon={Icon.Star}
-        title="Save Answer"
-        onAction={() => handleSaveAnswer(answer)}
-        shortcut={{ modifiers: ["cmd"], key: "s" }}
-      />
+      <SaveAnswerAction onAction={() => handleSaveAnswer(answer)} />
       <Action.CreateSnippet
         icon={Icon.Snippets}
         title="Save as a Snippet"
