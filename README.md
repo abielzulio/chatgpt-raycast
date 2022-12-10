@@ -4,9 +4,9 @@
 
 <h1 align="center">ChatGPT</h1>
 
-<h4 align="center">
+<h3 align="center">
 Interact with OpenAI's ChatGPT right from your command bar
-</h4>
+</h3>
 
 ![Conversation View](/metadata/1.png)
 
@@ -18,7 +18,7 @@ Straight from your command bar, ask anything that you wanted and get ChatGPT's g
 
 ![Notion connection](/metadata/2.png)
 
-### Well-designed, made you undistracted
+### Well-designed, undistracted
 
 Read through AI-generated answer in a clean and nice-looking markdown view without losing ongoing conversation.
 
@@ -30,7 +30,7 @@ Got the answer that you wanted? Great. Now you can save it in your collection lo
 
 ![Natural language](/metadata/4.png)
 
-### Look-up your past question, without hesitation
+### Look-up your past, fast
 
 Automatically save all the asked questions and its generated answer locally, so you can go back digging for the answer you're looking for without any internet connection!
 
