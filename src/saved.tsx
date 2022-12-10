@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import say from "say";
 import { AnswerDetailView } from "./views/answer-detail";
 import { Answer } from "./type";
-import { CopyToClipboardAction, SaveAsSnippetAction, TextToSpeechAction } from "./actions";
+import { CopyToClipboardAction, DestructiveAction, SaveAsSnippetAction, TextToSpeechAction } from "./actions";
 
 export default function SavedAnswer() {
   const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
@@ -50,25 +50,12 @@ export default function SavedAnswer() {
       <CopyToClipboardAction title="Copy ID" content={answer.id} />
       <CopyToClipboardAction title="Copy Conversatio ID" content={answer.conversationId} />
       <TextToSpeechAction content={answer.answer} />
-      <Action
-        style={Action.Style.Destructive}
-        icon={Icon.Trash}
+      <DestructiveAction
         title="Remove Answer"
-        onAction={async () => {
-          await confirmAlert({
-            title: "Are you sure you want to remove this answer from your collection?",
-            message: "This action cannot be undone.",
-            icon: Icon.Trash,
-            primaryAction: {
-              title: "Remove",
-              style: Alert.ActionStyle.Destructive,
-              onAction: () => {
-                handleUnsaveAnswer(answer);
-              },
-            },
-          });
+        dialog={{
+          title: "Are you sure you want to remove this answer from your collection?",
         }}
-        shortcut={{ modifiers: ["cmd"], key: "s" }}
+        onAction={() => handleUnsaveAnswer(answer)}
       />
     </ActionPanel>
   );

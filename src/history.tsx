@@ -3,7 +3,13 @@ import { useCallback, useEffect, useState } from "react";
 import { Answer } from "./type";
 import say from "say";
 import { AnswerDetailView } from "./views/answer-detail";
-import { CopyToClipboardAction, SaveAnswerAction, SaveAsSnippetAction, TextToSpeechAction } from "./actions";
+import {
+  CopyToClipboardAction,
+  DestructiveAction,
+  SaveAnswerAction,
+  SaveAsSnippetAction,
+  TextToSpeechAction,
+} from "./actions";
 
 export default function History() {
   const [history, setHistory] = useState<Answer[]>([]);
@@ -92,44 +98,19 @@ export default function History() {
       <CopyToClipboardAction title="Copy ID" content={answer.id} />
       <CopyToClipboardAction title="Copy Conversatio ID" content={answer.conversationId} />
       <TextToSpeechAction content={answer.answer} />
-      <Action
-        style={Action.Style.Destructive}
-        icon={Icon.Trash}
+      <DestructiveAction
         title="Remove Answer"
-        onAction={async () => {
-          await confirmAlert({
-            title: "Are you sure you want to remove this answer from your history?",
-            message: "This action cannot be undone.",
-            icon: Icon.Trash,
-            primaryAction: {
-              title: "Remove",
-              style: Alert.ActionStyle.Destructive,
-              onAction: () => {
-                handleRemoveAnswer(answer);
-              },
-            },
-          });
+        dialog={{
+          title: "Are you sure you want to remove this answer from your history?",
         }}
-        shortcut={{ modifiers: ["cmd"], key: "delete" }}
+        onAction={() => handleRemoveAnswer(answer)}
       />
-      <Action
-        style={Action.Style.Destructive}
-        icon={Icon.Trash}
+      <DestructiveAction
         title="Clear History"
-        onAction={async () => {
-          await confirmAlert({
-            title: "Are you sure you want to clear your history?",
-            message: "This action cannot be undone.",
-            icon: Icon.Trash,
-            primaryAction: {
-              title: "Remove",
-              style: Alert.ActionStyle.Destructive,
-              onAction: () => {
-                handleClearHistory();
-              },
-            },
-          });
+        dialog={{
+          title: "Are you sure you want to clear your history?",
         }}
+        onAction={() => handleClearHistory()}
         shortcut={{ modifiers: ["cmd", "shift"], key: "delete" }}
       />
     </ActionPanel>

@@ -24,7 +24,13 @@ import { EmptyView } from "./views/empty";
 import { defaultProfileImage } from "./profile-image";
 import { shareConversation } from "./share-gpt";
 import { Answer, ChatAnswer, ConversationItem, Question } from "./type";
-import { CopyToClipboardAction, SaveAnswerAction, SaveAsSnippetAction, TextToSpeechAction } from "./actions";
+import {
+  CopyToClipboardAction,
+  DestructiveAction,
+  SaveAnswerAction,
+  SaveAsSnippetAction,
+  TextToSpeechAction,
+} from "./actions";
 
 const FullTextInput = ({ onSubmit }: { onSubmit: (text: string) => void }) => {
   const [text, setText] = useState<string>("");
@@ -332,28 +338,20 @@ export default function ChatGPT() {
         }}
       />
       {answers.length > 0 && (
-        <Action
-          style={Action.Style.Destructive}
+        <DestructiveAction
           title="Start new conversation"
-          shortcut={{ modifiers: ["cmd", "shift"], key: "n" }}
           icon={Icon.RotateAntiClockwise}
-          onAction={async () => {
-            await confirmAlert({
-              title: "Are you sure you want to start a new conversation?",
-              message: "This action cannot be undone.",
-              icon: Icon.RotateAntiClockwise,
-              primaryAction: {
-                title: "Start New",
-                style: Alert.ActionStyle.Destructive,
-                onAction: () => {
-                  setAnswers([]);
-                  clearSearchBar();
-                  setConversationId(uuidv4());
-                  setIsLoading(false);
-                },
-              },
-            });
+          dialog={{
+            title: "Are you sure you want to start a new conversation?",
+            primaryButton: "Start New",
           }}
+          onAction={() => {
+            setAnswers([]);
+            clearSearchBar();
+            setConversationId(uuidv4());
+            setIsLoading(false);
+          }}
+          shortcut={{ modifiers: ["cmd", "shift"], key: "n" }}
         />
       )}
     </ActionPanel>
@@ -399,24 +397,10 @@ export default function ChatGPT() {
                             getAnswer(question.question);
                           }}
                         />
-                        <Action
-                          title="Clear history"
-                          icon={Icon.Trash}
-                          style={Action.Style.Destructive}
-                          onAction={async () => {
-                            await confirmAlert({
-                              title: "Are you sure you to clear your recent question?",
-                              message: "This action cannot be undone.",
-                              icon: Icon.Trash,
-                              primaryAction: {
-                                title: "Clear History",
-                                style: Alert.ActionStyle.Destructive,
-                                onAction: () => {
-                                  setInitialQuestions([]);
-                                },
-                              },
-                            });
-                          }}
+                        <DestructiveAction
+                          title="Clear History"
+                          dialog={{ title: "Are you sure you to clear your recent question?" }}
+                          onAction={() => setInitialQuestions([])}
                         />
                       </ActionPanel>
                     }
