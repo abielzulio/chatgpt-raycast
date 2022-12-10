@@ -9,7 +9,7 @@ import { AnswerDetailView } from "./views/answer-detail";
 export default function SavedAnswer() {
   const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
   const [searchText, setSearchText] = useState<string>("");
-
+  const [isLoading, setLoading] = useState<boolean>(true);
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -21,6 +21,7 @@ export default function SavedAnswer() {
       } else {
         const answers: Answer[] = JSON.parse(storedSavedAnswers);
         setSavedAnswers((previous) => [...previous, ...answers]);
+        setLoading(false);
       }
     })();
   }, []);
@@ -84,6 +85,7 @@ export default function SavedAnswer() {
   return (
     <List
       isShowingDetail={filteredAnswers.length === 0 ? false : true}
+      isLoading={isLoading}
       filtering={false}
       throttle={false}
       navigationTitle={"Saved Answers"}

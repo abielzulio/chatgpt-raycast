@@ -11,6 +11,7 @@ export default function History() {
   const [history, setHistory] = useState<Answer[]>([]);
   const [searchText, setSearchText] = useState<string>("");
   const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
+  const [isLoading, setLoading] = useState<boolean>(true);
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -22,6 +23,7 @@ export default function History() {
       } else {
         const answers: Answer[] = JSON.parse(storedHistory);
         setHistory((previous) => [...previous, ...answers]);
+        setLoading(false);
       }
     })();
   }, []);
@@ -129,6 +131,7 @@ export default function History() {
   return (
     <List
       isShowingDetail={filteredHistory.length === 0 ? false : true}
+      isLoading={isLoading}
       filtering={false}
       throttle={false}
       navigationTitle={"Saved Answers"}

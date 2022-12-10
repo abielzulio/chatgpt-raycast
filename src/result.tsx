@@ -57,7 +57,7 @@ export default function ChatGPT() {
   const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
   const [initialQuestions, setInitialQuestions] = useState<Question[]>([]);
   const [history, setHistory] = useState<Answer[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchText, setSearchText] = useState<string>("");
   const [selectedAnswerId, setSelectedAnswer] = useState<string | null>(null);
 
@@ -85,6 +85,7 @@ export default function ChatGPT() {
       } else {
         const initialQuestions: Question[] = JSON.parse(storedInitialQuestions);
         setInitialQuestions((previous) => [...previous, ...initialQuestions]);
+        setIsLoading(false);
       }
     })();
   }, []);
@@ -166,8 +167,10 @@ export default function ChatGPT() {
   });
 
   async function getAnswer(question: string) {
+    setIsLoading(true);
+
     const toast = await showToast({
-      title: "Getting your answer...",
+      title: "Validating your token...",
       style: Toast.Style.Animated,
     });
 
@@ -189,8 +192,10 @@ export default function ChatGPT() {
       });
     }
 
+    toast.title = "Getting your answer...";
+    toast.style = Toast.Style.Animated;
+
     const answerId = uuidv4();
-    setIsLoading(true);
     const baseAnswer: ChatAnswer = {
       id: answerId,
       answer: "",
