@@ -33,7 +33,7 @@ export const SaveAsSnippetAction = ({ text, name }: { text: string; name: string
 export const DestructiveAction = ({
   icon = Icon.Trash,
   title,
-  dialog = { message: "This action cannot be undone." },
+  dialog,
   onAction,
   shortcut = { modifiers: ["cmd"], key: "delete" },
 }: {
@@ -50,7 +50,7 @@ export const DestructiveAction = ({
     onAction={async () => {
       await confirmAlert({
         title: dialog.title ?? title,
-        message: dialog.message,
+        message: dialog.message ?? "This action cannot be undone",
         icon,
         primaryAction: {
           title: dialog.primaryButton ?? title,

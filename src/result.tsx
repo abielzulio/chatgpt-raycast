@@ -266,7 +266,7 @@ export default function ChatGPT() {
       {searchText.length > 0 ? (
         <>
           <Action
-            title="Get answer"
+            title="Get Answer"
             icon={Icon.ArrowRight}
             onAction={() => {
               getAnswer(searchText);
@@ -387,7 +387,7 @@ export default function ChatGPT() {
                     actions={
                       <ActionPanel>
                         <Action
-                          title="Get answer"
+                          title="Get Answer"
                           icon={Icon.ArrowRight}
                           onAction={() => {
                             getAnswer(question.question);
