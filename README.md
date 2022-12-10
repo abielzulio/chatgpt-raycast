@@ -12,25 +12,25 @@ Interact with OpenAI's ChatGPT right from your command bar
 
 # Features
 
-## Ask anything, from your favourite thing
+### Ask anything, from your favourite thing
 
 Straight from your command bar, ask anything that you wanted and get ChatGPT's generated answer without opening any browser app.
 
 ![Notion connection](/metadata/2.png)
 
-## Well-designed, made you undistracted
+### Well-designed, made you undistracted
 
 Read through AI-generated answer in a clean and nice-looking markdown view without losing ongoing conversation.
 
 ![Conversation View](/metadata/3.png)
 
-## Save the answer, faster
+### Save the answer, faster
 
 Got the answer that you wanted? Great. Now you can save it in your collection locally and here you have it! No need to reask again.
 
 ![Natural language](/metadata/4.png)
 
-## Look-up your past question, without hesitation
+### Look-up your past question, without hesitation
 
 Automatically save all the asked questions and its generated answer locally, so you can go back digging for the answer you're looking for without any internet connection!
 
