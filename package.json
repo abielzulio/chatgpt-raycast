@@ -3,10 +3,16 @@
   "name": "chatgpt",
   "title": "ChatGPT",
   "description": "Interact with OpenAI's ChatGPT API directly from your command bar",
-  "icon": "command-icon.png",
+  "icon": "icon.png",
   "author": "abielzulio",
   "categories": [
-    "Applications"
+    "Applications",
+    "Productivity",
+    "Developer Tools",
+    "Web",
+    "Fun",
+    "Finance",
+    "Other"
   ],
   "license": "MIT",
   "commands": [
