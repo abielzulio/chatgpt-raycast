@@ -5,6 +5,11 @@
   "description": "Interact with OpenAI's ChatGPT API directly from your command bar",
   "icon": "icon.png",
   "author": "abielzulio",
+  "contributors": [
+    "timolins",
+    "shichongrui",
+    "pomdtr"
+  ],
   "categories": [
     "Applications",
     "Productivity",
