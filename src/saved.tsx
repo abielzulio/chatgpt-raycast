@@ -57,6 +57,14 @@ export default function SavedAnswer() {
           }}
           onAction={() => handleUnsaveAnswer(answer)}
         />
+        <DestructiveAction
+          title="Remove All Answer"
+          dialog={{
+            title: "Are you sure you want to remove all your saved answer from your collection?",
+          }}
+          onAction={() => setSavedAnswers([])}
+          shortcut={{ modifiers: ["cmd", "shift"], key: "delete" }}
+        />
       </ActionPanel.Section>
     </ActionPanel>
   );
