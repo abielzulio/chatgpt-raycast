@@ -1,6 +1,6 @@
 import { ActionPanel, Icon, List, LocalStorage, showToast, Toast } from "@raycast/api";
 import { useCallback, useEffect, useState } from "react";
-import { CopyToClipboardAction, DestructiveAction, SaveAsSnippetAction, TextToSpeechAction } from "./actions";
+import { DestructiveAction, SaveAsSnippetAction, TextToSpeechAction } from "./actions";
 import { CopyActionSection } from "./actions/copy";
 import { Answer } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";

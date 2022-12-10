@@ -1,13 +1,8 @@
 import { ActionPanel, Icon, List, LocalStorage, showToast, Toast } from "@raycast/api";
 import { useCallback, useEffect, useState } from "react";
-import {
-  CopyToClipboardAction,
-  DestructiveAction,
-  SaveAnswerAction,
-  SaveAsSnippetAction,
-  TextToSpeechAction,
-} from "./actions";
+import { DestructiveAction, TextToSpeechAction } from "./actions";
 import { CopyActionSection } from "./actions/copy";
+import { SaveActionSection } from "./actions/save";
 import { Answer } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
 
@@ -92,8 +87,10 @@ export default function History() {
   const getActionPanel = (answer: Answer) => (
     <ActionPanel>
       <CopyActionSection answer={answer.answer} question={answer.question} />
-      <SaveAnswerAction onAction={() => handleSaveAnswer(answer)} />
-      <SaveAsSnippetAction text={answer.answer} name={answer.question} />
+      <SaveActionSection
+        onSaveAnswerAction={() => handleSaveAnswer(answer)}
+        snippet={{ text: answer.answer, name: answer.question }}
+      />
       <TextToSpeechAction content={answer.answer} />
       <DestructiveAction
         title="Remove Answer"

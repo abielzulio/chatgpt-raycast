@@ -18,14 +18,9 @@ import {
 import { ChatGPTAPI, ChatGPTConversation } from "chatgpt";
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import {
-  CopyToClipboardAction,
-  DestructiveAction,
-  SaveAnswerAction,
-  SaveAsSnippetAction,
-  TextToSpeechAction,
-} from "./actions";
+import { DestructiveAction, TextToSpeechAction } from "./actions";
 import { CopyActionSection } from "./actions/copy";
+import { SaveActionSection } from "./actions/save";
 import { defaultProfileImage } from "./profile-image";
 import { shareConversation } from "./share-gpt";
 import { Answer, ChatAnswer, ConversationItem, Question } from "./type";
@@ -280,10 +275,12 @@ export default function ChatGPT() {
         </>
       ) : answer && selectedAnswerId === answer.id ? (
         <>
-          <SaveAnswerAction onAction={() => handleSaveAnswer(answer)} />
           <CopyActionSection answer={answer.answer} question={answer.question} />
+          <SaveActionSection
+            onSaveAnswerAction={() => handleSaveAnswer(answer)}
+            snippet={{ text: answer.answer, name: answer.question }}
+          />
           <TextToSpeechAction content={answer.answer} />
-          <SaveAsSnippetAction text={answer.answer} name={answer.question} />
           <Action
             title="Share to shareg.pt"
             shortcut={{ modifiers: ["cmd", "shift"], key: "s" }}
