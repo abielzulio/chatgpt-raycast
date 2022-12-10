@@ -7,6 +7,7 @@ import {
   SaveAsSnippetAction,
   TextToSpeechAction,
 } from "./actions";
+import { CopyActionSection } from "./actions/copy";
 import { Answer } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
 
@@ -90,8 +91,7 @@ export default function History() {
 
   const getActionPanel = (answer: Answer) => (
     <ActionPanel>
-      <CopyToClipboardAction title="Copy Answer" content={answer.answer} />
-      <CopyToClipboardAction title="Copy Question" content={answer.question} />
+      <CopyActionSection answer={answer.answer} question={answer.question} />
       <SaveAnswerAction onAction={() => handleSaveAnswer(answer)} />
       <SaveAsSnippetAction text={answer.answer} name={answer.question} />
       <CopyToClipboardAction title="Copy ID" content={answer.id} />

@@ -25,6 +25,7 @@ import {
   SaveAsSnippetAction,
   TextToSpeechAction,
 } from "./actions";
+import { CopyActionSection } from "./actions/copy";
 import { defaultProfileImage } from "./profile-image";
 import { shareConversation } from "./share-gpt";
 import { Answer, ChatAnswer, ConversationItem, Question } from "./type";
@@ -279,9 +280,8 @@ export default function ChatGPT() {
         </>
       ) : answer && selectedAnswerId === answer.id ? (
         <>
-          <CopyToClipboardAction title="Copy Answer" content={answer.answer} />
-          <CopyToClipboardAction title="Copy Question" content={answer.question} />
           <SaveAnswerAction onAction={() => handleSaveAnswer(answer)} />
+          <CopyActionSection answer={answer.answer} question={answer.question} />
           <TextToSpeechAction content={answer.answer} />
           <SaveAsSnippetAction text={answer.answer} name={answer.question} />
           <Action
