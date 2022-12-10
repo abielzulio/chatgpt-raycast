@@ -46,14 +46,18 @@ export default function SavedAnswer() {
     <ActionPanel>
       <CopyActionSection answer={answer.answer} question={answer.question} />
       <SaveAsSnippetAction text={answer.answer} name={answer.question} />
-      <TextToSpeechAction content={answer.answer} />
-      <DestructiveAction
-        title="Remove Answer"
-        dialog={{
-          title: "Are you sure you want to remove this answer from your collection?",
-        }}
-        onAction={() => handleUnsaveAnswer(answer)}
-      />
+      <ActionPanel.Section title="Output">
+        <TextToSpeechAction content={answer.answer} />
+      </ActionPanel.Section>
+      <ActionPanel.Section title="Delete">
+        <DestructiveAction
+          title="Remove Answer"
+          dialog={{
+            title: "Are you sure you want to remove this answer from your collection?",
+          }}
+          onAction={() => handleUnsaveAnswer(answer)}
+        />
+      </ActionPanel.Section>
     </ActionPanel>
   );
 

@@ -91,22 +91,26 @@ export default function History() {
         onSaveAnswerAction={() => handleSaveAnswer(answer)}
         snippet={{ text: answer.answer, name: answer.question }}
       />
-      <TextToSpeechAction content={answer.answer} />
-      <DestructiveAction
-        title="Remove Answer"
-        dialog={{
-          title: "Are you sure you want to remove this answer from your history?",
-        }}
-        onAction={() => handleRemoveAnswer(answer)}
-      />
-      <DestructiveAction
-        title="Clear History"
-        dialog={{
-          title: "Are you sure you want to clear your history?",
-        }}
-        onAction={() => handleClearHistory()}
-        shortcut={{ modifiers: ["cmd", "shift"], key: "delete" }}
-      />
+      <ActionPanel.Section title="Output">
+        <TextToSpeechAction content={answer.answer} />
+      </ActionPanel.Section>
+      <ActionPanel.Section title="Delete">
+        <DestructiveAction
+          title="Remove Answer"
+          dialog={{
+            title: "Are you sure you want to remove this answer from your history?",
+          }}
+          onAction={() => handleRemoveAnswer(answer)}
+        />
+        <DestructiveAction
+          title="Clear History"
+          dialog={{
+            title: "Are you sure you want to clear your history?",
+          }}
+          onAction={() => handleClearHistory()}
+          shortcut={{ modifiers: ["cmd", "shift"], key: "delete" }}
+        />
+      </ActionPanel.Section>
     </ActionPanel>
   );
 

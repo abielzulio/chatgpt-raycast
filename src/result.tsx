@@ -280,75 +280,81 @@ export default function ChatGPT() {
             onSaveAnswerAction={() => handleSaveAnswer(answer)}
             snippet={{ text: answer.answer, name: answer.question }}
           />
-          <TextToSpeechAction content={answer.answer} />
-          <Action
-            title="Share to shareg.pt"
-            shortcut={{ modifiers: ["cmd", "shift"], key: "s" }}
-            icon={Icon.Upload}
-            onAction={async () => {
-              if (answer) {
-                const toast = await showToast({
-                  title: "Sharing your conversation...",
-                  style: Toast.Style.Animated,
-                });
-                await shareConversation({
-                  avatarUrl: defaultProfileImage,
-                  items: answers.flatMap((a): ConversationItem[] => [
-                    {
-                      value: a.question,
-                      from: "human",
-                    },
-                    {
-                      value: a.answer,
-                      from: "gpt",
-                    },
-                  ]),
-                })
-                  .then(({ url }) => {
-                    Clipboard.copy(url);
-                    toast.title = `Copied link to clipboard!`;
-                    toast.style = Toast.Style.Success;
-                  })
-                  .catch(() => {
-                    toast.title = "Error while sharing conversation";
-                    toast.style = Toast.Style.Failure;
+          <ActionPanel.Section title="Output">
+            <TextToSpeechAction content={answer.answer} />
+            <Action
+              title="Share to shareg.pt"
+              shortcut={{ modifiers: ["cmd", "shift"], key: "s" }}
+              icon={Icon.Upload}
+              onAction={async () => {
+                if (answer) {
+                  const toast = await showToast({
+                    title: "Sharing your conversation...",
+                    style: Toast.Style.Animated,
                   });
-              }
-            }}
-          />
-        </>
-      ) : null}
-      <Action
-        title="Full Text Input"
-        shortcut={{ modifiers: ["cmd"], key: "t" }}
-        icon={Icon.Text}
-        onAction={() => {
-          push(
-            <FullTextInput
-              onSubmit={(text) => {
-                getAnswer(text);
-                pop();
+                  await shareConversation({
+                    avatarUrl: defaultProfileImage,
+                    items: answers.flatMap((a): ConversationItem[] => [
+                      {
+                        value: a.question,
+                        from: "human",
+                      },
+                      {
+                        value: a.answer,
+                        from: "gpt",
+                      },
+                    ]),
+                  })
+                    .then(({ url }) => {
+                      Clipboard.copy(url);
+                      toast.title = `Copied link to clipboard!`;
+                      toast.style = Toast.Style.Success;
+                    })
+                    .catch(() => {
+                      toast.title = "Error while sharing conversation";
+                      toast.style = Toast.Style.Failure;
+                    });
+                }
               }}
             />
-          );
-        }}
-      />
-      {answers.length > 0 && (
-        <DestructiveAction
-          title="Start New Conversation"
-          icon={Icon.RotateAntiClockwise}
-          dialog={{
-            title: "Are you sure you want to start a new conversation?",
-            primaryButton: "Start New",
-          }}
+          </ActionPanel.Section>
+        </>
+      ) : null}
+      <ActionPanel.Section title="Input">
+        <Action
+          title="Full Text Input"
+          shortcut={{ modifiers: ["cmd"], key: "t" }}
+          icon={Icon.Text}
           onAction={() => {
-            setAnswers([]);
-            clearSearchBar();
-            setConversationId(uuidv4());
-            setIsLoading(false);
+            push(
+              <FullTextInput
+                onSubmit={(text) => {
+                  getAnswer(text);
+                  pop();
+                }}
+              />
+            );
           }}
-          shortcut={{ modifiers: ["cmd", "shift"], key: "n" }}
         />
+      </ActionPanel.Section>
+      {answers.length > 0 && (
+        <ActionPanel.Section title="Restart">
+          <DestructiveAction
+            title="Start New Conversation"
+            icon={Icon.RotateAntiClockwise}
+            dialog={{
+              title: "Are you sure you want to start a new conversation?",
+              primaryButton: "Start New",
+            }}
+            onAction={() => {
+              setAnswers([]);
+              clearSearchBar();
+              setConversationId(uuidv4());
+              setIsLoading(false);
+            }}
+            shortcut={{ modifiers: ["cmd", "shift"], key: "n" }}
+          />
+        </ActionPanel.Section>
       )}
     </ActionPanel>
   );
