@@ -16,25 +16,25 @@ Interact with OpenAI's ChatGPT right from your command bar
 
 Straight from your command bar, ask anything that you wanted and get ChatGPT's generated answer without opening any browser app.
 
-![Notion connection](/metadata/2.png)
+![Ask ChatGPT from the command bar](/metadata/2.png)
 
 ### Well-designed, undistracted
 
 Read through AI-generated answer in a clean and nice-looking markdown view without losing ongoing conversation.
 
-![Conversation View](/metadata/3.png)
+![Conversation view](/metadata/3.png)
 
 ### Save the answer, faster
 
 Got the answer that you wanted? Great. Now you can save it in your collection locally and here you have it! No need to reask again.
 
-![Natural language](/metadata/4.png)
+![Saving the answer](/metadata/4.png)
 
 ### Look-up your past, fast
 
 Automatically save all the asked questions and its generated answer locally, so you can go back digging for the answer you're looking for without any internet connection!
 
-![Natural language](/metadata/5.png)
+![Looking through the question history](/metadata/5.png)
 
 # How to use
 
@@ -49,6 +49,8 @@ To get a session token:
    ![ChatGPT cookies](https://github.com/transitive-bullshit/chatgpt-api/blob/main/media/session-token.png?raw=true)
 
 4. Copy the value for `__Secure-next-auth.session-token` and paste in the initialization set-up!
+
+![Looking through the question history](/metadata/6.png)
 
 > Session token will be stored locally using [Preferences API](https://developers.raycast.com/api-reference/preferences)
 
