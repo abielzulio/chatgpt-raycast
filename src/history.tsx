@@ -127,7 +127,7 @@ export default function History() {
             },
           });
         }}
-        shortcut={{ modifiers: ["cmd"], key: "s" }}
+        shortcut={{ modifiers: ["cmd"], key: "delete" }}
       />
       <Action
         style={Action.Style.Destructive}
@@ -147,7 +147,7 @@ export default function History() {
             },
           });
         }}
-        shortcut={{ modifiers: ["cmd"], key: "s" }}
+        shortcut={{ modifiers: ["cmd", "shift"], key: "delete" }}
       />
     </ActionPanel>
   );
