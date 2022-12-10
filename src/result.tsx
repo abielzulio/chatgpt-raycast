@@ -402,7 +402,7 @@ export default function ChatGPT() {
     >
       {searchText.length === 0 && answers.length === 0 ? (
         initialQuestions.length > 0 ? (
-          <List.Section title="Recent question" subtitle={initialQuestions.length.toLocaleString()}>
+          <List.Section title="Recent questions" subtitle={initialQuestions.length.toLocaleString()}>
             {unduplicatedInitialQuestions.map((question) => {
               return (
                 <List.Item

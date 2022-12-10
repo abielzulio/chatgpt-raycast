@@ -63,6 +63,7 @@ export default function SavedAnswer() {
           title="Remove All Answer"
           dialog={{
             title: "Are you sure you want to remove all your saved answer from your collection?",
+            primaryButton: "Remove All",
           }}
           onAction={() => setSavedAnswers([])}
           shortcut={{ modifiers: ["cmd", "shift"], key: "delete" }}
@@ -101,12 +102,16 @@ export default function SavedAnswer() {
           setSelectedAnswerId(id);
         }
       }}
-      searchBarPlaceholder="Search saved answers/question..."
+      searchBarPlaceholder="Search saved answers/questions..."
       searchText={searchText}
       onSearchTextChange={setSearchText}
     >
       {savedAnswers.length === 0 ? (
-        <List.EmptyView title="No saved answers" icon={Icon.Stars} />
+        <List.EmptyView
+          title="No saved answers"
+          description="Save generated question with ⌘ + S shortcut"
+          icon={Icon.Stars}
+        />
       ) : (
         <List.Section title="Saved" subtitle={filteredAnswers.length.toLocaleString()}>
           {filteredAnswers.map((answer) => (
