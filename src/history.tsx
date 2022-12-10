@@ -1,8 +1,5 @@
-import { ActionPanel, List, LocalStorage, Action, Icon, showToast, Toast, confirmAlert, Alert } from "@raycast/api";
+import { ActionPanel, Icon, List, LocalStorage, showToast, Toast } from "@raycast/api";
 import { useCallback, useEffect, useState } from "react";
-import { Answer } from "./type";
-import say from "say";
-import { AnswerDetailView } from "./views/answer-detail";
 import {
   CopyToClipboardAction,
   DestructiveAction,
@@ -10,6 +7,8 @@ import {
   SaveAsSnippetAction,
   TextToSpeechAction,
 } from "./actions";
+import { Answer } from "./type";
+import { AnswerDetailView } from "./views/answer-detail";
 
 export default function History() {
   const [history, setHistory] = useState<Answer[]>([]);
@@ -96,7 +95,7 @@ export default function History() {
       <SaveAnswerAction onAction={() => handleSaveAnswer(answer)} />
       <SaveAsSnippetAction text={answer.answer} name={answer.question} />
       <CopyToClipboardAction title="Copy ID" content={answer.id} />
-      <CopyToClipboardAction title="Copy Conversatio ID" content={answer.conversationId} />
+      <CopyToClipboardAction title="Copy Conversation ID" content={answer.conversationId} />
       <TextToSpeechAction content={answer.answer} />
       <DestructiveAction
         title="Remove Answer"

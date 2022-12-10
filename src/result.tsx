@@ -17,13 +17,7 @@ import {
 } from "@raycast/api";
 import { ChatGPTAPI, ChatGPTConversation } from "chatgpt";
 import { useCallback, useEffect, useState } from "react";
-import say from "say";
 import { v4 as uuidv4 } from "uuid";
-import { AnswerDetailView } from "./views/answer-detail";
-import { EmptyView } from "./views/empty";
-import { defaultProfileImage } from "./profile-image";
-import { shareConversation } from "./share-gpt";
-import { Answer, ChatAnswer, ConversationItem, Question } from "./type";
 import {
   CopyToClipboardAction,
   DestructiveAction,
@@ -31,6 +25,11 @@ import {
   SaveAsSnippetAction,
   TextToSpeechAction,
 } from "./actions";
+import { defaultProfileImage } from "./profile-image";
+import { shareConversation } from "./share-gpt";
+import { Answer, ChatAnswer, ConversationItem, Question } from "./type";
+import { AnswerDetailView } from "./views/answer-detail";
+import { EmptyView } from "./views/empty";
 
 const FullTextInput = ({ onSubmit }: { onSubmit: (text: string) => void }) => {
   const [text, setText] = useState<string>("");
@@ -323,7 +322,7 @@ export default function ChatGPT() {
         </>
       ) : null}
       <Action
-        title="Full text input"
+        title="Full Text Input"
         shortcut={{ modifiers: ["cmd"], key: "t" }}
         icon={Icon.Text}
         onAction={() => {
@@ -339,7 +338,7 @@ export default function ChatGPT() {
       />
       {answers.length > 0 && (
         <DestructiveAction
-          title="Start new conversation"
+          title="Start New Conversation"
           icon={Icon.RotateAntiClockwise}
           dialog={{
             title: "Are you sure you want to start a new conversation?",
