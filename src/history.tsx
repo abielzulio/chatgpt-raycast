@@ -7,7 +7,7 @@ import { AnswerDetailView } from "./answer-detail";
 export default function History() {
   const [history, setHistory] = useState<Answer[]>([]);
   const [searchText, setSearchText] = useState<string>("");
-
+  const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -24,8 +24,25 @@ export default function History() {
   }, []);
 
   useEffect(() => {
+    (async () => {
+      const storedSavedAnswers = await LocalStorage.getItem<string>("savedAnswers");
+
+      if (!storedSavedAnswers) {
+        setSavedAnswers([]);
+      } else {
+        const answers: Answer[] = JSON.parse(storedSavedAnswers);
+        setSavedAnswers((previous) => [...previous, ...answers]);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
     LocalStorage.setItem("history", JSON.stringify(history));
   }, [history]);
+
+  useEffect(() => {
+    LocalStorage.setItem("savedAnswers", JSON.stringify(savedAnswers));
+  }, [savedAnswers]);
 
   const handleRemoveAnswer = useCallback(
     async (answer: Answer) => {
@@ -51,10 +68,30 @@ export default function History() {
     toast.style = Toast.Style.Success;
   }, [setHistory]);
 
+  const handleSaveAnswer = useCallback(
+    async (answer: Answer) => {
+      const toast = await showToast({
+        title: "Saving your answer...",
+        style: Toast.Style.Animated,
+      });
+      answer.savedAt = new Date().toISOString();
+      setSavedAnswers([...savedAnswers, answer]);
+      toast.title = "Answer saved!";
+      toast.style = Toast.Style.Success;
+    },
+    [setSavedAnswers, savedAnswers]
+  );
+
   const getActionPanel = (answer: Answer) => (
     <ActionPanel>
       <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Answer" content={answer.answer} />
       <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Question" content={answer.question} />
+      <Action
+        icon={Icon.Star}
+        title="Save Answer"
+        onAction={() => handleSaveAnswer(answer)}
+        shortcut={{ modifiers: ["cmd"], key: "s" }}
+      />
       <Action.CreateSnippet
         icon={Icon.Snippets}
         title="Save as a Snippet"
@@ -63,7 +100,6 @@ export default function History() {
       />
       <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy ID" content={answer.id} />
       <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Conversation ID" content={answer.conversationId} />
-
       <Action
         icon={Icon.SpeechBubble}
         title="Speak"
