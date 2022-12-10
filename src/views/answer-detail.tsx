@@ -5,11 +5,9 @@ export const AnswerDetailView = (props: { answer: Answer; markdown?: string | nu
   const { answer, markdown } = props;
   return (
     <List.Item.Detail
-      markdown={markdown ?? answer.answer}
+      markdown={markdown ?? `**${answer.question}**\n\n${answer.answer}`}
       metadata={
         <List.Item.Detail.Metadata>
-          <List.Item.Detail.Metadata.Label title="Question" text={answer.question} />
-          <List.Item.Detail.Metadata.Separator />
           <List.Item.Detail.Metadata.Label title="Date" text={new Date(answer.createdAt ?? 0).toLocaleString()} />
           <List.Item.Detail.Metadata.Separator />
           <List.Item.Detail.Metadata.Label title="ID" text={answer.id} />

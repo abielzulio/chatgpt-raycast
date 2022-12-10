@@ -438,7 +438,7 @@ export default function ChatGPT() {
         <List.Section title="Results" subtitle={answers.length.toLocaleString()}>
           {sortedAnswers.map((answer, i) => {
             const currentAnswer = answer.done ? answer.answer : answer.partialAnswer;
-            const markdown = `${currentAnswer}`;
+            const markdown = `**${answer.question}**\n\n${currentAnswer}`;
             return (
               <List.Item
                 id={answer.id}
