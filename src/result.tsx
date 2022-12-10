@@ -23,8 +23,8 @@ import { DestructiveAction, GetAnswerAction, TextToSpeechAction } from "./action
 import { CopyActionSection } from "./actions/copy";
 import { PreferencesActionSection } from "./actions/preferences";
 import { SaveActionSection } from "./actions/save";
-import { defaultProfileImage } from "./profile-image";
-import { shareConversation } from "./share-gpt";
+import { defaultProfileImage } from "./libs/profile-image";
+import { shareConversation } from "./libs/share-gpt";
 import { Answer, ChatAnswer, ConversationItem, Question } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
 import { EmptyView } from "./views/empty";

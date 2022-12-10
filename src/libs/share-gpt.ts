@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { ConversationItem } from "./type";
+import { ConversationItem } from "../type";
 
 type ConversationData = {
   avatarUrl: string;
