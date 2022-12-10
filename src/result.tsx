@@ -443,10 +443,10 @@ export default function ChatGPT() {
           </List.Section>
         )
       ) : (
-        <EmptyView isLoading={isLoading} />
+        <EmptyView />
       )}
       {answers.length === 0 ? (
-        <EmptyView isLoading={isLoading} />
+        <EmptyView />
       ) : (
         <List.Section title="Results" subtitle={answers.length.toLocaleString()}>
           {answers
