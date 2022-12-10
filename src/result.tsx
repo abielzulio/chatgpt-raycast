@@ -136,10 +136,19 @@ export default function ChatGPT() {
     const isAuthenticated: boolean = await chatGPT.getIsAuthenticated();
 
     if (!isAuthenticated) {
-      toast.title = "Your session token is invalid!";
-      toast.style = Toast.Style.Failure;
-      openExtensionPreferences();
-      setIsLoading(false);
+      await confirmAlert({
+        title: "Your session token is invalid",
+        icon: Icon.Gear,
+        message: "Please go to the preferences and enter a new valid session token.",
+        primaryAction: {
+          title: "Open preferences",
+          style: Alert.ActionStyle.Destructive,
+          onAction: () => {
+            openExtensionPreferences();
+            setIsLoading(false);
+          },
+        },
+      });
     }
 
     const answerId = uuidv4();
