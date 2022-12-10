@@ -2,6 +2,7 @@ import { ActionPanel, Icon, List, LocalStorage, showToast, Toast } from "@raycas
 import { useCallback, useEffect, useState } from "react";
 import { DestructiveAction, TextToSpeechAction } from "./actions";
 import { CopyActionSection } from "./actions/copy";
+import { PreferencesActionSection } from "./actions/preferences";
 import { SaveActionSection } from "./actions/save";
 import { Answer } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
@@ -111,6 +112,7 @@ export default function History() {
           shortcut={{ modifiers: ["cmd", "shift"], key: "delete" }}
         />
       </ActionPanel.Section>
+      <PreferencesActionSection />
     </ActionPanel>
   );
 

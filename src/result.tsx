@@ -20,6 +20,7 @@ import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { DestructiveAction, GetAnswerAction, TextToSpeechAction } from "./actions";
 import { CopyActionSection } from "./actions/copy";
+import { PreferencesActionSection } from "./actions/preferences";
 import { SaveActionSection } from "./actions/save";
 import { defaultProfileImage } from "./profile-image";
 import { shareConversation } from "./share-gpt";
@@ -350,6 +351,7 @@ export default function ChatGPT() {
           />
         </ActionPanel.Section>
       )}
+      <PreferencesActionSection />
     </ActionPanel>
   );
 
@@ -396,6 +398,7 @@ export default function ChatGPT() {
                             onAction={() => setInitialQuestions([])}
                           />
                         </ActionPanel.Section>
+                        <PreferencesActionSection />
                       </ActionPanel>
                     }
                   />
