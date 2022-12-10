@@ -1,9 +1,12 @@
-export interface Answer {
+export interface Question {
   id: string;
   question: string;
+  createdAt: string;
+}
+
+export interface Answer extends Question {
   answer: string;
   conversationId: string;
-  createdAt: string;
   savedAt?: string;
 }
 

@@ -20,9 +20,10 @@ import { useCallback, useEffect, useState } from "react";
 import say from "say";
 import { v4 as uuidv4 } from "uuid";
 import { AnswerDetailView } from "./answer-detail";
+import { EmptyView } from "./empty-view";
 import { defaultProfileImage } from "./profile-image";
 import { shareConversation } from "./share-gpt";
-import { Answer, ChatAnswer, ConversationItem } from "./type";
+import { Answer, ChatAnswer, ConversationItem, Question } from "./type";
 
 const FullTextInput = ({ onSubmit }: { onSubmit: (text: string) => void }) => {
   const [text, setText] = useState<string>("");
@@ -50,6 +51,7 @@ export default function ChatGPT() {
   const [conversation, setConversation] = useState<ChatGPTConversation>();
   const [answers, setAnswers] = useState<ChatAnswer[]>([]);
   const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
+  const [initialQuestions, setInitialQuestions] = useState<Question[]>([]);
   const [history, setHistory] = useState<Answer[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
@@ -72,6 +74,19 @@ export default function ChatGPT() {
 
   useEffect(() => {
     (async () => {
+      const storedInitialQuestions = await LocalStorage.getItem<string>("initialQuestions");
+
+      if (!storedInitialQuestions) {
+        setInitialQuestions([]);
+      } else {
+        const initialQuestions: Question[] = JSON.parse(storedInitialQuestions);
+        setInitialQuestions((previous) => [...previous, ...initialQuestions]);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
       const storedHistory = await LocalStorage.getItem<string>("history");
 
       if (!storedHistory) {
@@ -86,6 +101,10 @@ export default function ChatGPT() {
   useEffect(() => {
     LocalStorage.setItem("savedAnswers", JSON.stringify(savedAnswers));
   }, [savedAnswers]);
+
+  useEffect(() => {
+    LocalStorage.setItem("initialQuestions", JSON.stringify(initialQuestions));
+  }, [initialQuestions]);
 
   useEffect(() => {
     LocalStorage.setItem("history", JSON.stringify(history));
@@ -117,6 +136,13 @@ export default function ChatGPT() {
       setHistory([...history, answer]);
     },
     [setHistory, history]
+  );
+
+  const handleUpdateInitialQuestions = useCallback(
+    async (question: Question) => {
+      setInitialQuestions([...initialQuestions, question]);
+    },
+    [setInitialQuestions, initialQuestions]
   );
 
   const [chatGPT] = useState(() => {
@@ -162,6 +188,15 @@ export default function ChatGPT() {
       conversationId: conversationId,
       createdAt: new Date().toISOString(),
     };
+
+    if (answers.length === 0) {
+      const initialQuestion: Question = {
+        id: uuidv4(),
+        question: baseAnswer.question,
+        createdAt: baseAnswer.createdAt,
+      };
+      handleUpdateInitialQuestions(initialQuestion);
+    }
 
     // Add new answer
     setAnswers((prev) => {
@@ -360,33 +395,77 @@ export default function ChatGPT() {
         answers.length > 0 ? "Ask another question..." : isLoading ? "Generating your answer..." : "Ask a question..."
       }
     >
-      {answers.length == 0 ? (
-        <List.EmptyView
-          title="Ask anything!"
-          description={
-            isLoading
-              ? "Hang on tight! This might require some time. You may redo your search if it takes longer"
-              : "Type your question or prompt from the search bar and hit the enter key"
-          }
-          icon={Icon.QuestionMark}
-        />
+      {searchText.length === 0 && answers.length === 0 ? (
+        initialQuestions.length > 0 && (
+          <List.Section title="Recent question" subtitle={initialQuestions.length.toLocaleString()}>
+            {initialQuestions
+              .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+              .map((question) => {
+                return (
+                  <List.Item
+                    id={question.id}
+                    key={question.id}
+                    accessories={[{ text: new Date(question.createdAt ?? 0).toLocaleString() }]}
+                    title={question.question}
+                    actions={
+                      <ActionPanel>
+                        <Action
+                          title="Get answer"
+                          icon={Icon.ArrowRight}
+                          onAction={() => {
+                            getAnswer(question.question);
+                          }}
+                        />
+                        <Action
+                          title="Clear history"
+                          icon={Icon.Trash}
+                          style={Action.Style.Destructive}
+                          onAction={async () => {
+                            await confirmAlert({
+                              title: "Are you sure you to clear your recent question?",
+                              message: "This action cannot be undone.",
+                              icon: Icon.Trash,
+                              primaryAction: {
+                                title: "Clear History",
+                                style: Alert.ActionStyle.Destructive,
+                                onAction: () => {
+                                  setInitialQuestions([]);
+                                },
+                              },
+                            });
+                          }}
+                        />
+                      </ActionPanel>
+                    }
+                  />
+                );
+              })}
+          </List.Section>
+        )
       ) : (
-        answers
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-          .map((answer, i) => {
-            const currentAnswer = answer.done ? answer.answer : answer.partialAnswer;
-            const markdown = `${currentAnswer}`;
-            return (
-              <List.Item
-                id={answer.id}
-                key={answer.id}
-                accessories={[{ text: `#${answers.length - i}` }]}
-                title={answer.question}
-                detail={<AnswerDetailView answer={answer} markdown={markdown} />}
-                actions={isLoading ? undefined : getActionPanel(answer)}
-              />
-            );
-          })
+        <EmptyView isLoading={isLoading} />
+      )}
+      {answers.length === 0 ? (
+        <EmptyView isLoading={isLoading} />
+      ) : (
+        <List.Section title="Results" subtitle={answers.length.toLocaleString()}>
+          {answers
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            .map((answer, i) => {
+              const currentAnswer = answer.done ? answer.answer : answer.partialAnswer;
+              const markdown = `${currentAnswer}`;
+              return (
+                <List.Item
+                  id={answer.id}
+                  key={answer.id}
+                  accessories={[{ text: `#${answers.length - i}` }]}
+                  title={answer.question}
+                  detail={<AnswerDetailView answer={answer} markdown={markdown} />}
+                  actions={isLoading ? undefined : getActionPanel(answer)}
+                />
+              );
+            })}
+        </List.Section>
       )}
     </List>
   );
