@@ -1,4 +1,4 @@
-import { Answer } from "./type";
+import { Answer } from "../type";
 import { List } from "@raycast/api";
 
 export const AnswerDetailView = (props: { answer: Answer; markdown?: string | null | undefined }) => {

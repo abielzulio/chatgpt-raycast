@@ -1,7 +1,7 @@
 import { Action, ActionPanel, Alert, confirmAlert, Icon, List, LocalStorage, showToast, Toast } from "@raycast/api";
 import { useCallback, useEffect, useState } from "react";
 import say from "say";
-import { AnswerDetailView } from "./answer-detail";
+import { AnswerDetailView } from "./views/answer-detail";
 import { Answer } from "./type";
 
 export default function SavedAnswer() {
@@ -53,7 +53,6 @@ export default function SavedAnswer() {
       />
       <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy ID" content={answer.id} />
       <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Conversation ID" content={answer.conversationId} />
-
       <Action
         icon={Icon.SpeechBubble}
         title="Speak"

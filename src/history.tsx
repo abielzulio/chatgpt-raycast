@@ -2,7 +2,7 @@ import { ActionPanel, List, LocalStorage, Action, Icon, showToast, Toast, confir
 import { useCallback, useEffect, useState } from "react";
 import { Answer } from "./type";
 import say from "say";
-import { AnswerDetailView } from "./answer-detail";
+import { AnswerDetailView } from "./views/answer-detail";
 
 export default function History() {
   const [history, setHistory] = useState<Answer[]>([]);
