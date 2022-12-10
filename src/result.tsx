@@ -373,6 +373,16 @@ export default function ChatGPT() {
     </ActionPanel>
   );
 
+  const sortedInitialQuestions = initialQuestions.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
+  const unduplicatedInitialQuestions = sortedInitialQuestions.filter(
+    (value, index, self) => index === self.findIndex((answer) => answer.question === value.question)
+  );
+
+  const sortedAnswers = answers.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
   return (
     <List
       isShowingDetail={answers.length > 0 ? true : false}
@@ -388,62 +398,58 @@ export default function ChatGPT() {
           setSelectedAnswer(id);
         }
       }}
-      searchBarPlaceholder={
-        answers.length > 0 ? "Ask another question..." : isLoading ? "Generating your answer..." : "Ask a question..."
-      }
+      searchBarPlaceholder={answers.length > 0 ? "Ask another question..." : "Ask a question..."}
     >
       {searchText.length === 0 && answers.length === 0 ? (
-        initialQuestions.length > 0 && (
+        initialQuestions.length > 0 ? (
           <List.Section title="Recent question" subtitle={initialQuestions.length.toLocaleString()}>
-            {initialQuestions
-              .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-              .map((question) => {
-                return (
-                  <List.Item
-                    id={question.id}
-                    key={question.id}
-                    accessories={[{ text: new Date(question.createdAt ?? 0).toLocaleString() }]}
-                    title={question.question}
-                    actions={
-                      <ActionPanel>
-                        <ActionPanel.Section title="Ask">
-                          <GetAnswerAction onAction={() => getAnswer(question.question)} />
-                        </ActionPanel.Section>
-                        <ActionPanel.Section title="Remove">
-                          <DestructiveAction
-                            title="Clear History"
-                            dialog={{ title: "Are you sure you to clear your recent question?" }}
-                            onAction={() => setInitialQuestions([])}
-                          />
-                        </ActionPanel.Section>
-                        <PreferencesActionSection />
-                      </ActionPanel>
-                    }
-                  />
-                );
-              })}
+            {unduplicatedInitialQuestions.map((question) => {
+              return (
+                <List.Item
+                  id={question.id}
+                  key={question.id}
+                  accessories={[{ text: new Date(question.createdAt ?? 0).toLocaleString() }]}
+                  title={question.question}
+                  actions={
+                    <ActionPanel>
+                      <ActionPanel.Section title="Ask">
+                        <GetAnswerAction onAction={() => getAnswer(question.question)} />
+                      </ActionPanel.Section>
+                      <ActionPanel.Section title="Remove">
+                        <DestructiveAction
+                          title="Clear History"
+                          dialog={{ title: "Are you sure you to clear your recent question?" }}
+                          onAction={() => setInitialQuestions([])}
+                        />
+                      </ActionPanel.Section>
+                      <PreferencesActionSection />
+                    </ActionPanel>
+                  }
+                />
+              );
+            })}
           </List.Section>
+        ) : (
+          <EmptyView />
         )
       ) : answers.length === 0 ? (
         <EmptyView />
       ) : (
         <List.Section title="Results" subtitle={answers.length.toLocaleString()}>
-          {answers
-            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-            .map((answer, i) => {
-              const currentAnswer = answer.done ? answer.answer : answer.partialAnswer;
-              const markdown = `${currentAnswer}`;
-              return (
-                <List.Item
-                  id={answer.id}
-                  key={answer.id}
-                  accessories={[{ text: `#${answers.length - i}` }]}
-                  title={answer.question}
-                  detail={<AnswerDetailView answer={answer} markdown={markdown} />}
-                  actions={isLoading ? undefined : getActionPanel(answer)}
-                />
-              );
-            })}
+          {sortedAnswers.map((answer, i) => {
+            const currentAnswer = answer.done ? answer.answer : answer.partialAnswer;
+            const markdown = `${currentAnswer}`;
+            return (
+              <List.Item
+                id={answer.id}
+                key={answer.id}
+                accessories={[{ text: `#${answers.length - i}` }]}
+                title={answer.question}
+                detail={<AnswerDetailView answer={answer} markdown={markdown} />}
+                actions={isLoading ? undefined : getActionPanel(answer)}
+              />
+            );
+          })}
         </List.Section>
       )}
     </List>

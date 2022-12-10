@@ -72,15 +72,21 @@ export default function SavedAnswer() {
     </ActionPanel>
   );
 
-  const filteredAnswers = savedAnswers.filter((answer) => {
-    if (searchText === "") {
-      return true;
-    }
-    return (
-      answer.question.toLowerCase().includes(searchText.toLowerCase()) ||
-      answer.answer.toLowerCase().includes(searchText.toLowerCase())
-    );
-  });
+  const sortedAnswers = savedAnswers.sort(
+    (a, b) => new Date(b.savedAt ?? 0).getTime() - new Date(a.savedAt ?? 0).getTime()
+  );
+
+  const filteredAnswers = sortedAnswers
+    .filter((value, index, self) => index === self.findIndex((answer) => answer.id === value.id))
+    .filter((answer) => {
+      if (searchText === "") {
+        return true;
+      }
+      return (
+        answer.question.toLowerCase().includes(searchText.toLowerCase()) ||
+        answer.answer.toLowerCase().includes(searchText.toLowerCase())
+      );
+    });
 
   return (
     <List
@@ -103,19 +109,16 @@ export default function SavedAnswer() {
         <List.EmptyView title="No saved answers" icon={Icon.Stars} />
       ) : (
         <List.Section title="Saved" subtitle={filteredAnswers.length.toLocaleString()}>
-          {filteredAnswers
-            .sort((a, b) => new Date(b.savedAt ?? 0).getTime() - new Date(a.savedAt ?? 0).getTime())
-
-            .map((answer) => (
-              <List.Item
-                id={answer.id}
-                key={answer.id}
-                title={answer.question}
-                accessories={[{ text: new Date(answer.createdAt ?? 0).toLocaleDateString() }]}
-                detail={<AnswerDetailView answer={answer} />}
-                actions={answer && selectedAnswerId === answer.id ? getActionPanel(answer) : undefined}
-              />
-            ))}
+          {filteredAnswers.map((answer) => (
+            <List.Item
+              id={answer.id}
+              key={answer.id}
+              title={answer.question}
+              accessories={[{ text: new Date(answer.createdAt ?? 0).toLocaleDateString() }]}
+              detail={<AnswerDetailView answer={answer} />}
+              actions={answer && selectedAnswerId === answer.id ? getActionPanel(answer) : undefined}
+            />
+          ))}
         </List.Section>
       )}
     </List>

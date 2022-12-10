@@ -118,7 +118,11 @@ export default function History() {
     </ActionPanel>
   );
 
-  const filteredHistory = history.filter((answer) => {
+  const sortedHistory = history.sort(
+    (a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime()
+  );
+
+  const filteredHistory = sortedHistory.filter((answer) => {
     if (searchText === "") {
       return true;
     }
@@ -149,18 +153,16 @@ export default function History() {
         <List.EmptyView title="No history" icon={Icon.Stars} />
       ) : (
         <List.Section title="Recent" subtitle={filteredHistory.length.toLocaleString()}>
-          {filteredHistory
-            .sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime())
-            .map((answer) => (
-              <List.Item
-                id={answer.id}
-                key={answer.id}
-                title={answer.question}
-                accessories={[{ text: new Date(answer.createdAt ?? 0).toLocaleDateString() }]}
-                detail={<AnswerDetailView answer={answer} />}
-                actions={answer && selectedAnswerId === answer.id ? getActionPanel(answer) : undefined}
-              />
-            ))}
+          {filteredHistory.map((answer) => (
+            <List.Item
+              id={answer.id}
+              key={answer.id}
+              title={answer.question}
+              accessories={[{ text: new Date(answer.createdAt ?? 0).toLocaleDateString() }]}
+              detail={<AnswerDetailView answer={answer} />}
+              actions={answer && selectedAnswerId === answer.id ? getActionPanel(answer) : undefined}
+            />
+          ))}
         </List.Section>
       )}
     </List>
