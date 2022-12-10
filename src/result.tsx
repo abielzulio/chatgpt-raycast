@@ -17,6 +17,7 @@ import {
 } from "@raycast/api";
 import { ChatGPTAPI, ChatGPTConversation } from "chatgpt";
 import { useCallback, useEffect, useState } from "react";
+import say from "say";
 import { v4 as uuidv4 } from "uuid";
 import { DestructiveAction, GetAnswerAction, TextToSpeechAction } from "./actions";
 import { CopyActionSection } from "./actions/copy";
@@ -120,6 +121,14 @@ export default function ChatGPT() {
     })();
   }, []);
 
+  const [isAutoTTS] = useState(() => {
+    const autoTTS = getPreferenceValues<{
+      isAutoTTS: boolean;
+    }>().isAutoTTS;
+
+    return autoTTS;
+  });
+
   const handleSaveAnswer = useCallback(
     async (answer: Answer) => {
       const toast = await showToast({
@@ -219,6 +228,10 @@ export default function ChatGPT() {
             setAnswers((prev) => {
               const newAnswers = prev.map((a) => {
                 if (a.id === answerId) {
+                  if (isAutoTTS) {
+                    say.stop();
+                    say.speak(progress);
+                  }
                   return {
                     ...a,
                     partialAnswer: progress,

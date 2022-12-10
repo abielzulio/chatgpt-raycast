@@ -39,6 +39,13 @@
       "type": "password",
       "title": "Session Token",
       "required": true
+    },
+    {
+      "name": "isAutoTTS",
+      "description": "Enable auto TTS everytime you get a generated answer",
+      "type": "checkbox",
+      "title": "Enable Auto Text-to-Speech",
+      "required": false
     }
   ],
   "dependencies": {
