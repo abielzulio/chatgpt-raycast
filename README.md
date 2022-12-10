@@ -1,5 +1,5 @@
 <p align="center">
-<img width=180 src="https://github.com/abielzulio/chatgpt-raycast/blob/main/assets/icon@dark.png?raw=true">
+<img width=100 src="https://github.com/abielzulio/chatgpt-raycast/blob/main/assets/icon@dark.png?raw=true">
 </p>
 
 <h1 align="center">ChatGPT</h1>
