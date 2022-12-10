@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Answer } from "./type";
 import say from "say";
 import { AnswerDetailView } from "./views/answer-detail";
+import { CopyToClipboardAction } from "./actions";
 
 export default function History() {
   const [history, setHistory] = useState<Answer[]>([]);
@@ -84,8 +85,8 @@ export default function History() {
 
   const getActionPanel = (answer: Answer) => (
     <ActionPanel>
-      <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Answer" content={answer.answer} />
-      <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Question" content={answer.question} />
+      <CopyToClipboardAction title="Copy Answer" content={answer.answer} />
+      <CopyToClipboardAction title="Copy Question" content={answer.question} />
       <Action
         icon={Icon.Star}
         title="Save Answer"
@@ -98,8 +99,8 @@ export default function History() {
         snippet={{ text: answer.answer, name: answer.question }}
         shortcut={{ modifiers: ["cmd"], key: "n" }}
       />
-      <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy ID" content={answer.id} />
-      <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy Conversation ID" content={answer.conversationId} />
+      <CopyToClipboardAction title="Copy ID" content={answer.id} />
+      <CopyToClipboardAction title="Copy Conversatio ID" content={answer.conversationId} />
       <Action
         icon={Icon.SpeechBubble}
         title="Speak"
