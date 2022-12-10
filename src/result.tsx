@@ -18,7 +18,7 @@ import {
 import { ChatGPTAPI, ChatGPTConversation } from "chatgpt";
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { DestructiveAction, TextToSpeechAction } from "./actions";
+import { DestructiveAction, GetAnswerAction, TextToSpeechAction } from "./actions";
 import { CopyActionSection } from "./actions/copy";
 import { SaveActionSection } from "./actions/save";
 import { defaultProfileImage } from "./profile-image";
@@ -265,13 +265,7 @@ export default function ChatGPT() {
     <ActionPanel>
       {searchText.length > 0 ? (
         <>
-          <Action
-            title="Get Answer"
-            icon={Icon.ArrowRight}
-            onAction={() => {
-              getAnswer(searchText);
-            }}
-          />
+          <GetAnswerAction onAction={() => getAnswer(searchText)} />
         </>
       ) : answer && selectedAnswerId === answer.id ? (
         <>
@@ -392,13 +386,7 @@ export default function ChatGPT() {
                     title={question.question}
                     actions={
                       <ActionPanel>
-                        <Action
-                          title="Get Answer"
-                          icon={Icon.ArrowRight}
-                          onAction={() => {
-                            getAnswer(question.question);
-                          }}
-                        />
+                        <GetAnswerAction onAction={() => getAnswer(question.question)} />
                         <DestructiveAction
                           title="Clear History"
                           dialog={{ title: "Are you sure you to clear your recent question?" }}
