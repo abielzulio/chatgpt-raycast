@@ -424,10 +424,7 @@ export default function ChatGPT() {
               })}
           </List.Section>
         )
-      ) : (
-        <EmptyView />
-      )}
-      {answers.length === 0 ? (
+      ) : answers.length === 0 ? (
         <EmptyView />
       ) : (
         <List.Section title="Results" subtitle={answers.length.toLocaleString()}>
