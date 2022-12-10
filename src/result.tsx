@@ -228,10 +228,6 @@ export default function ChatGPT() {
             setAnswers((prev) => {
               const newAnswers = prev.map((a) => {
                 if (a.id === answerId) {
-                  if (isAutoTTS) {
-                    say.stop();
-                    say.speak(progress);
-                  }
                   return {
                     ...a,
                     partialAnswer: progress,
@@ -250,6 +246,10 @@ export default function ChatGPT() {
             partialAnswer: data,
             done: true,
           };
+          if (isAutoTTS) {
+            say.stop();
+            say.speak(newAnswer.answer);
+          }
           setAnswers((prev) => {
             return prev.map((a) => {
               if (a.id === answerId) {
