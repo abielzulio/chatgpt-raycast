@@ -24,7 +24,7 @@ import { EmptyView } from "./views/empty";
 import { defaultProfileImage } from "./profile-image";
 import { shareConversation } from "./share-gpt";
 import { Answer, ChatAnswer, ConversationItem, Question } from "./type";
-import { CopyToClipboardAction } from "./actions";
+import { CopyToClipboardAction, TextToSpeechAction } from "./actions";
 
 const FullTextInput = ({ onSubmit }: { onSubmit: (text: string) => void }) => {
   const [text, setText] = useState<string>("");
@@ -282,15 +282,7 @@ export default function ChatGPT() {
             onAction={() => handleSaveAnswer(answer)}
             shortcut={{ modifiers: ["cmd"], key: "s" }}
           />
-          <Action
-            icon={Icon.SpeechBubble}
-            title="Speak"
-            onAction={() => {
-              say.stop();
-              say.speak(answer.answer);
-            }}
-            shortcut={{ modifiers: ["cmd"], key: "p" }}
-          />
+          <TextToSpeechAction content={answer.answer} />
           <Action.CreateSnippet
             icon={Icon.Snippets}
             title="Save as a Snippet"

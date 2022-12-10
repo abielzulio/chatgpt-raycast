@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Answer } from "./type";
 import say from "say";
 import { AnswerDetailView } from "./views/answer-detail";
-import { CopyToClipboardAction } from "./actions";
+import { CopyToClipboardAction, TextToSpeechAction } from "./actions";
 
 export default function History() {
   const [history, setHistory] = useState<Answer[]>([]);
@@ -101,15 +101,7 @@ export default function History() {
       />
       <CopyToClipboardAction title="Copy ID" content={answer.id} />
       <CopyToClipboardAction title="Copy Conversatio ID" content={answer.conversationId} />
-      <Action
-        icon={Icon.SpeechBubble}
-        title="Speak"
-        onAction={() => {
-          say.stop();
-          say.speak(answer.answer);
-        }}
-        shortcut={{ modifiers: ["cmd"], key: "p" }}
-      />
+      <TextToSpeechAction content={answer.answer} />
       <Action
         style={Action.Style.Destructive}
         icon={Icon.Trash}
