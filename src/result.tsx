@@ -386,12 +386,16 @@ export default function ChatGPT() {
                     title={question.question}
                     actions={
                       <ActionPanel>
-                        <GetAnswerAction onAction={() => getAnswer(question.question)} />
-                        <DestructiveAction
-                          title="Clear History"
-                          dialog={{ title: "Are you sure you to clear your recent question?" }}
-                          onAction={() => setInitialQuestions([])}
-                        />
+                        <ActionPanel.Section title="Ask">
+                          <GetAnswerAction onAction={() => getAnswer(question.question)} />
+                        </ActionPanel.Section>
+                        <ActionPanel.Section title="Remove">
+                          <DestructiveAction
+                            title="Clear History"
+                            dialog={{ title: "Are you sure you to clear your recent question?" }}
+                            onAction={() => setInitialQuestions([])}
+                          />
+                        </ActionPanel.Section>
                       </ActionPanel>
                     }
                   />
