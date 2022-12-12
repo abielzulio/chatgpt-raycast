@@ -46,9 +46,23 @@
   "preferences": [
     {
       "name": "sessionToken",
-      "description": "Enter your ChatGPT session token",
-      "type": "password",
+      "description": "Enter your ChatGPT session token value",
+      "type": "textfield",
       "title": "Session Token",
+      "required": true
+    },
+    {
+      "name": "clearanceToken",
+      "description": "Enter your ChatGPT clearance value",
+      "type": "textfield",
+      "title": "Clearance Token",
+      "required": true
+    },
+    {
+      "name": "userAgent",
+      "description": "Enter your ChatGPT user agent value",
+      "type": "textfield",
+      "title": "User Agent",
       "required": true
     },
     {
