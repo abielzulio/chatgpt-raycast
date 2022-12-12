@@ -38,7 +38,7 @@ Automatically save all the asked questions and its generated answer locally, so 
 
 # How to use
 
-This package requires a valid session token from ChatGPT to access it's unofficial REST API by [transitive-bullshit/chatgpt-api](https://github.com/transitive-bullshit/chatgpt-api).
+This package requires a valid `Session Token` from ChatGPT to access it's unofficial REST API by [transitive-bullshit/chatgpt-api](https://github.com/transitive-bullshit/chatgpt-api).
 
 To get a session token:
 
@@ -48,11 +48,34 @@ To get a session token:
 
    ![ChatGPT cookies](https://github.com/transitive-bullshit/chatgpt-api/blob/main/media/session-token.png?raw=true)
 
-4. Copy the value for `__Secure-next-auth.session-token` and paste in the initialization set-up!
+4. Copy the value of `__Secure-next-auth.session-token` and paste it in the `Session Token` initialization set-up field!
 
-![Looking through the question history](/metadata/6.png)
+### Update December 11, 2022
 
-> Session token will be stored locally using [Preferences API](https://developers.raycast.com/api-reference/preferences)
+> An update note from [the API author](https://github.com/transitive-bullshit/chatgpt-api)
+
+Today, OpenAI added additional Cloudflare protections that make it more difficult to access the unofficial API. Here's some additional steps that you need to follow:
+
+5. Copy the value of the `cf_clearance` cookie and paste it in the `Clearance Token` initialization set-up field.
+
+![ChatGPT user agent](media/clearance.png)
+
+6. Copy your browser's `user-agent` header from any request in your browser's network tab and paste it in the `User Agent` initialization set-up field.
+
+![ChatGPT user agent](media/user-agent.png)
+
+Restrictions on this method:
+
+- Cloudflare `cf_clearance` **tokens expire after 2 hours**, so there will be a pop-up reminder to update your token if you had an invalid token value.
+- Your `user-agent` and `IP address` **must match** from the real browser window you're logged in with to the one you're using for the extension.
+  - This means that you currently can't log in with your laptop and then run the extension in the same time.
+- You should not be using this account while the extension is already running, because that browser window may refresh one of your tokens and invalidate the extension's session.
+
+# Initialization set-up
+
+![Initial set-up](metadata/6.png)
+
+> All the preferences value will be stored locally using [Preferences API](https://developers.raycast.com/api-reference/preferences)
 
 ---
 
