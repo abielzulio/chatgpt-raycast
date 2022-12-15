@@ -66,6 +66,14 @@
       "required": true
     },
     {
+      "label": "Enable detailed view",
+      "name": "isDetailedView",
+      "description": "See the live response date, ID, and the conversation ID",
+      "type": "checkbox",
+      "title": "Detailed View",
+      "required": false
+    },
+    {
       "label": "Enable text-to-speech for every response",
       "name": "isAutoTTS",
       "description": "Enable auto TTS everytime you get a generated answer",
