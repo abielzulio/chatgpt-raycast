@@ -8,6 +8,11 @@
 Interact with OpenAI's ChatGPT right from your command bar
 </h3>
 
+<p align="center">
+(Archived until there's an official API)
+</p>
+
+
 ![Conversation View](metadata/1.png)
 
 # Features
