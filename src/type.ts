@@ -6,7 +6,8 @@ export interface Question {
 
 export interface Answer extends Question {
   answer: string;
-  conversationId: string;
+  convoId?: string;
+  parentId?: string;
   savedAt?: string;
 }
 

@@ -1,21 +1,18 @@
 import {
   Action,
   ActionPanel,
-  Alert,
   clearSearchBar,
   Clipboard,
-  confirmAlert,
   Form,
   getPreferenceValues,
   Icon,
   List,
   LocalStorage,
-  openExtensionPreferences,
   showToast,
   Toast,
   useNavigation,
 } from "@raycast/api";
-import { ChatGPTAPI, ChatGPTConversation } from "chatgpt";
+import { ChatGPTAPI } from "chatgpt";
 import { useCallback, useEffect, useState } from "react";
 import say from "say";
 import { v4 as uuidv4 } from "uuid";
@@ -51,8 +48,8 @@ const FullTextInput = ({ onSubmit }: { onSubmit: (text: string) => void }) => {
 };
 
 export default function ChatGPT() {
-  const [conversationId, setConversationId] = useState<string>(uuidv4());
-  const [conversation, setConversation] = useState<ChatGPTConversation>();
+  const [parentMessageId, setParentMessagId] = useState<string>("");
+  const [conversation, setConversation] = useState<string[]>([]);
   const [answers, setAnswers] = useState<ChatAnswer[]>([]);
   const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
   const [initialQuestions, setInitialQuestions] = useState<Question[]>([]);
@@ -115,13 +112,6 @@ export default function ChatGPT() {
     LocalStorage.setItem("history", JSON.stringify(history));
   }, [history]);
 
-  useEffect(() => {
-    (async () => {
-      const initConversation = await chatGPT.getConversation();
-      setConversation(initConversation);
-    })();
-  }, []);
-
   const [isAutoTTS] = useState(() => {
     const autoTTS = getPreferenceValues<{
       isAutoTTS: boolean;
@@ -159,70 +149,33 @@ export default function ChatGPT() {
   );
 
   const [chatGPT] = useState(() => {
-    const sessionToken = getPreferenceValues<{
-      sessionToken: string;
-    }>().sessionToken;
+    const apiKey = getPreferenceValues<{
+      api: string;
+    }>().api;
 
-    const clearanceToken = getPreferenceValues<{
-      clearanceToken: string;
-    }>().clearanceToken;
-
-    const userAgent = getPreferenceValues<{
-      userAgent: string;
-    }>().userAgent;
-
-    return new ChatGPTAPI({ sessionToken, clearanceToken, userAgent });
+    return new ChatGPTAPI({ apiKey });
   });
 
   async function getAnswer(question: string) {
     setIsLoading(true);
 
     const toast = await showToast({
-      title: "Validating your token...",
+      title: "Getting your answer...",
       style: Toast.Style.Animated,
     });
 
-    const isAuthenticated: boolean = await chatGPT.getIsAuthenticated();
-
-    if (!isAuthenticated) {
-      await confirmAlert({
-        title: "Your preferences value is invalid",
-        icon: Icon.Gear,
-        message:
-          "Please go to the preferences and enter a new valid session token, clearance token, or user agent value.",
-        primaryAction: {
-          title: "Open preferences",
-          style: Alert.ActionStyle.Destructive,
-          onAction: () => {
-            openExtensionPreferences();
-            setIsLoading(false);
-          },
-        },
-      });
-    }
-
-    toast.title = "Getting your answer...";
-    toast.style = Toast.Style.Animated;
-
     const answerId = uuidv4();
+
     const baseAnswer: ChatAnswer = {
       id: answerId,
       answer: "",
       partialAnswer: "",
       done: false,
+      convoId: "",
+      parentId: "",
       question: question,
-      conversationId: conversationId,
       createdAt: new Date().toISOString(),
     };
-
-    if (answers.length === 0) {
-      const initialQuestion: Question = {
-        id: uuidv4(),
-        question: baseAnswer.question,
-        createdAt: baseAnswer.createdAt,
-      };
-      handleUpdateInitialQuestions(initialQuestion);
-    }
 
     // Add new answer
     setAnswers((prev) => {
@@ -234,59 +187,62 @@ export default function ChatGPT() {
       setSelectedAnswer(answerId);
     }, 50);
 
-    conversation &&
-      (await conversation
-        .sendMessage(question, {
-          timeoutMs: 2 * 60 * 1000,
-          onProgress: (progress) => {
-            setAnswers((prev) => {
-              const newAnswers = prev.map((a) => {
-                if (a.id === answerId) {
-                  return {
-                    ...a,
-                    partialAnswer: progress,
-                  };
-                }
-                return a;
-              });
-              return newAnswers;
-            });
-          },
-        })
-        .then((data) => {
-          const newAnswer: ChatAnswer = {
-            ...baseAnswer,
-            answer: data,
-            partialAnswer: data,
-            done: true,
-          };
-          if (isAutoTTS) {
-            say.stop();
-            say.speak(newAnswer.answer);
-          }
+    await chatGPT
+      .sendMessage(question, {
+        parentMessageId: answers.length > 0 ? answers[answers.length - 1].parentId : undefined,
+        conversationId: answers.length > 0 ? answers[answers.length - 1].convoId : undefined,
+        timeoutMs: 2 * 60 * 1000,
+        onProgress: (progress) => {
           setAnswers((prev) => {
-            return prev.map((a) => {
+            const newAnswers = prev.map((a) => {
               if (a.id === answerId) {
-                return newAnswer;
+                return {
+                  ...a,
+                  partialAnswer: progress,
+                };
               }
               return a;
             });
+            return newAnswers;
           });
-          handleUpdateHistory(newAnswer);
-        })
-        .then(() => {
-          clearSearchBar();
-          setIsLoading(false);
-          toast.title = "Got your answer!";
-          toast.style = Toast.Style.Success;
-        })
-        .catch((err) => {
-          toast.title = "Error";
-          if (err instanceof Error) {
-            toast.message = err?.message;
-          }
-          toast.style = Toast.Style.Failure;
-        }));
+        },
+      })
+      .then((data) => {
+        const newAnswer: ChatAnswer = {
+          ...baseAnswer,
+          answer: data.text,
+          partialAnswer: data.text,
+          convoId: data.id,
+          parentId: data.parentMessageId,
+          done: true,
+        };
+        if (isAutoTTS) {
+          say.stop();
+          say.speak(newAnswer.answer);
+        }
+        setAnswers((prev) => {
+          return prev.map((a) => {
+            if (a.id === answerId) {
+              return newAnswer;
+            }
+            return a;
+          });
+        });
+        handleUpdateHistory(newAnswer);
+      })
+      .then(() => {
+        clearSearchBar();
+        setIsLoading(false);
+        toast.title = "Got your answer!";
+        toast.style = Toast.Style.Success;
+      })
+      .catch((err) => {
+        toast.title = "Error";
+        if (err instanceof Error) {
+          toast.message = err?.message;
+        }
+        toast.style = Toast.Style.Failure;
+      });
   }
 
   const getActionPanel = (answer?: ChatAnswer) => (
