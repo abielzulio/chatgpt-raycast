@@ -45,10 +45,34 @@
   ],
   "preferences": [
     {
-      "name": "api",
-      "description": "Enter your personal Open AI API",
+      "name": "accessToken",
+      "description": "Enter your chatGPT access token (Get from https://chat.openai.com/api/auth/session) or openAI API if you want to use official API",
       "type": "password",
-      "title": "API",
+      "title": "Access Token/ openAI API",
+      "required": true
+    },
+    {
+      "name": "apiReverseProxyUrl",
+      "description": "Enter a reverse proxy url",
+      "type": "textfield",
+      "title": "Reverse Proxy URL",
+      "required": false
+    },
+    {
+      "name": "mode",
+      "title": "ChatGPT mode",
+      "description": "Choose which chatGPT mode to use",
+      "type": "dropdown",
+      "data": [
+        {
+          "title": "official-openai",
+          "value": "official"
+        },
+        {
+          "title": "unofficial-proxy",
+          "value": "unofficial"
+        }
+      ],
       "required": true
     },
     {
@@ -69,7 +93,7 @@
     }
   ],
   "dependencies": {
-    "@raycast/api": "^1.44.0",
+    "@raycast/api": "^1.47.0",
     "@types/uuid": "^9.0.0",
     "say": "^0.16.0",
     "chatgpt": "^4.1.1",

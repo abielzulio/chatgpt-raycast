@@ -12,7 +12,8 @@ import {
   Toast,
   useNavigation,
 } from "@raycast/api";
-import { ChatGPTAPI } from "chatgpt";
+import fetch from "node-fetch";
+import { ChatGPTAPI, ChatGPTUnofficialProxyAPI } from "chatgpt";
 import { useCallback, useEffect, useState } from "react";
 import say from "say";
 import { v4 as uuidv4 } from "uuid";
@@ -149,11 +150,14 @@ export default function ChatGPT() {
   );
 
   const [chatGPT] = useState(() => {
-    const apiKey = getPreferenceValues<{
-      api: string;
-    }>().api;
+    const accessToken = getPreferenceValues<{ accessToken: string }>().accessToken;
 
-    return new ChatGPTAPI({ apiKey });
+    const apiReverseProxyUrl = getPreferenceValues<{ apiReverseProxyUrl: string }>().apiReverseProxyUrl;
+
+    const mode = getPreferenceValues<{ mode: string }>().mode;
+    return mode === "official"
+      ? new ChatGPTAPI({ apiKey: accessToken })
+      : new ChatGPTUnofficialProxyAPI({ accessToken, apiReverseProxyUrl, fetch: fetch });
   });
 
   async function getAnswer(question: string) {
