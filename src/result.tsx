@@ -156,7 +156,7 @@ export default function ChatGPT() {
 
     const mode = getPreferenceValues<{ mode: string }>().mode;
     return mode === "official"
-      ? new ChatGPTAPI({ apiKey: accessToken })
+      ? new ChatGPTAPI({ apiKey: accessToken, fetch: fetch})
       : new ChatGPTUnofficialProxyAPI({ accessToken, apiReverseProxyUrl, fetch: fetch });
   });
 
