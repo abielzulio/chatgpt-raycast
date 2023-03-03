@@ -67,6 +67,14 @@ export default function ChatGPT() {
     return new OpenAIApi(config);
   });
 
+  const [isAutoTTS] = useState(() => {
+    const autoTTS = getPreferenceValues<{
+      isAutoTTS: boolean;
+    }>().isAutoTTS;
+
+    return autoTTS;
+  });
+
   const { pop, push } = useNavigation();
 
   useEffect(() => {
@@ -117,14 +125,6 @@ export default function ChatGPT() {
   useEffect(() => {
     LocalStorage.setItem("history", JSON.stringify(history));
   }, [history]);
-
-  const [isAutoTTS] = useState(() => {
-    const autoTTS = getPreferenceValues<{
-      isAutoTTS: boolean;
-    }>().isAutoTTS;
-
-    return autoTTS;
-  });
 
   const handleSaveChat = useCallback(
     async (chat: Chat) => {
