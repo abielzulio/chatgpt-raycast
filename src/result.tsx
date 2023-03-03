@@ -55,7 +55,7 @@ export default function ChatGPT() {
   const [history, setHistory] = useState<Chat[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchText, setSearchText] = useState<string>("");
-  const [selectedAnswerId, setSelectedAnswer] = useState<string | null>(null);
+  const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
 
   const { pop, push } = useNavigation();
 
@@ -187,7 +187,7 @@ export default function ChatGPT() {
 
     // Weird selection glitch workaround
     setTimeout(async () => {
-      setSelectedAnswer(answerId);
+      setSelectedChatId(answerId);
     }, 50);
 
     await chatGPT
@@ -237,7 +237,7 @@ export default function ChatGPT() {
         <>
           <GetAnswerAction onAction={() => getAnswer(searchText)} />
         </>
-      ) : chat?.answer && selectedAnswerId === chat.id ? (
+      ) : chat?.answer && selectedChatId === chat.id ? (
         <>
           <CopyActionSection answer={chat.answer} question={chat.question} />
           <SaveActionSection
@@ -307,10 +307,10 @@ export default function ChatGPT() {
       throttle={false}
       navigationTitle={"ChatGPT"}
       actions={getActionPanel()}
-      selectedItemId={selectedAnswerId || undefined}
+      selectedItemId={selectedChatId || undefined}
       onSelectionChange={(id) => {
-        if (id !== selectedAnswerId) {
-          setSelectedAnswer(id);
+        if (id !== selectedChatId) {
+          setSelectedChatId(id);
         }
       }}
       searchBarPlaceholder={chats.length > 0 ? "Ask another question..." : "Ask a question..."}
