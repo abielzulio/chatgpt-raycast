@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { DestructiveAction, SaveAsSnippetAction, TextToSpeechAction } from "./actions";
 import { CopyActionSection } from "./actions/copy";
 import { PreferencesActionSection } from "./actions/preferences";
-import { SavedChat } from "./type";
+import { Chat, SavedChat } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
 
 export default function SavedAnswer() {
