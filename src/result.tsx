@@ -57,6 +57,16 @@ export default function ChatGPT() {
   const [searchText, setSearchText] = useState<string>("");
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
 
+  const [chatGPT] = useState(() => {
+    const apiKey = getPreferenceValues<{
+      api: string;
+    }>().api;
+
+    const config = new Configuration({ apiKey });
+
+    return new OpenAIApi(config);
+  });
+
   const { pop, push } = useNavigation();
 
   useEffect(() => {
@@ -114,16 +124,6 @@ export default function ChatGPT() {
     }>().isAutoTTS;
 
     return autoTTS;
-  });
-
-  const [chatGPT] = useState(() => {
-    const apiKey = getPreferenceValues<{
-      api: string;
-    }>().api;
-
-    const config = new Configuration({ apiKey });
-
-    return new OpenAIApi(config);
   });
 
   const handleSaveChat = useCallback(
