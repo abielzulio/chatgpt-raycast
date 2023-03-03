@@ -21,29 +21,9 @@ import { CopyActionSection } from "./actions/copy";
 import { PreferencesActionSection } from "./actions/preferences";
 import { SaveActionSection } from "./actions/save";
 import { Chat, Question, SavedChat } from "./type";
+import { FullTextInput } from "./components/FullTextInput";
 import { AnswerDetailView } from "./views/answer-detail";
 import { EmptyView } from "./views/empty";
-
-const FullTextInput = ({ onSubmit }: { onSubmit: (text: string) => void }) => {
-  const [text, setText] = useState<string>("");
-  return (
-    <Form
-      actions={
-        <ActionPanel>
-          <Action
-            title="Submit"
-            icon={Icon.Checkmark}
-            onAction={() => {
-              onSubmit(text);
-            }}
-          />
-        </ActionPanel>
-      }
-    >
-      <Form.TextArea id="question" title="Question" placeholder="Type your question here" onChange={setText} />
-    </Form>
-  );
-};
 
 export default function ChatGPT() {
   const [chats, setChats] = useState<Chat[]>([]);
