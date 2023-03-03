@@ -4,13 +4,13 @@ import { DestructiveAction, TextToSpeechAction } from "./actions";
 import { CopyActionSection } from "./actions/copy";
 import { PreferencesActionSection } from "./actions/preferences";
 import { SaveActionSection } from "./actions/save";
-import { Answer } from "./type";
+import { Chat, SavedChat } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
 
 export default function History() {
-  const [history, setHistory] = useState<Answer[]>([]);
+  const [history, setHistory] = useState<Chat[]>([]);
   const [searchText, setSearchText] = useState<string>("");
-  const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
+  const [savedChats, setSavedChats] = useState<SavedChat[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(null);
 
@@ -21,8 +21,7 @@ export default function History() {
       if (!storedHistory) {
         setHistory([]);
       } else {
-        const answers: Answer[] = JSON.parse(storedHistory);
-        setHistory((previous) => [...previous, ...answers]);
+        setHistory((previous) => [...previous, ...JSON.parse(storedHistory)]);
         setLoading(false);
       }
     })();
@@ -30,13 +29,12 @@ export default function History() {
 
   useEffect(() => {
     (async () => {
-      const storedSavedAnswers = await LocalStorage.getItem<string>("savedAnswers");
+      const storedSavedAnswers = await LocalStorage.getItem<string>("savedChats");
 
       if (!storedSavedAnswers) {
-        setSavedAnswers([]);
+        setSavedChats([]);
       } else {
-        const answers: Answer[] = JSON.parse(storedSavedAnswers);
-        setSavedAnswers((previous) => [...previous, ...answers]);
+        setSavedChats((previous) => [...previous, ...JSON.parse(storedSavedAnswers)]);
       }
     })();
   }, []);
@@ -46,11 +44,11 @@ export default function History() {
   }, [history]);
 
   useEffect(() => {
-    LocalStorage.setItem("savedAnswers", JSON.stringify(savedAnswers));
-  }, [savedAnswers]);
+    LocalStorage.setItem("savedChats", JSON.stringify(savedChats));
+  }, [savedChats]);
 
-  const handleRemoveAnswer = useCallback(
-    async (answer: Answer) => {
+  const handleRemoveChat = useCallback(
+    async (answer: Chat) => {
       const toast = await showToast({
         title: "Removing answer...",
         style: Toast.Style.Animated,
@@ -73,29 +71,29 @@ export default function History() {
     toast.style = Toast.Style.Success;
   }, [setHistory]);
 
-  const handleSaveAnswer = useCallback(
-    async (answer: Answer) => {
+  const handleSaveChat = useCallback(
+    async (chat: Chat) => {
       const toast = await showToast({
         title: "Saving your answer...",
         style: Toast.Style.Animated,
       });
-      answer.savedAt = new Date().toISOString();
-      setSavedAnswers([...savedAnswers, answer]);
+      const newSavedChat: SavedChat = { ...chat, saved_at: new Date().toISOString() };
+      setSavedChats([...savedChats, newSavedChat]);
       toast.title = "Answer saved!";
       toast.style = Toast.Style.Success;
     },
-    [setSavedAnswers, savedAnswers]
+    [setSavedChats, savedChats]
   );
 
-  const getActionPanel = (answer: Answer) => (
+  const getActionPanel = (chat: Chat) => (
     <ActionPanel>
-      <CopyActionSection answer={answer.answer} question={answer.question} />
+      <CopyActionSection answer={chat.answer} question={chat.question} />
       <SaveActionSection
-        onSaveAnswerAction={() => handleSaveAnswer(answer)}
-        snippet={{ text: answer.answer, name: answer.question }}
+        onSaveAnswerAction={() => handleSaveChat(chat)}
+        snippet={{ text: chat.answer, name: chat.question }}
       />
       <ActionPanel.Section title="Output">
-        <TextToSpeechAction content={answer.answer} />
+        <TextToSpeechAction content={chat.answer} />
       </ActionPanel.Section>
       <ActionPanel.Section title="Delete">
         <DestructiveAction
@@ -103,7 +101,7 @@ export default function History() {
           dialog={{
             title: "Are you sure you want to remove this answer from your history?",
           }}
-          onAction={() => handleRemoveAnswer(answer)}
+          onAction={() => handleRemoveChat(chat)}
         />
         <DestructiveAction
           title="Clear History"
@@ -119,7 +117,7 @@ export default function History() {
   );
 
   const sortedHistory = history.sort(
-    (a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime()
+    (a, b) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime()
   );
 
   const filteredHistory = sortedHistory.filter((answer) => {
@@ -162,8 +160,8 @@ export default function History() {
               id={answer.id}
               key={answer.id}
               title={answer.question}
-              accessories={[{ text: new Date(answer.createdAt ?? 0).toLocaleDateString() }]}
-              detail={<AnswerDetailView answer={answer} />}
+              accessories={[{ text: new Date(answer.created_at ?? 0).toLocaleDateString() }]}
+              detail={<AnswerDetailView chat={answer} />}
               actions={answer && selectedAnswerId === answer.id ? getActionPanel(answer) : undefined}
             />
           ))}

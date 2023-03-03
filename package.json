@@ -45,24 +45,10 @@
   ],
   "preferences": [
     {
-      "name": "sessionToken",
-      "description": "Enter your ChatGPT session token value",
-      "type": "textfield",
-      "title": "Session Token",
-      "required": true
-    },
-    {
-      "name": "clearanceToken",
-      "description": "Enter your ChatGPT clearance value",
-      "type": "textfield",
-      "title": "Clearance Token",
-      "required": true
-    },
-    {
-      "name": "userAgent",
-      "description": "Enter your ChatGPT user agent value",
-      "type": "textfield",
-      "title": "User Agent",
+      "name": "api",
+      "description": "Enter your personal Open AI API",
+      "type": "password",
+      "title": "API",
       "required": true
     },
     {
@@ -83,11 +69,10 @@
     }
   ],
   "dependencies": {
-    "@raycast/api": "^1.44.0",
+    "@raycast/api": "^1.47.0",
     "@types/uuid": "^9.0.0",
+    "openai": "^3.2.1",
     "say": "^0.16.0",
-    "chatgpt": "^2.1.1",
-    "node-fetch": "^3.3.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
