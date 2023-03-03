@@ -162,10 +162,8 @@ export default function ChatGPT() {
       style: Toast.Style.Animated,
     });
 
-    const answerId = uuidv4();
-
     let chat: Chat = {
-      id: answerId,
+      id: uuidv4(),
       question,
       answer: "",
       created_at: new Date().toISOString(),
@@ -187,7 +185,7 @@ export default function ChatGPT() {
 
     // Weird selection glitch workaround
     setTimeout(async () => {
-      setSelectedChatId(answerId);
+      setSelectedChatId(chat.id);
     }, 50);
 
     await chatGPT
@@ -207,7 +205,7 @@ export default function ChatGPT() {
           });
           setChats((prev) => {
             return prev.map((a) => {
-              if (a.id === answerId) {
+              if (a.id === chat.id) {
                 return chat;
               }
               return a;
