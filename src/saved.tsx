@@ -3,53 +3,52 @@ import { useCallback, useEffect, useState } from "react";
 import { DestructiveAction, SaveAsSnippetAction, TextToSpeechAction } from "./actions";
 import { CopyActionSection } from "./actions/copy";
 import { PreferencesActionSection } from "./actions/preferences";
-import { Answer } from "./type";
+import { SavedChat } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
 
 export default function SavedAnswer() {
-  const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
+  const [savedChats, setSavedChats] = useState<SavedChat[]>([]);
   const [searchText, setSearchText] = useState<string>("");
   const [isLoading, setLoading] = useState<boolean>(true);
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
-      const storedSavedAnswers = await LocalStorage.getItem<string>("savedAnswers");
+      const storedSavedAnswers = await LocalStorage.getItem<string>("savedChats");
 
       if (!storedSavedAnswers) {
-        setSavedAnswers([]);
+        setSavedChats([]);
       } else {
-        const answers: Answer[] = JSON.parse(storedSavedAnswers);
-        setSavedAnswers((previous) => [...previous, ...answers]);
+        setSavedChats((previous) => [...previous, ...JSON.parse(storedSavedAnswers)]);
         setLoading(false);
       }
     })();
   }, []);
 
   useEffect(() => {
-    LocalStorage.setItem("savedAnswers", JSON.stringify(savedAnswers));
-  }, [savedAnswers]);
+    LocalStorage.setItem("savedChats", JSON.stringify(savedChats));
+  }, [savedChats]);
 
-  const handleUnsaveAnswer = useCallback(
-    async (answer: Answer) => {
+  const handleUnsaveChat = useCallback(
+    async (chat: Chat) => {
       const toast = await showToast({
         title: "Unsaving your answer...",
         style: Toast.Style.Animated,
       });
-      const newSavedAnswer = savedAnswers.filter((savedAnswer) => savedAnswer.id !== answer.id);
-      setSavedAnswers(newSavedAnswer);
+      const newSavedChats = savedChats.filter((savedAnswer) => savedAnswer.id !== chat.id);
+      setSavedChats(newSavedChats);
       toast.title = "Answer unsaved!";
       toast.style = Toast.Style.Success;
     },
-    [setSavedAnswers, savedAnswers]
+    [setSavedChats, savedChats]
   );
 
-  const getActionPanel = (answer: Answer) => (
+  const getActionPanel = (chat: Chat) => (
     <ActionPanel>
-      <CopyActionSection answer={answer.answer} question={answer.question} />
-      <SaveAsSnippetAction text={answer.answer} name={answer.question} />
+      <CopyActionSection answer={chat.answer} question={chat.question} />
+      <SaveAsSnippetAction text={chat.answer} name={chat.question} />
       <ActionPanel.Section title="Output">
-        <TextToSpeechAction content={answer.answer} />
+        <TextToSpeechAction content={chat.answer} />
       </ActionPanel.Section>
       <ActionPanel.Section title="Delete">
         <DestructiveAction
@@ -57,7 +56,7 @@ export default function SavedAnswer() {
           dialog={{
             title: "Are you sure you want to remove this answer from your collection?",
           }}
-          onAction={() => handleUnsaveAnswer(answer)}
+          onAction={() => handleUnsaveChat(chat)}
         />
         <DestructiveAction
           title="Remove All Answer"
@@ -65,7 +64,7 @@ export default function SavedAnswer() {
             title: "Are you sure you want to remove all your saved answer from your collection?",
             primaryButton: "Remove All",
           }}
-          onAction={() => setSavedAnswers([])}
+          onAction={() => setSavedChats([])}
           shortcut={{ modifiers: ["cmd", "shift"], key: "delete" }}
         />
       </ActionPanel.Section>
@@ -73,8 +72,8 @@ export default function SavedAnswer() {
     </ActionPanel>
   );
 
-  const sortedAnswers = savedAnswers.sort(
-    (a, b) => new Date(b.savedAt ?? 0).getTime() - new Date(a.savedAt ?? 0).getTime()
+  const sortedAnswers = savedChats.sort(
+    (a, b) => new Date(b.saved_at ?? 0).getTime() - new Date(a.saved_at ?? 0).getTime()
   );
 
   const filteredAnswers = sortedAnswers
@@ -106,7 +105,7 @@ export default function SavedAnswer() {
       searchText={searchText}
       onSearchTextChange={setSearchText}
     >
-      {savedAnswers.length === 0 ? (
+      {savedChats.length === 0 ? (
         <List.EmptyView
           title="No saved answers"
           description="Save generated question with ⌘ + S shortcut"
@@ -119,8 +118,8 @@ export default function SavedAnswer() {
               id={answer.id}
               key={answer.id}
               title={answer.question}
-              accessories={[{ text: new Date(answer.createdAt ?? 0).toLocaleDateString() }]}
-              detail={<AnswerDetailView answer={answer} />}
+              accessories={[{ text: new Date(answer.created_at ?? 0).toLocaleDateString() }]}
+              detail={<AnswerDetailView chat={answer} />}
               actions={answer && selectedAnswerId === answer.id ? getActionPanel(answer) : undefined}
             />
           ))}

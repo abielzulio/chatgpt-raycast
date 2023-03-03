@@ -1,22 +1,13 @@
 export interface Question {
   id: string;
   question: string;
-  createdAt: string;
+  created_at: string;
 }
 
-export interface Answer extends Question {
+export interface Chat extends Question {
   answer: string;
-  convoId?: string;
-  parentId?: string;
-  savedAt?: string;
 }
 
-export interface ChatAnswer extends Answer {
-  partialAnswer: string;
-  done: boolean;
+export interface SavedChat extends Chat {
+  saved_at: string;
 }
-
-export type ConversationItem = {
-  from: "human" | "gpt";
-  value: string;
-};

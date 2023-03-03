@@ -2,7 +2,6 @@ import {
   Action,
   ActionPanel,
   clearSearchBar,
-  Clipboard,
   Form,
   getPreferenceValues,
   Icon,
@@ -12,7 +11,8 @@ import {
   Toast,
   useNavigation,
 } from "@raycast/api";
-import { ChatGPTAPI } from "chatgpt";
+import type { ChatCompletionRequestMessage } from "openai";
+import { Configuration, OpenAIApi } from "openai";
 import { useCallback, useEffect, useState } from "react";
 import say from "say";
 import { v4 as uuidv4 } from "uuid";
@@ -20,9 +20,7 @@ import { DestructiveAction, GetAnswerAction, TextToSpeechAction } from "./action
 import { CopyActionSection } from "./actions/copy";
 import { PreferencesActionSection } from "./actions/preferences";
 import { SaveActionSection } from "./actions/save";
-import { defaultProfileImage } from "./libs/profile-image";
-import { shareConversation } from "./libs/share-gpt";
-import { Answer, ChatAnswer, ConversationItem, Question } from "./type";
+import { Chat, Question, SavedChat } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
 import { EmptyView } from "./views/empty";
 
@@ -48,12 +46,13 @@ const FullTextInput = ({ onSubmit }: { onSubmit: (text: string) => void }) => {
 };
 
 export default function ChatGPT() {
-  const [parentMessageId, setParentMessagId] = useState<string>("");
-  const [conversation, setConversation] = useState<string[]>([]);
-  const [answers, setAnswers] = useState<ChatAnswer[]>([]);
-  const [savedAnswers, setSavedAnswers] = useState<Answer[]>([]);
+  const [chats, setChats] = useState<Chat[]>([]);
+  const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([
+    { role: "system", content: "You are a helpful assistant." },
+  ]);
+  const [savedChats, setSavedChats] = useState<SavedChat[]>([]);
   const [initialQuestions, setInitialQuestions] = useState<Question[]>([]);
-  const [history, setHistory] = useState<Answer[]>([]);
+  const [history, setHistory] = useState<Chat[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchText, setSearchText] = useState<string>("");
   const [selectedAnswerId, setSelectedAnswer] = useState<string | null>(null);
@@ -62,13 +61,12 @@ export default function ChatGPT() {
 
   useEffect(() => {
     (async () => {
-      const storedSavedAnswers = await LocalStorage.getItem<string>("savedAnswers");
+      const storedSavedChats = await LocalStorage.getItem<string>("savedChats");
 
-      if (!storedSavedAnswers) {
-        setSavedAnswers([]);
+      if (!storedSavedChats) {
+        setSavedChats([]);
       } else {
-        const answers: Answer[] = JSON.parse(storedSavedAnswers);
-        setSavedAnswers((previous) => [...previous, ...answers]);
+        setSavedChats((previous) => [...previous, ...JSON.parse(storedSavedChats)]);
       }
     })();
   }, []);
@@ -80,8 +78,7 @@ export default function ChatGPT() {
       if (!storedInitialQuestions) {
         setInitialQuestions([]);
       } else {
-        const initialQuestions: Question[] = JSON.parse(storedInitialQuestions);
-        setInitialQuestions((previous) => [...previous, ...initialQuestions]);
+        setInitialQuestions([...JSON.parse(storedInitialQuestions)]);
         setIsLoading(false);
       }
     })();
@@ -94,15 +91,14 @@ export default function ChatGPT() {
       if (!storedHistory) {
         setHistory([]);
       } else {
-        const answers: Answer[] = JSON.parse(storedHistory);
-        setHistory((previous) => [...previous, ...answers]);
+        setHistory((previous) => [...previous, ...JSON.parse(storedHistory)]);
       }
     })();
   }, []);
 
   useEffect(() => {
-    LocalStorage.setItem("savedAnswers", JSON.stringify(savedAnswers));
-  }, [savedAnswers]);
+    LocalStorage.setItem("savedChats", JSON.stringify(savedChats));
+  }, [savedChats]);
 
   useEffect(() => {
     LocalStorage.setItem("initialQuestions", JSON.stringify(initialQuestions));
@@ -120,23 +116,33 @@ export default function ChatGPT() {
     return autoTTS;
   });
 
-  const handleSaveAnswer = useCallback(
-    async (answer: Answer) => {
+  const [chatGPT] = useState(() => {
+    const apiKey = getPreferenceValues<{
+      api: string;
+    }>().api;
+
+    const config = new Configuration({ apiKey });
+
+    return new OpenAIApi(config);
+  });
+
+  const handleSaveChat = useCallback(
+    async (chat: Chat) => {
       const toast = await showToast({
         title: "Saving your answer...",
         style: Toast.Style.Animated,
       });
-      answer.savedAt = new Date().toISOString();
-      setSavedAnswers([...savedAnswers, answer]);
+      const newSavedChat: SavedChat = { ...chat, saved_at: new Date().toISOString() };
+      setSavedChats([...savedChats, newSavedChat]);
       toast.title = "Answer saved!";
       toast.style = Toast.Style.Success;
     },
-    [setSavedAnswers, savedAnswers]
+    [setSavedChats, savedChats]
   );
 
   const handleUpdateHistory = useCallback(
-    async (answer: Answer) => {
-      setHistory([...history, answer]);
+    async (chat: Chat) => {
+      setHistory([...history, chat]);
     },
     [setHistory, history]
   );
@@ -148,14 +154,6 @@ export default function ChatGPT() {
     [setInitialQuestions, initialQuestions]
   );
 
-  const [chatGPT] = useState(() => {
-    const apiKey = getPreferenceValues<{
-      api: string;
-    }>().api;
-
-    return new ChatGPTAPI({ apiKey });
-  });
-
   async function getAnswer(question: string) {
     setIsLoading(true);
 
@@ -166,20 +164,25 @@ export default function ChatGPT() {
 
     const answerId = uuidv4();
 
-    const baseAnswer: ChatAnswer = {
+    let chat: Chat = {
       id: answerId,
+      question,
       answer: "",
-      partialAnswer: "",
-      done: false,
-      convoId: "",
-      parentId: "",
-      question: question,
-      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     };
 
+    if (chats.length === 0) {
+      const initialQuestion: Question = {
+        id: uuidv4(),
+        question: chat.question,
+        created_at: chat.created_at,
+      };
+      handleUpdateInitialQuestions(initialQuestion);
+    }
+
     // Add new answer
-    setAnswers((prev) => {
-      return [...prev, baseAnswer];
+    setChats((prev) => {
+      return [...prev, chat];
     });
 
     // Weird selection glitch workaround
@@ -188,47 +191,30 @@ export default function ChatGPT() {
     }, 50);
 
     await chatGPT
-      .sendMessage(question, {
-        parentMessageId: answers.length > 0 ? answers[answers.length - 1].parentId : undefined,
-        conversationId: answers.length > 0 ? answers[answers.length - 1].convoId : undefined,
-        timeoutMs: 2 * 60 * 1000,
-        onProgress: (progress) => {
-          setAnswers((prev) => {
-            const newAnswers = prev.map((a) => {
+      .createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: [...messages, { role: "user", content: question }],
+      })
+      .then((res) => {
+        chat = { ...chat, answer: res.data.choices.map((x) => x.message)[0]?.content ?? "" };
+        if (typeof chat.answer === "string") {
+          if (isAutoTTS) {
+            say.stop();
+            say.speak(chat.answer);
+          }
+          setMessages((prev) => {
+            return [...prev, { role: "assistant", content: chat.answer }];
+          });
+          setChats((prev) => {
+            return prev.map((a) => {
               if (a.id === answerId) {
-                return {
-                  ...a,
-                  partialAnswer: progress,
-                };
+                return chat;
               }
               return a;
             });
-            return newAnswers;
           });
-        },
-      })
-      .then((data) => {
-        const newAnswer: ChatAnswer = {
-          ...baseAnswer,
-          answer: data.text,
-          partialAnswer: data.text,
-          convoId: data.id,
-          parentId: data.parentMessageId,
-          done: true,
-        };
-        if (isAutoTTS) {
-          say.stop();
-          say.speak(newAnswer.answer);
+          handleUpdateHistory(chat);
         }
-        setAnswers((prev) => {
-          return prev.map((a) => {
-            if (a.id === answerId) {
-              return newAnswer;
-            }
-            return a;
-          });
-        });
-        handleUpdateHistory(newAnswer);
       })
       .then(() => {
         clearSearchBar();
@@ -245,56 +231,21 @@ export default function ChatGPT() {
       });
   }
 
-  const getActionPanel = (answer?: ChatAnswer) => (
+  const getActionPanel = (chat?: Chat) => (
     <ActionPanel>
       {searchText.length > 0 ? (
         <>
           <GetAnswerAction onAction={() => getAnswer(searchText)} />
         </>
-      ) : answer && selectedAnswerId === answer.id ? (
+      ) : chat?.answer && selectedAnswerId === chat.id ? (
         <>
-          <CopyActionSection answer={answer.answer} question={answer.question} />
+          <CopyActionSection answer={chat.answer} question={chat.question} />
           <SaveActionSection
-            onSaveAnswerAction={() => handleSaveAnswer(answer)}
-            snippet={{ text: answer.answer, name: answer.question }}
+            onSaveAnswerAction={() => handleSaveChat(chat)}
+            snippet={{ text: chat.answer, name: chat.question }}
           />
           <ActionPanel.Section title="Output">
-            <TextToSpeechAction content={answer.answer} />
-            <Action
-              title="Share to shareg.pt"
-              shortcut={{ modifiers: ["cmd", "shift"], key: "s" }}
-              icon={Icon.Upload}
-              onAction={async () => {
-                if (answer) {
-                  const toast = await showToast({
-                    title: "Sharing your conversation...",
-                    style: Toast.Style.Animated,
-                  });
-                  await shareConversation({
-                    avatarUrl: defaultProfileImage,
-                    items: answers.flatMap((a): ConversationItem[] => [
-                      {
-                        value: a.question,
-                        from: "human",
-                      },
-                      {
-                        value: a.answer,
-                        from: "gpt",
-                      },
-                    ]),
-                  })
-                    .then(({ url }) => {
-                      Clipboard.copy(url);
-                      toast.title = `Copied link to clipboard!`;
-                      toast.style = Toast.Style.Success;
-                    })
-                    .catch(() => {
-                      toast.title = "Error while sharing conversation";
-                      toast.style = Toast.Style.Failure;
-                    });
-                }
-              }}
-            />
+            <TextToSpeechAction content={chat.answer} />
           </ActionPanel.Section>
         </>
       ) : null}
@@ -315,7 +266,7 @@ export default function ChatGPT() {
           }}
         />
       </ActionPanel.Section>
-      {answers.length > 0 && (
+      {chats.length > 0 && (
         <ActionPanel.Section title="Restart">
           <DestructiveAction
             title="Start New Conversation"
@@ -325,9 +276,8 @@ export default function ChatGPT() {
               primaryButton: "Start New",
             }}
             onAction={() => {
-              setAnswers([]);
+              setChats([]);
               clearSearchBar();
-              setConversationId(uuidv4());
               setIsLoading(false);
             }}
             shortcut={{ modifiers: ["cmd", "shift"], key: "n" }}
@@ -339,18 +289,18 @@ export default function ChatGPT() {
   );
 
   const sortedInitialQuestions = initialQuestions.sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
 
   const unduplicatedInitialQuestions = sortedInitialQuestions.filter(
     (value, index, self) => index === self.findIndex((answer) => answer.question === value.question)
   );
 
-  const sortedAnswers = answers.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const sortedChats = chats.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   return (
     <List
-      isShowingDetail={answers.length > 0 ? true : false}
+      isShowingDetail={chats.length > 0 ? true : false}
       filtering={false}
       isLoading={isLoading}
       onSearchTextChange={setSearchText}
@@ -363,9 +313,9 @@ export default function ChatGPT() {
           setSelectedAnswer(id);
         }
       }}
-      searchBarPlaceholder={answers.length > 0 ? "Ask another question..." : "Ask a question..."}
+      searchBarPlaceholder={chats.length > 0 ? "Ask another question..." : "Ask a question..."}
     >
-      {searchText.length === 0 && answers.length === 0 ? (
+      {searchText.length === 0 && chats.length === 0 ? (
         initialQuestions.length > 0 ? (
           <List.Section title="Recent questions" subtitle={initialQuestions.length.toLocaleString()}>
             {unduplicatedInitialQuestions.map((question) => {
@@ -373,7 +323,7 @@ export default function ChatGPT() {
                 <List.Item
                   id={question.id}
                   key={question.id}
-                  accessories={[{ text: new Date(question.createdAt ?? 0).toLocaleString() }]}
+                  accessories={[{ text: new Date(question.created_at ?? 0).toLocaleString() }]}
                   title={question.question}
                   actions={
                     <ActionPanel>
@@ -397,20 +347,19 @@ export default function ChatGPT() {
         ) : (
           <EmptyView />
         )
-      ) : answers.length === 0 ? (
+      ) : chats.length === 0 ? (
         <EmptyView />
       ) : (
-        <List.Section title="Results" subtitle={answers.length.toLocaleString()}>
-          {sortedAnswers.map((answer, i) => {
-            const currentAnswer = answer.done ? answer.answer : answer.partialAnswer;
-            const markdown = `**${answer.question}**\n\n${currentAnswer}`;
+        <List.Section title="Results" subtitle={chats.length.toLocaleString()}>
+          {sortedChats.map((answer, i) => {
+            const markdown = `**${answer.question}**\n\n${answer.answer}`;
             return (
               <List.Item
                 id={answer.id}
                 key={answer.id}
-                accessories={[{ text: `#${answers.length - i}` }]}
+                accessories={[{ text: `#${chats.length - i}` }]}
                 title={answer.question}
-                detail={<AnswerDetailView answer={answer} markdown={markdown} />}
+                detail={answer.answer && <AnswerDetailView chat={answer} markdown={markdown} />}
                 actions={isLoading ? undefined : getActionPanel(answer)}
               />
             );
