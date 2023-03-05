@@ -23,7 +23,7 @@ export default function ChatGPT() {
     { role: "system", content: "You are a helpful assistant." },
   ]);
   const { add: addHistory } = useHistory();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const savedChat = useSavedChat();
   const recentQuestion = useRecentQuestion();
   const [searchText, setSearchText] = useState<string>("");
