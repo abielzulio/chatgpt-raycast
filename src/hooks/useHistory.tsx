@@ -4,7 +4,7 @@ import { Chat } from "../type";
 
 export function useHistory() {
   const [history, setHistory] = useState<Chat[]>([]);
-  const [isHistoryLoaded, setLoading] = useState<boolean>(true);
+  const [isLoading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     (async () => {
@@ -54,5 +54,5 @@ export function useHistory() {
     toast.style = Toast.Style.Success;
   }, [setHistory]);
 
-  return { history, isHistoryLoaded, addHistory, deleteHistory, clearHistory } as const;
+  return { history, isLoading, addHistory, deleteHistory, clearHistory } as const;
 }
