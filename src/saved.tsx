@@ -8,7 +8,7 @@ import { Chat } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
 
 export default function Saved() {
-  const { data: savedChats, isLoading, remove: unsaveChat, clear: clearSavedChat } = useSavedChat();
+  const savedChats = useSavedChat();
   const [searchText, setSearchText] = useState<string>("");
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(null);
 
@@ -25,14 +25,14 @@ export default function Saved() {
           dialog={{
             title: "Are you sure you want to unsave this answer from your collection?",
           }}
-          onAction={() => unsaveChat(chat)}
+          onAction={() => savedChats.remove(chat)}
         />
         <DestructiveAction
           title="Clear All"
           dialog={{
             title: "Are you sure you want to clear all your saved answer from your collection?",
           }}
-          onAction={() => clearSavedChat()}
+          onAction={() => savedChats.clear()}
           shortcut={{ modifiers: ["cmd", "shift"], key: "delete" }}
         />
       </ActionPanel.Section>
@@ -40,11 +40,11 @@ export default function Saved() {
     </ActionPanel>
   );
 
-  const sortedAnswers = savedChats.sort(
+  const sortedSavedChats = savedChats.data.sort(
     (a, b) => new Date(b.saved_at ?? 0).getTime() - new Date(a.saved_at ?? 0).getTime()
   );
 
-  const filteredAnswers = sortedAnswers
+  const filteredSavedChats = sortedSavedChats
     .filter((value, index, self) => index === self.findIndex((answer) => answer.id === value.id))
     .filter((answer) => {
       if (searchText === "") {
@@ -58,8 +58,8 @@ export default function Saved() {
 
   return (
     <List
-      isShowingDetail={filteredAnswers.length === 0 ? false : true}
-      isLoading={isLoading}
+      isShowingDetail={filteredSavedChats.length === 0 ? false : true}
+      isLoading={savedChats.isLoading}
       filtering={false}
       throttle={false}
       navigationTitle={"Saved Answers"}
@@ -73,22 +73,22 @@ export default function Saved() {
       searchText={searchText}
       onSearchTextChange={setSearchText}
     >
-      {savedChats.length === 0 ? (
+      {savedChats.data.length === 0 ? (
         <List.EmptyView
           title="No saved answers"
           description="Save generated question with ⌘ + S shortcut"
           icon={Icon.Stars}
         />
       ) : (
-        <List.Section title="Saved" subtitle={filteredAnswers.length.toLocaleString()}>
-          {filteredAnswers.map((answer) => (
+        <List.Section title="Saved" subtitle={filteredSavedChats.length.toLocaleString()}>
+          {filteredSavedChats.map((chat) => (
             <List.Item
-              id={answer.id}
-              key={answer.id}
-              title={answer.question}
-              accessories={[{ text: new Date(answer.created_at ?? 0).toLocaleDateString() }]}
-              detail={<AnswerDetailView chat={answer} />}
-              actions={answer && selectedAnswerId === answer.id ? getActionPanel(answer) : undefined}
+              id={chat.id}
+              key={chat.id}
+              title={chat.question}
+              accessories={[{ text: new Date(chat.created_at ?? 0).toLocaleDateString() }]}
+              detail={<AnswerDetailView chat={chat} />}
+              actions={chat && selectedAnswerId === chat.id ? getActionPanel(chat) : undefined}
             />
           ))}
         </List.Section>

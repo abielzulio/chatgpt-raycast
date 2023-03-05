@@ -10,7 +10,7 @@ import { Chat } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
 
 export default function History() {
-  const { add: saveChat } = useSavedChat();
+  const savedChat = useSavedChat();
   const history = useHistory();
   const [searchText, setSearchText] = useState<string>("");
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(null);
@@ -19,7 +19,7 @@ export default function History() {
     <ActionPanel>
       <CopyActionSection answer={chat.answer} question={chat.question} />
       <SaveActionSection
-        onSaveAnswerAction={() => saveChat(chat)}
+        onSaveAnswerAction={() => savedChat.add(chat)}
         snippet={{ text: chat.answer, name: chat.question }}
       />
       <ActionPanel.Section title="Output">
