@@ -1,31 +1,21 @@
-import {
-  Action,
-  ActionPanel,
-  clearSearchBar,
-  Icon,
-  List,
-  LocalStorage,
-  showToast,
-  Toast,
-  useNavigation,
-} from "@raycast/api";
-import { useCallback, useEffect, useState } from "react";
+import { Action, ActionPanel, clearSearchBar, Icon, List, showToast, Toast, useNavigation } from "@raycast/api";
+import { ChatCompletionRequestMessage } from "openai";
+import { useState } from "react";
 import say from "say";
 import { v4 as uuidv4 } from "uuid";
 import { DestructiveAction, GetAnswerAction, TextToSpeechAction } from "./actions";
 import { CopyActionSection } from "./actions/copy";
 import { PreferencesActionSection } from "./actions/preferences";
 import { SaveActionSection } from "./actions/save";
-import { Chat, Question, SavedChat } from "./type";
 import { FullTextInput } from "./components/FullTextInput";
 import { useAutoTTS } from "./hooks/useAutoTTS";
 import { useChatGPT } from "./hooks/useChatGPT";
 import { useHistory } from "./hooks/useHistory";
 import { useRecentQuestion } from "./hooks/useRecentQuestion";
 import { useSavedChat } from "./hooks/useSavedChat";
+import { Chat, Question } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
 import { EmptyView } from "./views/empty";
-import { ChatCompletionRequestMessage } from "openai";
 
 export default function ChatGPT() {
   const [chats, setChats] = useState<Chat[]>([]);
