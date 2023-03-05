@@ -76,6 +76,12 @@ export default function ChatGPT() {
       .then((res) => {
         chat = { ...chat, answer: res.data.choices.map((x) => x.message)[0]?.content ?? "" };
         if (typeof chat.answer === "string") {
+          setIsLoading(false);
+          clearSearchBar();
+
+          toast.title = "Got your answer!";
+          toast.style = Toast.Style.Success;
+
           if (isAutoTTS) {
             say.stop();
             say.speak(chat.answer);
@@ -91,14 +97,9 @@ export default function ChatGPT() {
               return a;
             });
           });
+
           addHistory(chat);
         }
-      })
-      .then(() => {
-        clearSearchBar();
-        setIsLoading(false);
-        toast.title = "Got your answer!";
-        toast.style = Toast.Style.Success;
       })
       .catch((err) => {
         toast.title = "Error";
