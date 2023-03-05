@@ -35,7 +35,7 @@ export default function ChatGPT() {
   ]);
   const [savedChats, setSavedChats] = useState<SavedChat[]>([]);
   const [initialQuestions, setInitialQuestions] = useState<Question[]>([]);
-  const { addHistory } = useHistory();
+  const { add: addHistory } = useHistory();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchText, setSearchText] = useState<string>("");
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);

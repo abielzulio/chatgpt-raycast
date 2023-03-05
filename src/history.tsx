@@ -9,7 +9,7 @@ import { Chat, SavedChat } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
 
 export default function History() {
-  const { history, isLoading: isHistoryLoading, deleteHistory, clearHistory } = useHistory();
+  const { data: history, isLoading: isHistoryLoading, remove: removeHistory, clear: clearHistory } = useHistory();
   const [searchText, setSearchText] = useState<string>("");
   const [savedChats, setSavedChats] = useState<SavedChat[]>([]);
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(null);
@@ -60,7 +60,7 @@ export default function History() {
           dialog={{
             title: "Are you sure you want to remove this answer from your history?",
           }}
-          onAction={() => deleteHistory(chat)}
+          onAction={() => removeHistory(chat)}
         />
         <DestructiveAction
           title="Clear History"
