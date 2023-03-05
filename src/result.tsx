@@ -55,7 +55,7 @@ export default function ChatGPT() {
         question: chat.question,
         created_at: chat.created_at,
       };
-      addRecentQuestion(initialQuestion);
+      recentQuestion.add(initialQuestion);
     }
 
     // Add new answer
