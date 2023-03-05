@@ -7,7 +7,7 @@ import { useConversations } from "./hooks/useConversations";
 import { useRecentQuestion } from "./hooks/useRecentQuestion";
 import { Conversation } from "./type";
 import { ChatView } from "./views/chat";
-import { RecentQuestionList } from "./views/recent-question-list";
+import { RecentQuestionListView } from "./views/recent-question-list";
 
 export default function ask() {
   const recentQuestion = useRecentQuestion();
@@ -69,7 +69,7 @@ export default function ask() {
       searchBarPlaceholder={chat.data.length > 0 ? "Ask another question..." : "Ask a question..."}
     >
       {searchText.length === 0 && chat.data.length === 0 ? (
-        <RecentQuestionList data={recentQuestion.data} use={{ chat, recentQuestion }} />
+        <RecentQuestionListView data={recentQuestion.data} use={{ chat, recentQuestion }} />
       ) : (
         <ChatView data={chat.data} question={searchText} setConversation={setConversation} use={{ chat }} />
       )}

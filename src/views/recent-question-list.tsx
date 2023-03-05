@@ -4,7 +4,7 @@ import { PreferencesActionSection } from "../actions/preferences";
 import { ChatHook, Question, RecentQuestionHook } from "../type";
 import { EmptyView } from "./empty";
 
-export const RecentQuestionList = ({
+export const RecentQuestionListView = ({
   data,
   use,
 }: {
