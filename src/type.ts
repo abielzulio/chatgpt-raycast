@@ -15,7 +15,7 @@ export interface Chat extends Question {
 }
 
 export interface SavedChat extends Chat {
-  saved_at: string;
+  saved_at?: string;
 }
 
 export interface Conversation {
