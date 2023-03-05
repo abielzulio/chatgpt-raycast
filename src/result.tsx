@@ -2,8 +2,6 @@ import {
   Action,
   ActionPanel,
   clearSearchBar,
-  Form,
-  getPreferenceValues,
   Icon,
   List,
   LocalStorage,
@@ -11,8 +9,6 @@ import {
   Toast,
   useNavigation,
 } from "@raycast/api";
-import type { ChatCompletionRequestMessage } from "openai";
-import { Configuration, OpenAIApi } from "openai";
 import { useCallback, useEffect, useState } from "react";
 import say from "say";
 import { v4 as uuidv4 } from "uuid";
