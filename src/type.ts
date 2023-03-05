@@ -1,3 +1,4 @@
+export type Set<T> = React.Dispatch<React.SetStateAction<T>>;
 export interface Question {
   id: string;
   question: string;
@@ -33,3 +34,12 @@ export type RecentQuestionHook = BaseHook<Question> & {
   add: PromiseFunctionWithArg<Question>;
   clear: PromiseFunctionNoArg;
 };
+export interface ChatHook {
+  data: Chat[];
+  isLoading: boolean;
+  setLoading: Set<boolean>;
+  selectedChatId: string | null;
+  setSelectedChatId: Set<string | null>;
+  getAnswer: PromiseFunctionWithArg<string>;
+  clear: PromiseFunctionNoArg;
+}
