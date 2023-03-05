@@ -17,6 +17,14 @@ export interface Chat extends Question {
 export interface SavedChat extends Chat {
   saved_at: string;
 }
+
+export interface Conversation {
+  id: string;
+  chats: Chat[];
+  created_at: string;
+  pinned: boolean;
+}
+
 type PromiseFunctionWithArg<T> = (arg: T) => Promise<void>;
 type PromiseFunctionNoArg = () => Promise<void>;
 
@@ -32,6 +40,7 @@ interface BaseHook<T> {
 }
 
 export type HistoryHook = BaseHook<Chat> & BaseFunctionHook<Chat>;
+type Hook<T> = BaseHook<T> & BaseFunctionHook<T>;
 
 export type SavedChatHook = BaseHook<SavedChat> & BaseFunctionHook<Chat>;
 
@@ -39,6 +48,9 @@ export type RecentQuestionHook = BaseHook<Question> & {
   add: PromiseFunctionWithArg<Question>;
   clear: PromiseFunctionNoArg;
 };
+
+export type ConversationsHook = Hook<Conversation> & { setData: Set<Conversation[]> };
+
 export interface ChatHook {
   data: Chat[];
   isLoading: boolean;
