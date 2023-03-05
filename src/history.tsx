@@ -1,54 +1,25 @@
-import { ActionPanel, Icon, List, LocalStorage, showToast, Toast } from "@raycast/api";
-import { useCallback, useEffect, useState } from "react";
+import { ActionPanel, Icon, List } from "@raycast/api";
+import { useState } from "react";
 import { DestructiveAction, TextToSpeechAction } from "./actions";
 import { CopyActionSection } from "./actions/copy";
 import { PreferencesActionSection } from "./actions/preferences";
 import { SaveActionSection } from "./actions/save";
 import { useHistory } from "./hooks/useHistory";
-import { Chat, SavedChat } from "./type";
+import { useSavedChat } from "./hooks/useSavedChat";
+import { Chat } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
 
 export default function History() {
+  const { add: saveChat } = useSavedChat();
   const { data: history, isLoading, remove: removeHistory, clear: clearHistory } = useHistory();
   const [searchText, setSearchText] = useState<string>("");
-  const [savedChats, setSavedChats] = useState<SavedChat[]>([]);
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      const storedSavedAnswers = await LocalStorage.getItem<string>("savedChats");
-
-      if (!storedSavedAnswers) {
-        setSavedChats([]);
-      } else {
-        setSavedChats((previous) => [...previous, ...JSON.parse(storedSavedAnswers)]);
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
-    LocalStorage.setItem("savedChats", JSON.stringify(savedChats));
-  }, [savedChats]);
-
-  const handleSaveChat = useCallback(
-    async (chat: Chat) => {
-      const toast = await showToast({
-        title: "Saving your answer...",
-        style: Toast.Style.Animated,
-      });
-      const newSavedChat: SavedChat = { ...chat, saved_at: new Date().toISOString() };
-      setSavedChats([...savedChats, newSavedChat]);
-      toast.title = "Answer saved!";
-      toast.style = Toast.Style.Success;
-    },
-    [setSavedChats, savedChats]
-  );
 
   const getActionPanel = (chat: Chat) => (
     <ActionPanel>
       <CopyActionSection answer={chat.answer} question={chat.question} />
       <SaveActionSection
-        onSaveAnswerAction={() => handleSaveChat(chat)}
+        onSaveAnswerAction={() => saveChat(chat)}
         snippet={{ text: chat.answer, name: chat.question }}
       />
       <ActionPanel.Section title="Output">

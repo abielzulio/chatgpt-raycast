@@ -1,47 +1,16 @@
-import { ActionPanel, Icon, List, LocalStorage, showToast, Toast } from "@raycast/api";
-import { useCallback, useEffect, useState } from "react";
+import { ActionPanel, Icon, List } from "@raycast/api";
+import { useState } from "react";
 import { DestructiveAction, SaveAsSnippetAction, TextToSpeechAction } from "./actions";
 import { CopyActionSection } from "./actions/copy";
 import { PreferencesActionSection } from "./actions/preferences";
-import { Chat, SavedChat } from "./type";
+import { useSavedChat } from "./hooks/useSavedChat";
+import { Chat } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
 
 export default function SavedAnswer() {
-  const [savedChats, setSavedChats] = useState<SavedChat[]>([]);
+  const { data: savedChats, isLoading, remove: unsaveChat, clear: clearSavedChat } = useSavedChat();
   const [searchText, setSearchText] = useState<string>("");
-  const [isLoading, setLoading] = useState<boolean>(true);
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      const storedSavedAnswers = await LocalStorage.getItem<string>("savedChats");
-
-      if (!storedSavedAnswers) {
-        setSavedChats([]);
-      } else {
-        setSavedChats((previous) => [...previous, ...JSON.parse(storedSavedAnswers)]);
-        setLoading(false);
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
-    LocalStorage.setItem("savedChats", JSON.stringify(savedChats));
-  }, [savedChats]);
-
-  const handleUnsaveChat = useCallback(
-    async (chat: Chat) => {
-      const toast = await showToast({
-        title: "Unsaving your answer...",
-        style: Toast.Style.Animated,
-      });
-      const newSavedChats = savedChats.filter((savedAnswer) => savedAnswer.id !== chat.id);
-      setSavedChats(newSavedChats);
-      toast.title = "Answer unsaved!";
-      toast.style = Toast.Style.Success;
-    },
-    [setSavedChats, savedChats]
-  );
 
   const getActionPanel = (chat: Chat) => (
     <ActionPanel>
@@ -52,19 +21,18 @@ export default function SavedAnswer() {
       </ActionPanel.Section>
       <ActionPanel.Section title="Delete">
         <DestructiveAction
-          title="Remove Answer"
+          title="Unsave Answer"
           dialog={{
-            title: "Are you sure you want to remove this answer from your collection?",
+            title: "Are you sure you want to unsave this answer from your collection?",
           }}
-          onAction={() => handleUnsaveChat(chat)}
+          onAction={() => unsaveChat(chat)}
         />
         <DestructiveAction
-          title="Remove All Answer"
+          title="Clear All"
           dialog={{
-            title: "Are you sure you want to remove all your saved answer from your collection?",
-            primaryButton: "Remove All",
+            title: "Are you sure you want to clear all your saved answer from your collection?",
           }}
-          onAction={() => setSavedChats([])}
+          onAction={() => clearSavedChat()}
           shortcut={{ modifiers: ["cmd", "shift"], key: "delete" }}
         />
       </ActionPanel.Section>

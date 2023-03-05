@@ -26,6 +26,7 @@ import { useAutoTTS } from "./hooks/useAutoTTS";
 import { useChatGPT } from "./hooks/useChatGPT";
 import { useHistory } from "./hooks/useHistory";
 import { useRecentQuestion } from "./hooks/useRecentQuestion";
+import { useSavedChat } from "./hooks/useSavedChat";
 import { AnswerDetailView } from "./views/answer-detail";
 import { EmptyView } from "./views/empty";
 
@@ -34,7 +35,7 @@ export default function ChatGPT() {
   const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([
     { role: "system", content: "You are a helpful assistant." },
   ]);
-  const [savedChats, setSavedChats] = useState<SavedChat[]>([]);
+  const { add: saveChat } = useSavedChat();
   const { data: recentQuestions, add: addRecentQuestion, clear: clearRecentQuestion } = useRecentQuestion();
   const { add: addHistory } = useHistory();
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -201,7 +202,7 @@ export default function ChatGPT() {
         <>
           <CopyActionSection answer={chat.answer} question={chat.question} />
           <SaveActionSection
-            onSaveAnswerAction={() => handleSaveChat(chat)}
+            onSaveAnswerAction={() => saveChat(chat)}
             snippet={{ text: chat.answer, name: chat.question }}
           />
           <ActionPanel.Section title="Output">
