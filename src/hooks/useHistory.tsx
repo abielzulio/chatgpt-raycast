@@ -36,7 +36,7 @@ export function useHistory() {
         title: "Removing answer...",
         style: Toast.Style.Animated,
       });
-      const newHistory = data.filter((item) => item.id !== answer.id);
+      const newHistory: Chat[] = data.filter((item) => item.id !== answer.id);
       setData(newHistory);
       toast.title = "Answer removed!";
       toast.style = Toast.Style.Success;
