@@ -166,7 +166,7 @@ export default function ChatGPT() {
     // Weird selection glitch workaround
     setTimeout(async () => {
       setSelectedChatId(chat.id);
-    }, 50);
+    }, 30);
 
     await chatGPT
       .createChatCompletion({
