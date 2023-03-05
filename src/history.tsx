@@ -9,7 +9,7 @@ import { Chat, SavedChat } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
 
 export default function History() {
-  const { data: history, isLoading: isHistoryLoading, remove: removeHistory, clear: clearHistory } = useHistory();
+  const { data: history, isLoading, remove: removeHistory, clear: clearHistory } = useHistory();
   const [searchText, setSearchText] = useState<string>("");
   const [savedChats, setSavedChats] = useState<SavedChat[]>([]);
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(null);
@@ -92,7 +92,7 @@ export default function History() {
   return (
     <List
       isShowingDetail={filteredHistory.length === 0 ? false : true}
-      isLoading={isHistoryLoading}
+      isLoading={isLoading}
       filtering={false}
       throttle={false}
       navigationTitle={"Saved Answers"}
