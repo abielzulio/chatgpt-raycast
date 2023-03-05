@@ -22,10 +22,10 @@ export default function ChatGPT() {
   const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([
     { role: "system", content: "You are a helpful assistant." },
   ]);
-  const { add: saveChat } = useSavedChat();
-  const { data: recentQuestions, add: addRecentQuestion, clear: clearRecentQuestion } = useRecentQuestion();
   const { add: addHistory } = useHistory();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const savedChat = useSavedChat();
+  const recentQuestion = useRecentQuestion();
   const [searchText, setSearchText] = useState<string>("");
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
 
@@ -120,7 +120,7 @@ export default function ChatGPT() {
         <>
           <CopyActionSection answer={chat.answer} question={chat.question} />
           <SaveActionSection
-            onSaveAnswerAction={() => saveChat(chat)}
+            onSaveAnswerAction={() => savedChat.add(chat)}
             snippet={{ text: chat.answer, name: chat.question }}
           />
           <ActionPanel.Section title="Output">
@@ -167,11 +167,11 @@ export default function ChatGPT() {
     </ActionPanel>
   );
 
-  const sortedInitialQuestions = recentQuestions.sort(
+  const sortedRecentQuestions = recentQuestion.data.sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
 
-  const unduplicatedInitialQuestions = sortedInitialQuestions.filter(
+  const unduplicatedReecentQuestions = sortedRecentQuestions.filter(
     (value, index, self) => index === self.findIndex((answer) => answer.question === value.question)
   );
 
@@ -195,9 +195,9 @@ export default function ChatGPT() {
       searchBarPlaceholder={chats.length > 0 ? "Ask another question..." : "Ask a question..."}
     >
       {searchText.length === 0 && chats.length === 0 ? (
-        recentQuestions.length > 0 ? (
-          <List.Section title="Recent questions" subtitle={recentQuestions.length.toLocaleString()}>
-            {unduplicatedInitialQuestions.map((question) => {
+        recentQuestion.data.length > 0 ? (
+          <List.Section title="Recent questions" subtitle={recentQuestion.data.length.toLocaleString()}>
+            {unduplicatedReecentQuestions.map((question) => {
               return (
                 <List.Item
                   id={question.id}
@@ -213,7 +213,7 @@ export default function ChatGPT() {
                         <DestructiveAction
                           title="Clear History"
                           dialog={{ title: "Are you sure you to clear your recent question?" }}
-                          onAction={() => clearRecentQuestion()}
+                          onAction={() => recentQuestion.clear()}
                         />
                       </ActionPanel.Section>
                       <PreferencesActionSection />
