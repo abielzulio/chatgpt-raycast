@@ -1,95 +1,25 @@
-import { ActionPanel, Icon, List, LocalStorage, showToast, Toast } from "@raycast/api";
-import { useCallback, useEffect, useState } from "react";
+import { ActionPanel, Icon, List } from "@raycast/api";
+import { useState } from "react";
 import { DestructiveAction, TextToSpeechAction } from "./actions";
 import { CopyActionSection } from "./actions/copy";
 import { PreferencesActionSection } from "./actions/preferences";
 import { SaveActionSection } from "./actions/save";
-import { Chat, SavedChat } from "./type";
+import { useHistory } from "./hooks/useHistory";
+import { useSavedChat } from "./hooks/useSavedChat";
+import { Chat } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
 
 export default function History() {
-  const [history, setHistory] = useState<Chat[]>([]);
+  const { add: saveChat } = useSavedChat();
+  const { data: history, isLoading, remove: removeHistory, clear: clearHistory } = useHistory();
   const [searchText, setSearchText] = useState<string>("");
-  const [savedChats, setSavedChats] = useState<SavedChat[]>([]);
-  const [isLoading, setLoading] = useState<boolean>(true);
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      const storedHistory = await LocalStorage.getItem<string>("history");
-
-      if (!storedHistory) {
-        setHistory([]);
-      } else {
-        setHistory((previous) => [...previous, ...JSON.parse(storedHistory)]);
-        setLoading(false);
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      const storedSavedAnswers = await LocalStorage.getItem<string>("savedChats");
-
-      if (!storedSavedAnswers) {
-        setSavedChats([]);
-      } else {
-        setSavedChats((previous) => [...previous, ...JSON.parse(storedSavedAnswers)]);
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
-    LocalStorage.setItem("history", JSON.stringify(history));
-  }, [history]);
-
-  useEffect(() => {
-    LocalStorage.setItem("savedChats", JSON.stringify(savedChats));
-  }, [savedChats]);
-
-  const handleRemoveChat = useCallback(
-    async (answer: Chat) => {
-      const toast = await showToast({
-        title: "Removing answer...",
-        style: Toast.Style.Animated,
-      });
-      const newHistory = history.filter((item) => item.id !== answer.id);
-      setHistory(newHistory);
-      toast.title = "Answer removed!";
-      toast.style = Toast.Style.Success;
-    },
-    [setHistory, history]
-  );
-
-  const handleClearHistory = useCallback(async () => {
-    const toast = await showToast({
-      title: "Clearing history...",
-      style: Toast.Style.Animated,
-    });
-    setHistory([]);
-    toast.title = "History cleared!";
-    toast.style = Toast.Style.Success;
-  }, [setHistory]);
-
-  const handleSaveChat = useCallback(
-    async (chat: Chat) => {
-      const toast = await showToast({
-        title: "Saving your answer...",
-        style: Toast.Style.Animated,
-      });
-      const newSavedChat: SavedChat = { ...chat, saved_at: new Date().toISOString() };
-      setSavedChats([...savedChats, newSavedChat]);
-      toast.title = "Answer saved!";
-      toast.style = Toast.Style.Success;
-    },
-    [setSavedChats, savedChats]
-  );
 
   const getActionPanel = (chat: Chat) => (
     <ActionPanel>
       <CopyActionSection answer={chat.answer} question={chat.question} />
       <SaveActionSection
-        onSaveAnswerAction={() => handleSaveChat(chat)}
+        onSaveAnswerAction={() => saveChat(chat)}
         snippet={{ text: chat.answer, name: chat.question }}
       />
       <ActionPanel.Section title="Output">
@@ -101,14 +31,14 @@ export default function History() {
           dialog={{
             title: "Are you sure you want to remove this answer from your history?",
           }}
-          onAction={() => handleRemoveChat(chat)}
+          onAction={() => removeHistory(chat)}
         />
         <DestructiveAction
           title="Clear History"
           dialog={{
             title: "Are you sure you want to clear your history?",
           }}
-          onAction={() => handleClearHistory()}
+          onAction={() => clearHistory()}
           shortcut={{ modifiers: ["cmd", "shift"], key: "delete" }}
         />
       </ActionPanel.Section>

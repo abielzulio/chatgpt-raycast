@@ -20,6 +20,9 @@ import { Chat, Question, SavedChat } from "./type";
 import { FullTextInput } from "./components/FullTextInput";
 import { useAutoTTS } from "./hooks/useAutoTTS";
 import { useChatGPT } from "./hooks/useChatGPT";
+import { useHistory } from "./hooks/useHistory";
+import { useRecentQuestion } from "./hooks/useRecentQuestion";
+import { useSavedChat } from "./hooks/useSavedChat";
 import { AnswerDetailView } from "./views/answer-detail";
 import { EmptyView } from "./views/empty";
 
@@ -28,9 +31,9 @@ export default function ChatGPT() {
   const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([
     { role: "system", content: "You are a helpful assistant." },
   ]);
-  const [savedChats, setSavedChats] = useState<SavedChat[]>([]);
-  const [initialQuestions, setInitialQuestions] = useState<Question[]>([]);
-  const [history, setHistory] = useState<Chat[]>([]);
+  const { add: saveChat } = useSavedChat();
+  const { data: recentQuestions, add: addRecentQuestion, clear: clearRecentQuestion } = useRecentQuestion();
+  const { add: addHistory } = useHistory();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchText, setSearchText] = useState<string>("");
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
@@ -103,13 +106,6 @@ export default function ChatGPT() {
     [setSavedChats, savedChats]
   );
 
-  const handleUpdateHistory = useCallback(
-    async (chat: Chat) => {
-      setHistory([...history, chat]);
-    },
-    [setHistory, history]
-  );
-
   const handleUpdateInitialQuestions = useCallback(
     async (question: Question) => {
       setInitialQuestions([...initialQuestions, question]);
@@ -138,7 +134,7 @@ export default function ChatGPT() {
         question: chat.question,
         created_at: chat.created_at,
       };
-      handleUpdateInitialQuestions(initialQuestion);
+      addRecentQuestion(initialQuestion);
     }
 
     // Add new answer
@@ -174,7 +170,7 @@ export default function ChatGPT() {
               return a;
             });
           });
-          handleUpdateHistory(chat);
+          addHistory(chat);
         }
       })
       .then(() => {
@@ -202,7 +198,7 @@ export default function ChatGPT() {
         <>
           <CopyActionSection answer={chat.answer} question={chat.question} />
           <SaveActionSection
-            onSaveAnswerAction={() => handleSaveChat(chat)}
+            onSaveAnswerAction={() => saveChat(chat)}
             snippet={{ text: chat.answer, name: chat.question }}
           />
           <ActionPanel.Section title="Output">
@@ -249,7 +245,7 @@ export default function ChatGPT() {
     </ActionPanel>
   );
 
-  const sortedInitialQuestions = initialQuestions.sort(
+  const sortedInitialQuestions = recentQuestions.sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
 
@@ -277,8 +273,8 @@ export default function ChatGPT() {
       searchBarPlaceholder={chats.length > 0 ? "Ask another question..." : "Ask a question..."}
     >
       {searchText.length === 0 && chats.length === 0 ? (
-        initialQuestions.length > 0 ? (
-          <List.Section title="Recent questions" subtitle={initialQuestions.length.toLocaleString()}>
+        recentQuestions.length > 0 ? (
+          <List.Section title="Recent questions" subtitle={recentQuestions.length.toLocaleString()}>
             {unduplicatedInitialQuestions.map((question) => {
               return (
                 <List.Item
@@ -295,7 +291,7 @@ export default function ChatGPT() {
                         <DestructiveAction
                           title="Clear History"
                           dialog={{ title: "Are you sure you to clear your recent question?" }}
-                          onAction={() => setInitialQuestions([])}
+                          onAction={() => clearRecentQuestion()}
                         />
                       </ActionPanel.Section>
                       <PreferencesActionSection />
