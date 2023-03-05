@@ -20,7 +20,7 @@ export default function ask() {
     pinned: false,
     created_at: new Date().toISOString(),
   });
-  const [searchText, setSearchText] = useState<string>("");
+  const [question, setQuestion] = useState<string>("");
 
   useEffect(() => {
     conversations.add(conversation);
@@ -56,10 +56,10 @@ export default function ask() {
       isShowingDetail={chat.data.length > 0 ? true : false}
       filtering={false}
       isLoading={chat.isLoading}
-      onSearchTextChange={setSearchText}
+      onSearchTextChange={setQuestion}
       throttle={false}
       navigationTitle={"ChatGPT"}
-      actions={chat.data.length > 0 ? (searchText.length > 0 ? getActionPanel(searchText) : null) : null}
+      actions={chat.data.length > 0 ? (question.length > 0 ? getActionPanel(question) : null) : null}
       selectedItemId={chat.selectedChatId || undefined}
       onSelectionChange={(id) => {
         if (id !== chat.selectedChatId) {
@@ -68,10 +68,10 @@ export default function ask() {
       }}
       searchBarPlaceholder={chat.data.length > 0 ? "Ask another question..." : "Ask a question..."}
     >
-      {searchText.length === 0 && chat.data.length === 0 ? (
+      {question.length === 0 && chat.data.length === 0 ? (
         <RecentQuestionListView data={recentQuestion.data} use={{ chat, recentQuestion }} />
       ) : (
-        <ChatView data={chat.data} question={searchText} setConversation={setConversation} use={{ chat }} />
+        <ChatView data={chat.data} question={question} setConversation={setConversation} use={{ chat }} />
       )}
     </List>
   );
