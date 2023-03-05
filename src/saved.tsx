@@ -8,7 +8,7 @@ import { Chat } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
 
 export default function Saved() {
-  const savedChats = useSavedChat();
+  const savedChat = useSavedChat();
   const [searchText, setSearchText] = useState<string>("");
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(null);
 
@@ -25,14 +25,14 @@ export default function Saved() {
           dialog={{
             title: "Are you sure you want to unsave this answer from your collection?",
           }}
-          onAction={() => savedChats.remove(chat)}
+          onAction={() => savedChat.remove(chat)}
         />
         <DestructiveAction
           title="Clear All"
           dialog={{
             title: "Are you sure you want to clear all your saved answer from your collection?",
           }}
-          onAction={() => savedChats.clear()}
+          onAction={() => savedChat.clear()}
           shortcut={{ modifiers: ["cmd", "shift"], key: "delete" }}
         />
       </ActionPanel.Section>
@@ -40,7 +40,7 @@ export default function Saved() {
     </ActionPanel>
   );
 
-  const sortedSavedChats = savedChats.data.sort(
+  const sortedSavedChats = savedChat.data.sort(
     (a, b) => new Date(b.saved_at ?? 0).getTime() - new Date(a.saved_at ?? 0).getTime()
   );
 
@@ -59,7 +59,7 @@ export default function Saved() {
   return (
     <List
       isShowingDetail={filteredSavedChats.length === 0 ? false : true}
-      isLoading={savedChats.isLoading}
+      isLoading={savedChat.isLoading}
       filtering={false}
       throttle={false}
       navigationTitle={"Saved Answers"}
@@ -73,7 +73,7 @@ export default function Saved() {
       searchText={searchText}
       onSearchTextChange={setSearchText}
     >
-      {savedChats.data.length === 0 ? (
+      {savedChat.data.length === 0 ? (
         <List.EmptyView
           title="No saved answers"
           description="Save generated question with ⌘ + S shortcut"
