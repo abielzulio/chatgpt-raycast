@@ -22,6 +22,8 @@ import { PreferencesActionSection } from "./actions/preferences";
 import { SaveActionSection } from "./actions/save";
 import { Chat, Question, SavedChat } from "./type";
 import { FullTextInput } from "./components/FullTextInput";
+import { useAutoTTS } from "./hooks/useAutoTTS";
+import { useChatGPT } from "./hooks/useChatGPT";
 import { AnswerDetailView } from "./views/answer-detail";
 import { EmptyView } from "./views/empty";
 
@@ -37,23 +39,8 @@ export default function ChatGPT() {
   const [searchText, setSearchText] = useState<string>("");
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
 
-  const [chatGPT] = useState(() => {
-    const apiKey = getPreferenceValues<{
-      api: string;
-    }>().api;
-
-    const config = new Configuration({ apiKey });
-
-    return new OpenAIApi(config);
-  });
-
-  const [isAutoTTS] = useState(() => {
-    const autoTTS = getPreferenceValues<{
-      isAutoTTS: boolean;
-    }>().isAutoTTS;
-
-    return autoTTS;
-  });
+  const chatGPT = useChatGPT();
+  const isAutoTTS = useAutoTTS();
 
   const { pop, push } = useNavigation();
 
