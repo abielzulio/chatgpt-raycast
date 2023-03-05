@@ -24,6 +24,7 @@ import { Chat, Question, SavedChat } from "./type";
 import { FullTextInput } from "./components/FullTextInput";
 import { useAutoTTS } from "./hooks/useAutoTTS";
 import { useChatGPT } from "./hooks/useChatGPT";
+import { useHistory } from "./hooks/useHistory";
 import { AnswerDetailView } from "./views/answer-detail";
 import { EmptyView } from "./views/empty";
 
@@ -34,7 +35,7 @@ export default function ChatGPT() {
   ]);
   const [savedChats, setSavedChats] = useState<SavedChat[]>([]);
   const [initialQuestions, setInitialQuestions] = useState<Question[]>([]);
-  const [history, setHistory] = useState<Chat[]>([]);
+  const { addHistory } = useHistory();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchText, setSearchText] = useState<string>("");
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
@@ -107,13 +108,6 @@ export default function ChatGPT() {
     [setSavedChats, savedChats]
   );
 
-  const handleUpdateHistory = useCallback(
-    async (chat: Chat) => {
-      setHistory([...history, chat]);
-    },
-    [setHistory, history]
-  );
-
   const handleUpdateInitialQuestions = useCallback(
     async (question: Question) => {
       setInitialQuestions([...initialQuestions, question]);
@@ -178,7 +172,7 @@ export default function ChatGPT() {
               return a;
             });
           });
-          handleUpdateHistory(chat);
+          addHistory(chat);
         }
       })
       .then(() => {

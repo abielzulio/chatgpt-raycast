@@ -4,28 +4,15 @@ import { DestructiveAction, TextToSpeechAction } from "./actions";
 import { CopyActionSection } from "./actions/copy";
 import { PreferencesActionSection } from "./actions/preferences";
 import { SaveActionSection } from "./actions/save";
+import { useHistory } from "./hooks/useHistory";
 import { Chat, SavedChat } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
 
 export default function History() {
-  const [history, setHistory] = useState<Chat[]>([]);
+  const { history, isHistoryLoaded, addHistory, deleteHistory, clearHistory } = useHistory();
   const [searchText, setSearchText] = useState<string>("");
   const [savedChats, setSavedChats] = useState<SavedChat[]>([]);
-  const [isLoading, setLoading] = useState<boolean>(true);
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(null);
-
-  useEffect(() => {
-    (async () => {
-      const storedHistory = await LocalStorage.getItem<string>("history");
-
-      if (!storedHistory) {
-        setHistory([]);
-      } else {
-        setHistory((previous) => [...previous, ...JSON.parse(storedHistory)]);
-        setLoading(false);
-      }
-    })();
-  }, []);
 
   useEffect(() => {
     (async () => {
@@ -40,36 +27,8 @@ export default function History() {
   }, []);
 
   useEffect(() => {
-    LocalStorage.setItem("history", JSON.stringify(history));
-  }, [history]);
-
-  useEffect(() => {
     LocalStorage.setItem("savedChats", JSON.stringify(savedChats));
   }, [savedChats]);
-
-  const handleRemoveChat = useCallback(
-    async (answer: Chat) => {
-      const toast = await showToast({
-        title: "Removing answer...",
-        style: Toast.Style.Animated,
-      });
-      const newHistory = history.filter((item) => item.id !== answer.id);
-      setHistory(newHistory);
-      toast.title = "Answer removed!";
-      toast.style = Toast.Style.Success;
-    },
-    [setHistory, history]
-  );
-
-  const handleClearHistory = useCallback(async () => {
-    const toast = await showToast({
-      title: "Clearing history...",
-      style: Toast.Style.Animated,
-    });
-    setHistory([]);
-    toast.title = "History cleared!";
-    toast.style = Toast.Style.Success;
-  }, [setHistory]);
 
   const handleSaveChat = useCallback(
     async (chat: Chat) => {
@@ -101,14 +60,14 @@ export default function History() {
           dialog={{
             title: "Are you sure you want to remove this answer from your history?",
           }}
-          onAction={() => handleRemoveChat(chat)}
+          onAction={() => deleteHistory(chat)}
         />
         <DestructiveAction
           title="Clear History"
           dialog={{
             title: "Are you sure you want to clear your history?",
           }}
-          onAction={() => handleClearHistory()}
+          onAction={() => clearHistory()}
           shortcut={{ modifiers: ["cmd", "shift"], key: "delete" }}
         />
       </ActionPanel.Section>
@@ -133,7 +92,7 @@ export default function History() {
   return (
     <List
       isShowingDetail={filteredHistory.length === 0 ? false : true}
-      isLoading={isLoading}
+      isLoading={isHistoryLoaded}
       filtering={false}
       throttle={false}
       navigationTitle={"Saved Answers"}
