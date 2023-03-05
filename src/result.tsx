@@ -26,10 +26,10 @@ export default function ChatGPT() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const savedChat = useSavedChat();
   const recentQuestion = useRecentQuestion();
+  const chat = useChat();
   const [searchText, setSearchText] = useState<string>("");
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
 
-  const chatGPT = useChatGPT();
   const isAutoTTS = useAutoTTS();
 
   const { pop, push } = useNavigation();
