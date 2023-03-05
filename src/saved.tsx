@@ -21,7 +21,7 @@ export default function SavedAnswer() {
       </ActionPanel.Section>
       <ActionPanel.Section title="Delete">
         <DestructiveAction
-          title="Unsave Answer"
+          title="Unsave"
           dialog={{
             title: "Are you sure you want to unsave this answer from your collection?",
           }}

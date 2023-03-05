@@ -27,7 +27,7 @@ export default function History() {
       </ActionPanel.Section>
       <ActionPanel.Section title="Delete">
         <DestructiveAction
-          title="Remove Answer"
+          title="Remove"
           dialog={{
             title: "Are you sure you want to remove this answer from your history?",
           }}
