@@ -58,7 +58,7 @@ export default function ask() {
       isLoading={chat.isLoading}
       onSearchTextChange={setQuestion}
       throttle={false}
-      navigationTitle={"ChatGPT"}
+      navigationTitle={"Ask"}
       actions={chat.data.length > 0 ? (question.length > 0 ? getActionPanel(question) : null) : null}
       selectedItemId={chat.selectedChatId || undefined}
       onSelectionChange={(id) => {
