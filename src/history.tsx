@@ -11,7 +11,7 @@ import { AnswerDetailView } from "./views/answer-detail";
 
 export default function History() {
   const { add: saveChat } = useSavedChat();
-  const { data: history, isLoading, remove: removeHistory, clear: clearHistory } = useHistory();
+  const history = useHistory();
   const [searchText, setSearchText] = useState<string>("");
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(null);
 
@@ -31,14 +31,14 @@ export default function History() {
           dialog={{
             title: "Are you sure you want to remove this answer from your history?",
           }}
-          onAction={() => removeHistory(chat)}
+          onAction={() => history.remove(chat)}
         />
         <DestructiveAction
           title="Clear History"
           dialog={{
             title: "Are you sure you want to clear your history?",
           }}
-          onAction={() => clearHistory()}
+          onAction={() => history.clear()}
           shortcut={{ modifiers: ["cmd", "shift"], key: "delete" }}
         />
       </ActionPanel.Section>
@@ -46,7 +46,7 @@ export default function History() {
     </ActionPanel>
   );
 
-  const sortedHistory = history.sort(
+  const sortedHistory = history.data.sort(
     (a, b) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime()
   );
 
@@ -63,7 +63,7 @@ export default function History() {
   return (
     <List
       isShowingDetail={filteredHistory.length === 0 ? false : true}
-      isLoading={isLoading}
+      isLoading={history.isLoading}
       filtering={false}
       throttle={false}
       navigationTitle={"Saved Answers"}
@@ -77,7 +77,7 @@ export default function History() {
       searchText={searchText}
       onSearchTextChange={setSearchText}
     >
-      {history.length === 0 ? (
+      {history.data.length === 0 ? (
         <List.EmptyView
           title="No history"
           description="Your recent questions will be showed up here"
