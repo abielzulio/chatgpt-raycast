@@ -8,7 +8,7 @@ export function useChatGPT(): OpenAIApi {
       api: string;
     }>().api;
 
-    const config = new Configuration({ apiKey: "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" });
+    const config = new Configuration({ apiKey });
 
     return new OpenAIApi(config);
   });
