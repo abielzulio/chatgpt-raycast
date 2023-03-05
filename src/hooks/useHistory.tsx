@@ -1,8 +1,8 @@
 import { LocalStorage, showToast, Toast } from "@raycast/api";
 import { useCallback, useEffect, useState } from "react";
-import { Chat } from "../type";
+import { Chat, HistoryHook } from "../type";
 
-export function useHistory() {
+export function useHistory(): HistoryHook {
   const [data, setData] = useState<Chat[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
 
@@ -54,5 +54,5 @@ export function useHistory() {
     toast.style = Toast.Style.Success;
   }, [setData]);
 
-  return { data, isLoading, add, remove, clear } as const;
+  return { data, isLoading, add, remove, clear };
 }

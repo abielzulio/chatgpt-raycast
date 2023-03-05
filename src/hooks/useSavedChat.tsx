@@ -1,8 +1,8 @@
 import { LocalStorage, showToast, Toast } from "@raycast/api";
 import { useCallback, useEffect, useState } from "react";
-import { Chat, SavedChat } from "../type";
+import { Chat, SavedChat, SavedChatHook } from "../type";
 
-export function useSavedChat() {
+export function useSavedChat(): SavedChatHook {
   const [data, setData] = useState<SavedChat[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
 
@@ -61,5 +61,5 @@ export function useSavedChat() {
     toast.style = Toast.Style.Success;
   }, [setData]);
 
-  return { data, isLoading, add, remove, clear } as const;
+  return { data, isLoading, add, remove, clear };
 }

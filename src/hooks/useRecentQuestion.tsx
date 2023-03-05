@@ -1,8 +1,8 @@
 import { LocalStorage, showToast, Toast } from "@raycast/api";
 import { useCallback, useEffect, useState } from "react";
-import { Question } from "../type";
+import { Question, RecentQuestionHook } from "../type";
 
-export function useRecentQuestion() {
+export function useRecentQuestion(): RecentQuestionHook {
   const [data, setData] = useState<Question[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
 
@@ -40,5 +40,5 @@ export function useRecentQuestion() {
     toast.style = Toast.Style.Success;
   }, [setData]);
 
-  return { data, isLoading, add, clear } as const;
+  return { data, isLoading, add, clear };
 }
