@@ -9,7 +9,7 @@ import { Chat, SavedChat } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
 
 export default function History() {
-  const { history, isHistoryLoaded, addHistory, deleteHistory, clearHistory } = useHistory();
+  const { history, isHistoryLoaded, deleteHistory, clearHistory } = useHistory();
   const [searchText, setSearchText] = useState<string>("");
   const [savedChats, setSavedChats] = useState<SavedChat[]>([]);
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(null);
