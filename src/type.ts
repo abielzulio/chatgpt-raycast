@@ -39,10 +39,11 @@ interface BaseHook<T> {
   isLoading: boolean;
 }
 
-export type HistoryHook = BaseHook<Chat> & BaseFunctionHook<Chat>;
 type Hook<T> = BaseHook<T> & BaseFunctionHook<T>;
 
-export type SavedChatHook = BaseHook<SavedChat> & BaseFunctionHook<Chat>;
+export type HistoryHook = Hook<Chat>;
+
+export type SavedChatHook = Hook<SavedChat>;
 
 export type RecentQuestionHook = BaseHook<Question> & {
   add: PromiseFunctionWithArg<Question>;
