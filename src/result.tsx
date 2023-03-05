@@ -230,16 +230,16 @@ export default function ChatGPT() {
         <EmptyView />
       ) : (
         <List.Section title="Results" subtitle={chats.length.toLocaleString()}>
-          {sortedChats.map((answer, i) => {
-            const markdown = `**${answer.question}**\n\n${answer.answer}`;
+          {sortedChats.map((chat, i) => {
+            const markdown = `**${chat.question}**\n\n${chat.answer}`;
             return (
               <List.Item
-                id={answer.id}
-                key={answer.id}
+                id={chat.id}
+                key={chat.id}
                 accessories={[{ text: `#${chats.length - i}` }]}
-                title={answer.question}
-                detail={answer.answer && <AnswerDetailView chat={answer} markdown={markdown} />}
-                actions={isLoading ? undefined : getActionPanel(answer)}
+                title={chat.question}
+                detail={chat.answer && <AnswerDetailView chat={chat} markdown={markdown} />}
+                actions={isLoading ? undefined : getActionPanel(chat)}
               />
             );
           })}
