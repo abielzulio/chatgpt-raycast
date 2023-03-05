@@ -25,6 +25,7 @@ import { FullTextInput } from "./components/FullTextInput";
 import { useAutoTTS } from "./hooks/useAutoTTS";
 import { useChatGPT } from "./hooks/useChatGPT";
 import { useHistory } from "./hooks/useHistory";
+import { useRecentQuestion } from "./hooks/useRecentQuestion";
 import { AnswerDetailView } from "./views/answer-detail";
 import { EmptyView } from "./views/empty";
 
@@ -34,7 +35,7 @@ export default function ChatGPT() {
     { role: "system", content: "You are a helpful assistant." },
   ]);
   const [savedChats, setSavedChats] = useState<SavedChat[]>([]);
-  const [initialQuestions, setInitialQuestions] = useState<Question[]>([]);
+  const { data: recentQuestions, add: addRecentQuestion, clear: clearRecentQuestion } = useRecentQuestion();
   const { add: addHistory } = useHistory();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchText, setSearchText] = useState<string>("");
@@ -136,7 +137,7 @@ export default function ChatGPT() {
         question: chat.question,
         created_at: chat.created_at,
       };
-      handleUpdateInitialQuestions(initialQuestion);
+      addRecentQuestion(initialQuestion);
     }
 
     // Add new answer
@@ -247,7 +248,7 @@ export default function ChatGPT() {
     </ActionPanel>
   );
 
-  const sortedInitialQuestions = initialQuestions.sort(
+  const sortedInitialQuestions = recentQuestions.sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
 
@@ -275,8 +276,8 @@ export default function ChatGPT() {
       searchBarPlaceholder={chats.length > 0 ? "Ask another question..." : "Ask a question..."}
     >
       {searchText.length === 0 && chats.length === 0 ? (
-        initialQuestions.length > 0 ? (
-          <List.Section title="Recent questions" subtitle={initialQuestions.length.toLocaleString()}>
+        recentQuestions.length > 0 ? (
+          <List.Section title="Recent questions" subtitle={recentQuestions.length.toLocaleString()}>
             {unduplicatedInitialQuestions.map((question) => {
               return (
                 <List.Item
@@ -293,7 +294,7 @@ export default function ChatGPT() {
                         <DestructiveAction
                           title="Clear History"
                           dialog={{ title: "Are you sure you to clear your recent question?" }}
-                          onAction={() => setInitialQuestions([])}
+                          onAction={() => clearRecentQuestion()}
                         />
                       </ActionPanel.Section>
                       <PreferencesActionSection />
