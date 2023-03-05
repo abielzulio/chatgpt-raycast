@@ -1,4 +1,9 @@
+import type { ChatCompletionRequestMessage } from "openai";
+
 export type Set<T> = React.Dispatch<React.SetStateAction<T>>;
+
+export type Message = ChatCompletionRequestMessage;
+
 export interface Question {
   id: string;
   question: string;
