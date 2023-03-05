@@ -1,9 +1,7 @@
 import { getPreferenceValues } from "@raycast/api";
 
 export function useAutoTTS(): boolean {
-  const autoTTS = getPreferenceValues<{
+  return getPreferenceValues<{
     isAutoTTS: boolean;
   }>().isAutoTTS;
-
-  return autoTTS;
 }
