@@ -22,7 +22,7 @@
   "license": "MIT",
   "commands": [
     {
-      "name": "result",
+      "name": "ask",
       "title": "Ask Question",
       "subtitle": "Powered by ChatGPT",
       "description": "Ask ChatGPT via Raycast",
