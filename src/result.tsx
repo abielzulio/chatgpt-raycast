@@ -25,6 +25,7 @@ import { useRecentQuestion } from "./hooks/useRecentQuestion";
 import { useSavedChat } from "./hooks/useSavedChat";
 import { AnswerDetailView } from "./views/answer-detail";
 import { EmptyView } from "./views/empty";
+import { ChatCompletionRequestMessage } from "openai";
 
 export default function ChatGPT() {
   const [chats, setChats] = useState<Chat[]>([]);
@@ -42,76 +43,6 @@ export default function ChatGPT() {
   const isAutoTTS = useAutoTTS();
 
   const { pop, push } = useNavigation();
-
-  useEffect(() => {
-    (async () => {
-      const storedSavedChats = await LocalStorage.getItem<string>("savedChats");
-
-      if (!storedSavedChats) {
-        setSavedChats([]);
-      } else {
-        setSavedChats((previous) => [...previous, ...JSON.parse(storedSavedChats)]);
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      const storedInitialQuestions = await LocalStorage.getItem<string>("initialQuestions");
-
-      if (!storedInitialQuestions) {
-        setInitialQuestions([]);
-      } else {
-        setInitialQuestions([...JSON.parse(storedInitialQuestions)]);
-        setIsLoading(false);
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      const storedHistory = await LocalStorage.getItem<string>("history");
-
-      if (!storedHistory) {
-        setHistory([]);
-      } else {
-        setHistory((previous) => [...previous, ...JSON.parse(storedHistory)]);
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
-    LocalStorage.setItem("savedChats", JSON.stringify(savedChats));
-  }, [savedChats]);
-
-  useEffect(() => {
-    LocalStorage.setItem("initialQuestions", JSON.stringify(initialQuestions));
-  }, [initialQuestions]);
-
-  useEffect(() => {
-    LocalStorage.setItem("history", JSON.stringify(history));
-  }, [history]);
-
-  const handleSaveChat = useCallback(
-    async (chat: Chat) => {
-      const toast = await showToast({
-        title: "Saving your answer...",
-        style: Toast.Style.Animated,
-      });
-      const newSavedChat: SavedChat = { ...chat, saved_at: new Date().toISOString() };
-      setSavedChats([...savedChats, newSavedChat]);
-      toast.title = "Answer saved!";
-      toast.style = Toast.Style.Success;
-    },
-    [setSavedChats, savedChats]
-  );
-
-  const handleUpdateInitialQuestions = useCallback(
-    async (question: Question) => {
-      setInitialQuestions([...initialQuestions, question]);
-    },
-    [setInitialQuestions, initialQuestions]
-  );
 
   async function getAnswer(question: string) {
     setIsLoading(true);
