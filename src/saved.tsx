@@ -7,7 +7,7 @@ import { useSavedChat } from "./hooks/useSavedChat";
 import { Chat } from "./type";
 import { AnswerDetailView } from "./views/answer-detail";
 
-export default function SavedAnswer() {
+export default function Saved() {
   const { data: savedChats, isLoading, remove: unsaveChat, clear: clearSavedChat } = useSavedChat();
   const [searchText, setSearchText] = useState<string>("");
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(null);
