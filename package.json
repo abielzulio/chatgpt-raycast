@@ -24,28 +24,28 @@
     {
       "name": "ask",
       "title": "Ask Question",
-      "subtitle": "Powered by ChatGPT",
+      "subtitle": "ChatGPT",
       "description": "Ask ChatGPT via Raycast",
       "mode": "view"
     },
     {
       "name": "saved",
       "title": "Saved Answer",
-      "subtitle": "Powered by ChatGPT",
+      "subtitle": "ChatGPT",
       "description": "Collection of your saved answer",
       "mode": "view"
     },
     {
       "name": "history",
       "title": "History",
-      "subtitle": "Powered by ChatGPT",
+      "subtitle": "ChatGPT",
       "description": "History generated answer",
       "mode": "view"
     },
     {
       "name": "conversation",
       "title": "Conversations",
-      "subtitle": "Powered by ChatGPT",
+      "subtitle": "ChatGPT",
       "description": "Conversation generated answer",
       "mode": "view"
     }
