@@ -54,6 +54,7 @@ export type ConversationsHook = Hook<Conversation> & { setData: Set<Conversation
 
 export interface ChatHook {
   data: Chat[];
+  setData: Set<Chat[]>;
   isLoading: boolean;
   setLoading: Set<boolean>;
   selectedChatId: string | null;

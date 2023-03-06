@@ -9,8 +9,8 @@ import { useAutoTTS } from "./useAutoTTS";
 import say from "say";
 import { chatTransfomer } from "../utils";
 
-export function useChat(): ChatHook {
-  const [data, setData] = useState<Chat[]>([]);
+export function useChat<T extends Chat>(props: T[]): ChatHook {
+  const [data, setData] = useState<Chat[]>(props);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [isLoading, setLoading] = useState<boolean>(false);
   const recentQuestions = useRecentQuestion();
@@ -103,5 +103,5 @@ export function useChat(): ChatHook {
     setData([]);
   }, [setData]);
 
-  return { data, isLoading, setLoading, selectedChatId, setSelectedChatId, getAnswer, clear };
+  return { data, setData, isLoading, setLoading, selectedChatId, setSelectedChatId, getAnswer, clear };
 }
