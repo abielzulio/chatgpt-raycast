@@ -4,34 +4,37 @@ import { v4 as uuidv4 } from "uuid";
 import { PrimaryAction } from "./actions";
 import { useChat } from "./hooks/useChat";
 import { useConversations } from "./hooks/useConversations";
-import { useRecentQuestion } from "./hooks/useRecentQuestion";
-import { Conversation } from "./type";
+import { Chat, Conversation } from "./type";
 import { ChatView } from "./views/chat";
-import { RecentQuestionListView } from "./views/recent-question-list";
 
-export default function ask() {
-  const recentQuestion = useRecentQuestion();
+export default function Ask(props: { conversation?: Conversation }) {
   const conversations = useConversations();
-  const chat = useChat();
+  const chat = useChat<Chat>(props.conversation?.chats ?? []);
 
-  const [conversation, setConversation] = useState<Conversation>({
-    id: uuidv4(),
-    chats: [],
-    pinned: false,
-    created_at: new Date().toISOString(),
-  });
+  const [conversation, setConversation] = useState<Conversation>(
+    props.conversation
+      ? props.conversation
+      : {
+          id: uuidv4(),
+          chats: [],
+          pinned: false,
+          updated_at: "",
+          created_at: new Date().toISOString(),
+        }
+  );
   const [question, setQuestion] = useState<string>("");
 
   useEffect(() => {
-    conversations.add(conversation);
+    if (!props.conversation && conversation.chats.length === 0) {
+      conversations.add(conversation);
+    }
   }, []);
 
   useEffect(() => {
-    console.log(conversations.data);
     conversations.setData((prev) => {
       return prev.map((a) => {
         if (a.id === conversation.id) {
-          return conversation;
+          return { ...conversation, updated_at: new Date().toISOString() };
         }
         return a;
       });
@@ -39,7 +42,6 @@ export default function ask() {
   }, [conversation]);
 
   useEffect(() => {
-    console.log(conversation);
     if (chat.data.length > 0) {
       setConversation({ ...conversation, chats: chat.data });
     }
@@ -59,7 +61,7 @@ export default function ask() {
       onSearchTextChange={setQuestion}
       throttle={false}
       navigationTitle={"Ask"}
-      actions={chat.data.length > 0 ? (question.length > 0 ? getActionPanel(question) : null) : null}
+      actions={question.length > 0 ? getActionPanel(question) : null}
       selectedItemId={chat.selectedChatId || undefined}
       onSelectionChange={(id) => {
         if (id !== chat.selectedChatId) {
@@ -68,11 +70,7 @@ export default function ask() {
       }}
       searchBarPlaceholder={chat.data.length > 0 ? "Ask another question..." : "Ask a question..."}
     >
-      {question.length === 0 && chat.data.length === 0 ? (
-        <RecentQuestionListView data={recentQuestion.data} use={{ chat, recentQuestion }} />
-      ) : (
-        <ChatView data={chat.data} question={question} setConversation={setConversation} use={{ chat }} />
-      )}
+      <ChatView data={chat.data} question={question} setConversation={setConversation} use={{ chat }} />
     </List>
   );
 }
