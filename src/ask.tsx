@@ -24,9 +24,7 @@ export default function Ask(props: { conversation?: Conversation }) {
   const [question, setQuestion] = useState<string>("");
 
   useEffect(() => {
-    if (props.conversation) {
-      setConversation(props.conversation);
-    } else {
+    if (props.conversation?.id !== conversation.id) {
       conversations.add(conversation);
     }
   }, []);
@@ -43,9 +41,7 @@ export default function Ask(props: { conversation?: Conversation }) {
   }, [conversation]);
 
   useEffect(() => {
-    if (chat.data.length > 0) {
-      setConversation({ ...conversation, chats: chat.data, updated_at: new Date().toISOString() });
-    }
+    setConversation({ ...conversation, chats: chat.data, updated_at: new Date().toISOString() });
   }, [chat.data]);
 
   const getActionPanel = (question: string) => (
