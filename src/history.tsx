@@ -66,7 +66,7 @@ export default function History() {
       isLoading={history.isLoading}
       filtering={false}
       throttle={false}
-      navigationTitle={"Saved Answers"}
+      navigationTitle={"History"}
       selectedItemId={selectedAnswerId || undefined}
       onSelectionChange={(id) => {
         if (id !== selectedAnswerId) {
