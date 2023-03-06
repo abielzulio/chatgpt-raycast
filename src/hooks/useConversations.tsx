@@ -4,18 +4,19 @@ import { Conversation, ConversationsHook } from "../type";
 
 export function useConversations(): ConversationsHook {
   const [data, setData] = useState<Conversation[]>([]);
-  const [isLoading, setLoading] = useState<boolean>(true);
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
+      setLoading(true);
       const storedConversations = await LocalStorage.getItem<string>("conversations");
 
       if (!storedConversations) {
         setData([]);
       } else {
         setData((previous) => [...previous, ...JSON.parse(storedConversations)]);
-        setLoading(false);
       }
+      setLoading(false);
     })();
   }, []);
 
