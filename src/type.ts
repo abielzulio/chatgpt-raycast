@@ -46,11 +46,6 @@ export type HistoryHook = Hook<Chat>;
 
 export type SavedChatHook = Hook<SavedChat>;
 
-export type RecentQuestionHook = BaseHook<Question> & {
-  add: PromiseFunctionWithArg<Question>;
-  clear: PromiseFunctionNoArg;
-};
-
 export type ConversationsHook = Hook<Conversation> & { setData: Set<Conversation[]> };
 
 export interface ChatHook {

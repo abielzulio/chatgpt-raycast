@@ -1,19 +1,18 @@
 import { clearSearchBar, getPreferenceValues, showToast, Toast } from "@raycast/api";
-import { useCallback, useState } from "react";
 import { Configuration, OpenAIApi } from "openai";
-import { Chat, ChatHook, Question } from "../type";
-import { v4 as uuidv4 } from "uuid";
-import { useRecentQuestion } from "./useRecentQuestion";
-import { useHistory } from "./useHistory";
-import { useAutoTTS } from "./useAutoTTS";
+import { useCallback, useState } from "react";
 import say from "say";
+import { v4 as uuidv4 } from "uuid";
+import { Chat, ChatHook, Question } from "../type";
 import { chatTransfomer } from "../utils";
+import { useAutoTTS } from "./useAutoTTS";
+import { useHistory } from "./useHistory";
 
 export function useChat<T extends Chat>(props: T[]): ChatHook {
   const [data, setData] = useState<Chat[]>(props);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [isLoading, setLoading] = useState<boolean>(false);
-  const recentQuestions = useRecentQuestion();
+
   const history = useHistory();
   const isAutoTTS = useAutoTTS();
 
@@ -40,15 +39,6 @@ export function useChat<T extends Chat>(props: T[]): ChatHook {
       answer: "",
       created_at: new Date().toISOString(),
     };
-
-    if (data.length === 0) {
-      const initialQuestion: Question = {
-        id: uuidv4(),
-        question: chat.question,
-        created_at: chat.created_at,
-      };
-      recentQuestions.add(initialQuestion);
-    }
 
     setData((prev) => {
       return [...prev, chat];
