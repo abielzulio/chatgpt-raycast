@@ -1,8 +1,8 @@
 import { Action, Alert, confirmAlert, Icon, Image, Keyboard } from "@raycast/api";
 import say from "say";
 
-export const GetAnswerAction = ({ onAction }: { onAction: () => void }) => (
-  <Action title="Get Answer" icon={Icon.ArrowRight} onAction={onAction} />
+export const PrimaryAction = ({ title, onAction }: { title: string; onAction: () => void }) => (
+  <Action title={title} icon={Icon.ArrowRight} onAction={onAction} />
 );
 
 export const CopyToClipboardAction = (props: Action.CopyToClipboard.Props) => (

@@ -1,6 +1,6 @@
 import { Action, ActionPanel, clearSearchBar, Icon, List, useNavigation } from "@raycast/api";
 import { v4 as uuidv4 } from "uuid";
-import { DestructiveAction, GetAnswerAction, TextToSpeechAction } from "../actions";
+import { DestructiveAction, PrimaryAction, TextToSpeechAction } from "../actions";
 import { CopyActionSection } from "../actions/copy";
 import { PreferencesActionSection } from "../actions/preferences";
 import { SaveActionSection } from "../actions/save";
@@ -30,7 +30,7 @@ export const ChatView = ({
   const getActionPanel = (selectedChat: Chat) => (
     <ActionPanel>
       {question.length > 0 ? (
-        <GetAnswerAction onAction={() => use.chat.getAnswer(question)} />
+        <PrimaryAction title="Get Answer" onAction={() => use.chat.getAnswer(question)} />
       ) : selectedChat.answer && use.chat.selectedChatId === selectedChat.id ? (
         <>
           <CopyActionSection answer={selectedChat.answer} question={selectedChat.question} />

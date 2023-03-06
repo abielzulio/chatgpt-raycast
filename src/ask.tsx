@@ -1,7 +1,7 @@
 import { ActionPanel, List } from "@raycast/api";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { GetAnswerAction } from "./actions";
+import { PrimaryAction } from "./actions";
 import { useChat } from "./hooks/useChat";
 import { useConversations } from "./hooks/useConversations";
 import { useRecentQuestion } from "./hooks/useRecentQuestion";
@@ -47,7 +47,7 @@ export default function ask() {
 
   const getActionPanel = (question: string) => (
     <ActionPanel>
-      <GetAnswerAction onAction={() => chat.getAnswer(question)} />;
+      <PrimaryAction title="Get Answer" onAction={() => chat.getAnswer(question)} />;
     </ActionPanel>
   );
 
