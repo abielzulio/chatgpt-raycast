@@ -63,7 +63,7 @@ export default function Conversation() {
         <DestructiveAction
           title="Remove"
           dialog={{
-            title: "Are you sure you want to remove this conversation from your history?",
+            title: "Are you sure you want to remove this conversation?",
           }}
           onAction={() => conversations.remove(conversation)}
         />
