@@ -1,6 +1,6 @@
 import { ActionPanel, Icon, List, useNavigation } from "@raycast/api";
 import { useEffect, useState } from "react";
-import { DestructiveAction, PrimaryAction } from "./actions";
+import { DestructiveAction, PinAction, PrimaryAction } from "./actions";
 import { PreferencesActionSection } from "./actions/preferences";
 import Ask from "./ask";
 import { useConversations } from "./hooks/useConversations";
@@ -8,20 +8,46 @@ import { Conversation } from "./type";
 
 export default function Conversation() {
   const conversations = useConversations();
-  const [searchText, setSearchText] = useState<string>("");
-  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
-
   const { push } = useNavigation();
 
+  const [searchText, setSearchText] = useState<string>("");
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [conversation, setConversation] = useState<Conversation | null>();
 
   useEffect(() => {
     setConversation(conversations.data.find((x) => x.id === selectedConversationId));
   }, [selectedConversationId]);
 
+  useEffect(() => {
+    if (conversation) {
+      conversations.setData((prev) => {
+        return prev.map((a) => {
+          if (a.id === conversation.id) {
+            return conversation;
+          }
+          return a;
+        });
+      });
+    }
+  }, [conversation]);
+
+  const sortedConversations = conversations.data.sort(
+    (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+  );
+
+  const pinnedConversation = sortedConversations.filter((x) => x.pinned);
+
+  const uniqueSortedConversations =
+    pinnedConversation.length > 0 ? sortedConversations.filter((x) => !x.pinned) : sortedConversations;
+
   const getActionPanel = (conversation: Conversation) => (
     <ActionPanel>
       <PrimaryAction title="Continue Ask" onAction={() => push(<Ask conversation={conversation} />)} />
+      <PinAction
+        title={conversation.pinned ? "Unpin Conversation" : "Pin Conversation"}
+        isPinned={conversation.pinned}
+        onAction={() => setConversation({ ...conversation, pinned: !conversation.pinned })}
+      />
       <ActionPanel.Section title="Delete">
         <DestructiveAction
           title="Remove"
@@ -43,10 +69,6 @@ export default function Conversation() {
     </ActionPanel>
   );
 
-  const sortedConversations = conversations.data.sort(
-    (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-  );
-
   return (
     <List
       isShowingDetail={false}
@@ -64,26 +86,31 @@ export default function Conversation() {
       searchText={searchText}
       onSearchTextChange={setSearchText}
     >
-      {sortedConversations.length === 0 ? (
+      {conversations.data.length === 0 ? (
         <List.EmptyView
           title="No Conversation"
           description="Your recent conversation will be showed up here"
           icon={Icon.Stars}
         />
       ) : (
-        <List.Section title="Recent" subtitle={sortedConversations.length.toLocaleString()}>
-          {sortedConversations.map((conversation) => (
-            <List.Item
-              id={conversation.id}
-              key={conversation.id}
-              title={conversation.chats[conversation.chats.length - 1].question}
-              accessories={[{ text: new Date(conversation.created_at ?? 0).toLocaleDateString() }]}
-              actions={
-                conversation && selectedConversationId === conversation.id ? getActionPanel(conversation) : undefined
-              }
+        <>
+          {pinnedConversation.length > 0 && selectedConversationId && (
+            <ConversationListView
+              title="Pinned"
+              data={pinnedConversation}
+              selectedDataId={selectedConversationId}
+              actionPanel={getActionPanel}
             />
-          ))}
-        </List.Section>
+          )}
+          {selectedConversationId && (
+            <ConversationListView
+              title="Recent"
+              data={uniqueSortedConversations}
+              selectedDataId={selectedConversationId}
+              actionPanel={getActionPanel}
+            />
+          )}
+        </>
       )}
     </List>
   );
