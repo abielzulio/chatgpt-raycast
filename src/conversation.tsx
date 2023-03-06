@@ -5,6 +5,7 @@ import { PreferencesActionSection } from "./actions/preferences";
 import Ask from "./ask";
 import { useConversations } from "./hooks/useConversations";
 import { Conversation } from "./type";
+import { ConversationListView } from "./views/conversation-list";
 
 export default function Conversation() {
   const conversations = useConversations();
