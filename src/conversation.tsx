@@ -32,7 +32,17 @@ export default function Conversation() {
     }
   }, [conversation]);
 
-  const sortedConversations = conversations.data.sort(
+  const filteredConversations = searchText
+    ? conversations.data.filter((x) =>
+        x.chats.some(
+          (x) =>
+            x.question.toLowerCase().includes(searchText.toLocaleLowerCase()) ||
+            x.answer.toLowerCase().includes(searchText.toLocaleLowerCase())
+        )
+      )
+    : conversations.data;
+
+  const sortedConversations = filteredConversations.sort(
     (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
   );
 
@@ -74,8 +84,8 @@ export default function Conversation() {
     <List
       isShowingDetail={false}
       isLoading={conversations.isLoading}
-      filtering={true}
-      throttle={false}
+      filtering={false}
+      throttle={true}
       navigationTitle={"Conversations"}
       selectedItemId={selectedConversationId || undefined}
       onSelectionChange={(id) => {
