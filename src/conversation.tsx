@@ -95,7 +95,7 @@ export default function Conversation() {
         />
       ) : (
         <>
-          {pinnedConversation.length > 0 && selectedConversationId && (
+          {pinnedConversation.length > 0 && (
             <ConversationListView
               title="Pinned"
               data={pinnedConversation}
@@ -103,7 +103,7 @@ export default function Conversation() {
               actionPanel={getActionPanel}
             />
           )}
-          {selectedConversationId && (
+          {uniqueSortedConversations && (
             <ConversationListView
               title="Recent"
               data={uniqueSortedConversations}

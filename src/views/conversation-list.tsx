@@ -4,7 +4,7 @@ import { Conversation } from "../type";
 export const ConversationListView = (props: {
   title: string;
   data: Conversation[];
-  selectedDataId: string;
+  selectedDataId: string | null;
   actionPanel: (conversation: Conversation) => JSX.Element;
 }) => {
   const { title, data, selectedDataId, actionPanel } = props;
