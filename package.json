@@ -41,6 +41,13 @@
       "subtitle": "Powered by ChatGPT",
       "description": "History generated answer",
       "mode": "view"
+    },
+    {
+      "name": "conversation",
+      "title": "Conversations",
+      "subtitle": "Powered by ChatGPT",
+      "description": "Conversation generated answer",
+      "mode": "view"
     }
   ],
   "preferences": [
