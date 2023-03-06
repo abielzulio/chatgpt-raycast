@@ -35,7 +35,7 @@ export default function Ask(props: { conversation?: Conversation }) {
     conversations.setData((prev) => {
       return prev.map((a) => {
         if (a.id === conversation.id) {
-          return { ...conversation, updated_at: new Date().toISOString() };
+          return conversation;
         }
         return a;
       });
@@ -44,7 +44,7 @@ export default function Ask(props: { conversation?: Conversation }) {
 
   useEffect(() => {
     if (chat.data.length > 0) {
-      setConversation({ ...conversation, chats: chat.data });
+      setConversation({ ...conversation, chats: chat.data, updated_at: new Date().toISOString() });
     }
   }, [chat.data]);
 
