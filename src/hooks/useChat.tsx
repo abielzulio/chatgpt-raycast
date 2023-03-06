@@ -3,7 +3,7 @@ import { Configuration, OpenAIApi } from "openai";
 import { useCallback, useState } from "react";
 import say from "say";
 import { v4 as uuidv4 } from "uuid";
-import { Chat, ChatHook, Question } from "../type";
+import { Chat, ChatHook } from "../type";
 import { chatTransfomer } from "../utils";
 import { useAutoTTS } from "./useAutoTTS";
 import { useHistory } from "./useHistory";

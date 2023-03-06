@@ -19,13 +19,8 @@ export default function Conversation() {
     setConversation(conversations.data.find((x) => x.id === selectedConversationId));
   }, [selectedConversationId]);
 
-  useEffect(() => {
-    console.log(conversations.data);
-  }, []);
-
   const getActionPanel = (conversation: Conversation) => (
     <ActionPanel>
-      <PrimaryAction title="Continue Ask" onAction={() => push(<Ask conversation={conversation} />)} />
       <PrimaryAction title="Continue Ask" onAction={() => push(<Ask conversation={conversation} />)} />
       <ActionPanel.Section title="Delete">
         <DestructiveAction
