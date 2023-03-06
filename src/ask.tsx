@@ -13,20 +13,20 @@ export default function Ask(props: { conversation?: Conversation }) {
   const chat = useChat<Chat>(props.conversation?.chats ?? []);
 
   const [conversation, setConversation] = useState<Conversation>(
-    props.conversation
-      ? props.conversation
-      : {
-          id: uuidv4(),
-          chats: [],
-          pinned: false,
-          updated_at: "",
-          created_at: new Date().toISOString(),
-        }
+    props.conversation ?? {
+      id: uuidv4(),
+      chats: [],
+      pinned: false,
+      updated_at: "",
+      created_at: new Date().toISOString(),
+    }
   );
   const [question, setQuestion] = useState<string>("");
 
   useEffect(() => {
-    if (!props.conversation && conversation.chats.length === 0) {
+    if (props.conversation) {
+      setConversation(props.conversation);
+    } else {
       conversations.add(conversation);
     }
   }, []);
