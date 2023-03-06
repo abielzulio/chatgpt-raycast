@@ -21,6 +21,7 @@ export interface SavedChat extends Chat {
 export interface Conversation {
   id: string;
   chats: Chat[];
+  updated_at: string;
   created_at: string;
   pinned: boolean;
 }

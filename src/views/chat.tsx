@@ -70,7 +70,13 @@ export const ChatView = ({
               primaryButton: "Start New",
             }}
             onAction={() => {
-              setConversation({ id: uuidv4(), chats: [], pinned: false, created_at: new Date().toISOString() });
+              setConversation({
+                id: uuidv4(),
+                chats: [],
+                pinned: false,
+                updated_at: "",
+                created_at: new Date().toISOString(),
+              });
               use.chat.clear();
               clearSearchBar();
               use.chat.setLoading(false);
