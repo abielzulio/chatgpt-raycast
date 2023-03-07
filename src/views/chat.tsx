@@ -1,4 +1,4 @@
-import { ActionPanel, clearSearchBar, Icon, List, useNavigation } from "@raycast/api";
+import { ActionPanel, clearSearchBar, Icon, List } from "@raycast/api";
 import { v4 as uuidv4 } from "uuid";
 import { DestructiveAction, PrimaryAction, TextToSpeechAction } from "../actions";
 import { CopyActionSection } from "../actions/copy";
@@ -19,10 +19,8 @@ export const ChatView = ({
   data: Chat[];
   question: string;
   setConversation: Set<Conversation>;
-  use: { chat: ChatHook };
+  use: { chats: ChatHook };
 }) => {
-  const { pop, push } = useNavigation();
-
   const savedChat = useSavedChat();
 
   const sortedChats = data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
@@ -30,8 +28,8 @@ export const ChatView = ({
   const getActionPanel = (selectedChat: Chat) => (
     <ActionPanel>
       {question.length > 0 ? (
-        <PrimaryAction title="Get Answer" onAction={() => use.chat.getAnswer(question)} />
-      ) : selectedChat.answer && use.chat.selectedChatId === selectedChat.id ? (
+        <PrimaryAction title="Get Answer" onAction={() => use.chats.getAnswer(question)} />
+      ) : selectedChat.answer && use.chats.selectedChatId === selectedChat.id ? (
         <>
           <CopyActionSection answer={selectedChat.answer} question={selectedChat.question} />
           <SaveActionSection
@@ -43,8 +41,8 @@ export const ChatView = ({
           </ActionPanel.Section>
         </>
       ) : null}
-      <FormInputActionSection initialQuestion={question} onSubmit={(question) => use.chat.getAnswer(question)} />
-      {use.chat.data.length > 0 && (
+      <FormInputActionSection initialQuestion={question} onSubmit={(question) => use.chats.getAnswer(question)} />
+      {use.chats.data.length > 0 && (
         <ActionPanel.Section title="Restart">
           <DestructiveAction
             title="Start New Conversation"
@@ -57,13 +55,14 @@ export const ChatView = ({
               setConversation({
                 id: uuidv4(),
                 chats: [],
+                prompt: "",
                 pinned: false,
                 updated_at: "",
                 created_at: new Date().toISOString(),
               });
-              use.chat.clear();
+              use.chats.clear();
               clearSearchBar();
-              use.chat.setLoading(false);
+              use.chats.setLoading(false);
             }}
             shortcut={{ modifiers: ["cmd", "shift"], key: "n" }}
           />
@@ -83,10 +82,10 @@ export const ChatView = ({
           <List.Item
             id={sortedChat.id}
             key={sortedChat.id}
-            accessories={[{ text: `#${use.chat.data.length - i}` }]}
+            accessories={[{ text: `#${use.chats.data.length - i}` }]}
             title={sortedChat.question}
             detail={sortedChat.answer && <AnswerDetailView chat={sortedChat} markdown={markdown} />}
-            actions={use.chat.isLoading ? undefined : getActionPanel(sortedChat)}
+            actions={use.chats.isLoading ? undefined : getActionPanel(sortedChat)}
           />
         );
       })}
