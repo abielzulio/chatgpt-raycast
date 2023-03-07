@@ -18,10 +18,7 @@ export default function History() {
   const getActionPanel = (chat: Chat) => (
     <ActionPanel>
       <CopyActionSection answer={chat.answer} question={chat.question} />
-      <SaveActionSection
-        onSaveAnswerAction={() => savedChat.add(chat)}
-        snippet={{ text: chat.answer, name: chat.question }}
-      />
+      <SaveActionSection onSaveAnswerAction={() => savedChat.add(chat)} />
       <ActionPanel.Section title="Output">
         <TextToSpeechAction content={chat.answer} />
       </ActionPanel.Section>

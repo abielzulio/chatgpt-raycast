@@ -35,10 +35,7 @@ export const ChatView = ({
       ) : selectedChat.answer && use.chats.selectedChatId === selectedChat.id ? (
         <>
           <CopyActionSection answer={selectedChat.answer} question={selectedChat.question} />
-          <SaveActionSection
-            onSaveAnswerAction={() => savedChat.add(selectedChat)}
-            snippet={{ text: selectedChat.answer, name: selectedChat.question }}
-          />
+          <SaveActionSection onSaveAnswerAction={() => savedChat.add(selectedChat)} />
           <ActionPanel.Section title="Output">
             <TextToSpeechAction content={selectedChat.answer} />
           </ActionPanel.Section>

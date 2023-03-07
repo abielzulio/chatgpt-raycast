@@ -6,10 +6,10 @@ export const SaveActionSection = ({
   snippet,
 }: {
   onSaveAnswerAction: () => void;
-  snippet: { text: string; name: string };
+  snippet?: { text: string; name: string };
 }) => (
   <ActionPanel.Section title="Save">
     <SaveAnswerAction onAction={onSaveAnswerAction} />
-    <SaveAsSnippetAction text={snippet.text} name={snippet.name} />
+    {snippet && <SaveAsSnippetAction text={snippet.text} name={snippet.name} />}
   </ActionPanel.Section>
 );

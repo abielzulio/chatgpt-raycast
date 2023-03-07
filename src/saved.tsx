@@ -1,6 +1,6 @@
 import { ActionPanel, Icon, List } from "@raycast/api";
 import { useState } from "react";
-import { DestructiveAction, SaveAsSnippetAction, TextToSpeechAction } from "./actions";
+import { DestructiveAction, TextToSpeechAction } from "./actions";
 import { CopyActionSection } from "./actions/copy";
 import { PreferencesActionSection } from "./actions/preferences";
 import { useSavedChat } from "./hooks/useSavedChat";
@@ -15,7 +15,6 @@ export default function Saved() {
   const getActionPanel = (chat: Chat) => (
     <ActionPanel>
       <CopyActionSection answer={chat.answer} question={chat.question} />
-      <SaveAsSnippetAction text={chat.answer} name={chat.question} />
       <ActionPanel.Section title="Output">
         <TextToSpeechAction content={chat.answer} />
       </ActionPanel.Section>
