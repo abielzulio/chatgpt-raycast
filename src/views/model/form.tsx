@@ -118,6 +118,15 @@ export const ModelForm = (props: { model?: Model; use: { models: ModelHook }; na
           <Form.Dropdown.Item value={option} title={option} key={option} />
         ))}
       </Form.Dropdown>
+      {data.id !== "default" && (
+        <Form.Checkbox
+          id="pinned"
+          title="Pinned"
+          label="Pin model"
+          defaultValue={data.pinned}
+          onChange={(value) => setData({ ...data, pinned: value })}
+        />
+      )}
     </Form>
   );
 };
