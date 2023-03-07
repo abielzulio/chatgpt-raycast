@@ -37,7 +37,7 @@ export default function Ask(props: { conversation?: Conversation }) {
   const USER_MODELS = models.data;
 
   useEffect(() => {
-    if (props.conversation?.id !== conversation.id) {
+    if (props.conversation?.id !== conversation.id || conversations.data.length === 0) {
       conversations.add(conversation);
     }
   }, []);
@@ -50,18 +50,9 @@ export default function Ask(props: { conversation?: Conversation }) {
   }, [models.data]);
 
   useEffect(() => {
-    conversations.setData((prev) => {
-      return prev.map((x) => {
-        if (x.id === conversation.id) {
-          return conversation;
-        }
-        return x;
-      });
-    });
-  }, [conversation]);
-
-  useEffect(() => {
-    setConversation({ ...conversation, chats: chats.data, updated_at: new Date().toISOString() });
+    const updatedConversation = { ...conversation, chats: chats.data, updated_at: new Date().toISOString() };
+    setConversation(updatedConversation);
+    conversations.update(updatedConversation);
   }, [chats.data]);
 
   useEffect(() => {

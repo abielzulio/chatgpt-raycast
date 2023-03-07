@@ -59,7 +59,7 @@ export type HistoryHook = Hook<Chat>;
 
 export type SavedChatHook = Hook<SavedChat>;
 
-export type ConversationsHook = Hook<Conversation> & { setData: Set<Conversation[]> };
+export type ConversationsHook = Hook<Conversation> & { update: PromiseFunctionWithOneArg<Conversation> };
 
 export type ModelHook = Hook<Model> & {
   update: PromiseFunctionWithOneArg<Model>;

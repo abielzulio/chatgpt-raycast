@@ -21,14 +21,7 @@ export default function Conversation() {
 
   useEffect(() => {
     if (conversation) {
-      conversations.setData((prev) => {
-        return prev.map((a) => {
-          if (a.id === conversation.id) {
-            return conversation;
-          }
-          return a;
-        });
-      });
+      conversations.update(conversation);
     }
   }, [conversation]);
 

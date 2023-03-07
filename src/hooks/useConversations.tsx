@@ -10,9 +10,7 @@ export function useConversations(): ConversationsHook {
     (async () => {
       const storedConversations = await LocalStorage.getItem<string>("conversations");
 
-      if (!storedConversations) {
-        setData([]);
-      } else {
+      if (storedConversations) {
         setData((previous) => [...previous, ...JSON.parse(storedConversations)]);
       }
       setLoading(false);
@@ -26,6 +24,20 @@ export function useConversations(): ConversationsHook {
   const add = useCallback(
     async (conversation: Conversation) => {
       setData([...data, conversation]);
+    },
+    [setData, data]
+  );
+
+  const update = useCallback(
+    async (conversation: Conversation) => {
+      setData((prev) => {
+        return prev.map((x) => {
+          if (x.id === conversation.id) {
+            return conversation;
+          }
+          return x;
+        });
+      });
     },
     [setData, data]
   );
@@ -54,5 +66,5 @@ export function useConversations(): ConversationsHook {
     toast.style = Toast.Style.Success;
   }, [setData]);
 
-  return { data, setData, isLoading, add, remove, clear };
+  return { data, isLoading, add, update, remove, clear };
 }
