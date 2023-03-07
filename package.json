@@ -72,7 +72,6 @@
       "description": "Load selected text from your frontmost application to the question bar automatically",
       "type": "checkbox",
       "title": "Auto-load",
-      "required": true,
       "default": false
     },
     {
