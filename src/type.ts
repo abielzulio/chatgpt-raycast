@@ -61,6 +61,8 @@ export type SavedChatHook = Hook<SavedChat>;
 
 export type ConversationsHook = Hook<Conversation> & { update: PromiseFunctionWithOneArg<Conversation> };
 
+export type QuestionHook = BaseHook<string> & { update: PromiseFunctionWithOneArg<string> };
+
 export type ModelHook = Hook<Model> & {
   update: PromiseFunctionWithOneArg<Model>;
   option: Model["option"][];

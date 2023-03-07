@@ -78,7 +78,7 @@ export default function Ask(props: { conversation?: Conversation }) {
       isShowingDetail={chats.data.length > 0 ? true : false}
       filtering={false}
       isLoading={question.isLoading ? question.isLoading : chats.isLoading}
-      onSearchTextChange={question.setData}
+      onSearchTextChange={question.update}
       throttle={false}
       navigationTitle={"Ask"}
       actions={question.data.length > 0 ? getActionPanel(question.data, conversation.model) : null}
