@@ -43,6 +43,10 @@ export default function Ask(props: { conversation?: Conversation }) {
   }, []);
 
   useEffect(() => {
+    conversations.update(conversation);
+  }, [conversation]);
+
+  useEffect(() => {
     if (models.data && conversation.chats.length === 0) {
       const defaultUserModel = models.data.find((x) => x.id === DEFAULT_MODEL.id) ?? conversation.model;
       setConversation({ ...conversation, model: defaultUserModel, updated_at: new Date().toISOString() });
@@ -52,7 +56,6 @@ export default function Ask(props: { conversation?: Conversation }) {
   useEffect(() => {
     const updatedConversation = { ...conversation, chats: chats.data, updated_at: new Date().toISOString() };
     setConversation(updatedConversation);
-    conversations.update(updatedConversation);
   }, [chats.data]);
 
   useEffect(() => {
