@@ -1,4 +1,4 @@
-import { Action, ActionPanel, Form } from "@raycast/api";
+import { Action, ActionPanel, Form, showToast, Toast } from "@raycast/api";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Model, ModelHook } from "../../type";
@@ -26,10 +26,16 @@ export const ModelForm = (props: { model?: Model; use: { models: ModelHook }; na
     temperature: "",
   });
 
-  const onSubmit = (model: Model) => {
+  const onSubmit = async (model: Model) => {
     let updatedModel: Model = { ...model, updated_at: new Date().toISOString() };
     if (typeof updatedModel.temperature === "string") {
+      const toast = await showToast({
+        title: "Update your model...",
+        style: Toast.Style.Animated,
+      });
       updatedModel = { ...updatedModel, temperature: Number(updatedModel.temperature) };
+      toast.title = "Model updated!";
+      toast.style = Toast.Style.Success;
     }
     if (props.model) {
       use.models.update({ ...updatedModel, id: props.model.id, created_at: props.model.created_at });
@@ -82,7 +88,7 @@ export const ModelForm = (props: { model?: Model; use: { models: ModelHook }; na
           }
         }}
       />
-      <Form.TextArea
+      <Form.TextField
         id="temperature"
         title="Temperature"
         placeholder="Set your sampling temperature (0 - 2)"

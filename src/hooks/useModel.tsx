@@ -53,10 +53,6 @@ export function useModel(): ModelHook {
 
   const update = useCallback(
     async (model: Model) => {
-      const toast = await showToast({
-        title: "Update your model...",
-        style: Toast.Style.Animated,
-      });
       setData((prev) => {
         return prev.map((x) => {
           if (x.id === model.id) {
@@ -65,8 +61,6 @@ export function useModel(): ModelHook {
           return x;
         });
       });
-      toast.title = "Model updated!";
-      toast.style = Toast.Style.Success;
     },
     [setData, data]
   );

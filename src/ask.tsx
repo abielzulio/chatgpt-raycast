@@ -44,7 +44,7 @@ export default function Ask(props: { conversation?: Conversation }) {
 
   useEffect(() => {
     if (models.data && conversation.chats.length === 0) {
-      const defaultUserModel = models.data.find((x) => x.id === DEFAULT_MODEL.id) ?? DEFAULT_MODEL;
+      const defaultUserModel = models.data.find((x) => x.id === DEFAULT_MODEL.id) ?? conversation.model;
       setConversation({ ...conversation, model: defaultUserModel, updated_at: new Date().toISOString() });
     }
   }, [models.data]);
@@ -83,7 +83,9 @@ export default function Ask(props: { conversation?: Conversation }) {
       navigationTitle={"Ask"}
       actions={question.data.length > 0 ? getActionPanel(question.data, conversation.model) : null}
       selectedItemId={chats.selectedChatId || undefined}
-      searchBarAccessory={<ModelDropdown models={USER_MODELS} onModelChange={setSelectedModelId} />}
+      searchBarAccessory={
+        <ModelDropdown models={USER_MODELS} onModelChange={setSelectedModelId} selectedModel={selectedModelId} />
+      }
       onSelectionChange={(id) => {
         if (id !== chats.selectedChatId) {
           chats.setSelectedChatId(id);
