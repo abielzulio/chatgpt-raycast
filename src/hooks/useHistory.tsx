@@ -14,8 +14,8 @@ export function useHistory(): HistoryHook {
         setData([]);
       } else {
         setData((previous) => [...previous, ...JSON.parse(storedHistory)]);
-        setLoading(false);
       }
+      setLoading(false);
     })();
   }, []);
 
