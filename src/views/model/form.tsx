@@ -76,7 +76,7 @@ export const ModelForm = (props: { model?: Model; use: { models: ModelHook }; na
           if (event.target.value?.length == 0) {
             setError({ ...error, prompt: "Required" });
           } else {
-            if (error.prompt && error.name.length > 0) {
+            if (error.prompt && error.prompt.length > 0) {
               setError({ ...error, prompt: "" });
             }
           }
