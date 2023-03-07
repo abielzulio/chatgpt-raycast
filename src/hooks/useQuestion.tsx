@@ -17,11 +17,13 @@ export function useQuestion(props: { initialQuestion: string; disableAutoLoad?: 
         setLoading(true);
         try {
           const selectedText = await getSelectedText();
-          setData(selectedText.trim());
-          await showToast({
-            style: Toast.Style.Success,
-            title: "Selected text loaded!",
-          });
+          if (selectedText.length > 1) {
+            setData(selectedText.trim());
+            await showToast({
+              style: Toast.Style.Success,
+              title: "Selected text loaded!",
+            });
+          }
         } catch (error) {
           await showToast({
             style: Toast.Style.Failure,
