@@ -43,14 +43,6 @@ export default function Model() {
               }}
               onAction={() => models.remove(model)}
             />
-            <DestructiveAction
-              title="Clear All"
-              dialog={{
-                title: "Are you sure you want to clear all your model from your collection?",
-              }}
-              onAction={() => models.clear()}
-              shortcut={{ modifiers: ["cmd", "shift"], key: "delete" }}
-            />
           </ActionPanel.Section>
         </>
       )}
