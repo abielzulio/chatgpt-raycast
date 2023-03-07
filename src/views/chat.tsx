@@ -1,10 +1,10 @@
-import { Action, ActionPanel, clearSearchBar, Icon, List, useNavigation } from "@raycast/api";
+import { ActionPanel, clearSearchBar, Icon, List, useNavigation } from "@raycast/api";
 import { v4 as uuidv4 } from "uuid";
 import { DestructiveAction, PrimaryAction, TextToSpeechAction } from "../actions";
 import { CopyActionSection } from "../actions/copy";
+import { FormInputActionSection } from "../actions/form-input";
 import { PreferencesActionSection } from "../actions/preferences";
 import { SaveActionSection } from "../actions/save";
-import { FullTextInput } from "../components/FullTextInput";
 import { useSavedChat } from "../hooks/useSavedChat";
 import { Chat, ChatHook, Conversation, Set } from "../type";
 import { AnswerDetailView } from "./answer-detail";
@@ -43,23 +43,7 @@ export const ChatView = ({
           </ActionPanel.Section>
         </>
       ) : null}
-      <ActionPanel.Section title="Input">
-        <Action
-          title="Full Text Input"
-          shortcut={{ modifiers: ["cmd"], key: "t" }}
-          icon={Icon.Text}
-          onAction={() => {
-            push(
-              <FullTextInput
-                onSubmit={(text) => {
-                  use.chat.getAnswer(text);
-                  pop();
-                }}
-              />
-            );
-          }}
-        />
-      </ActionPanel.Section>
+      <FormInputActionSection initialQuestion={question} onSubmit={(question) => use.chat.getAnswer(question)} />
       {use.chat.data.length > 0 && (
         <ActionPanel.Section title="Restart">
           <DestructiveAction
