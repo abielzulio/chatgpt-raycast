@@ -5,19 +5,22 @@ import { CopyActionSection } from "../actions/copy";
 import { FormInputActionSection } from "../actions/form-input";
 import { PreferencesActionSection } from "../actions/preferences";
 import { SaveActionSection } from "../actions/save";
+import { DEFAULT_MODEL } from "../hooks/useModel";
 import { useSavedChat } from "../hooks/useSavedChat";
-import { Chat, ChatHook, Conversation, Set } from "../type";
+import { Chat, ChatHook, Conversation, Model, Set } from "../type";
 import { AnswerDetailView } from "./answer-detail";
 import { EmptyView } from "./empty";
 
 export const ChatView = ({
   data,
   question,
+  model,
   setConversation,
   use,
 }: {
   data: Chat[];
   question: string;
+  model: Model;
   setConversation: Set<Conversation>;
   use: { chats: ChatHook };
 }) => {
@@ -28,7 +31,7 @@ export const ChatView = ({
   const getActionPanel = (selectedChat: Chat) => (
     <ActionPanel>
       {question.length > 0 ? (
-        <PrimaryAction title="Get Answer" onAction={() => use.chats.getAnswer(question)} />
+        <PrimaryAction title="Get Answer" onAction={() => use.chats.getAnswer(question, model)} />
       ) : selectedChat.answer && use.chats.selectedChatId === selectedChat.id ? (
         <>
           <CopyActionSection answer={selectedChat.answer} question={selectedChat.question} />
@@ -41,7 +44,10 @@ export const ChatView = ({
           </ActionPanel.Section>
         </>
       ) : null}
-      <FormInputActionSection initialQuestion={question} onSubmit={(question) => use.chats.getAnswer(question)} />
+      <FormInputActionSection
+        initialQuestion={question}
+        onSubmit={(question) => use.chats.getAnswer(question, model)}
+      />
       {use.chats.data.length > 0 && (
         <ActionPanel.Section title="Restart">
           <DestructiveAction
@@ -55,7 +61,7 @@ export const ChatView = ({
               setConversation({
                 id: uuidv4(),
                 chats: [],
-                prompt: "",
+                model: DEFAULT_MODEL,
                 pinned: false,
                 updated_at: "",
                 created_at: new Date().toISOString(),

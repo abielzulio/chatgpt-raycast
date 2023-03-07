@@ -108,16 +108,16 @@ export default function Conversation() {
           {pinnedConversation.length > 0 && (
             <ConversationListView
               title="Pinned"
-              data={pinnedConversation}
-              selectedDataId={selectedConversationId}
+              conversations={pinnedConversation}
+              selectedConversation={selectedConversationId}
               actionPanel={getActionPanel}
             />
           )}
           {uniqueSortedConversations && (
             <ConversationListView
               title="Recent"
-              data={uniqueSortedConversations}
-              selectedDataId={selectedConversationId}
+              conversations={uniqueSortedConversations}
+              selectedConversation={selectedConversationId}
               actionPanel={getActionPanel}
             />
           )}

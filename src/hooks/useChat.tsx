@@ -3,7 +3,7 @@ import { Configuration, OpenAIApi } from "openai";
 import { useCallback, useState } from "react";
 import say from "say";
 import { v4 as uuidv4 } from "uuid";
-import { Chat, ChatHook } from "../type";
+import { Chat, ChatHook, Model } from "../type";
 import { chatTransfomer } from "../utils";
 import { useAutoTTS } from "./useAutoTTS";
 import { useHistory } from "./useHistory";
@@ -26,7 +26,7 @@ export function useChat<T extends Chat>(props: T[]): ChatHook {
     return new OpenAIApi(config);
   });
 
-  async function getAnswer(question: string) {
+  async function getAnswer(question: string, model: Model) {
     setLoading(true);
     const toast = await showToast({
       title: "Getting your answer...",
@@ -50,8 +50,9 @@ export function useChat<T extends Chat>(props: T[]): ChatHook {
 
     await chatGPT
       .createChatCompletion({
-        model: "gpt-3.5-turbo",
-        messages: [...chatTransfomer(data), { role: "user", content: question }],
+        model: model.option,
+        temperature: model.temperature,
+        messages: [...chatTransfomer(data, model.prompt), { role: "user", content: question }],
       })
       .then((res) => {
         chat = { ...chat, answer: res.data.choices.map((x) => x.message)[0]?.content ?? "" };
@@ -82,7 +83,6 @@ export function useChat<T extends Chat>(props: T[]): ChatHook {
       .catch((err) => {
         toast.title = "Error";
         if (err instanceof Error) {
-          console.log(err);
           toast.message = err?.message;
         }
         toast.style = Toast.Style.Failure;

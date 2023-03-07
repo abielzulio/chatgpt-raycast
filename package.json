@@ -39,14 +39,21 @@
       "name": "history",
       "title": "History",
       "subtitle": "ChatGPT",
-      "description": "History generated answer",
+      "description": "Collection of your recent answer",
       "mode": "view"
     },
     {
       "name": "conversation",
       "title": "Conversations",
       "subtitle": "ChatGPT",
-      "description": "Conversation generated answer",
+      "description": "Collection of your recent conversation",
+      "mode": "view"
+    },
+    {
+      "name": "model",
+      "title": "Models",
+      "subtitle": "ChatGPT",
+      "description": "Collection of your custom and default model",
       "mode": "view"
     }
   ],
@@ -65,15 +72,8 @@
       "description": "Load selected text from your frontmost application to the question bar automatically",
       "type": "checkbox",
       "title": "Auto-load",
-      "required": true
-    },
-    {
-      "name": "isDetailedView",
-      "label": "Enable detailed view",
-      "description": "See the live response date, ID, and the conversation ID",
-      "type": "checkbox",
-      "title": "Detailed View",
-      "required": false
+      "required": true,
+      "default": false
     },
     {
       "name": "isAutoTTS",
@@ -81,7 +81,8 @@
       "description": "Enable auto TTS everytime you get a generated answer",
       "type": "checkbox",
       "title": "Text-to-Speech",
-      "required": false
+      "required": false,
+      "default": false
     }
   ],
   "dependencies": {
