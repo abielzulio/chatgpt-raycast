@@ -73,7 +73,7 @@ export default function History() {
           setSelectedAnswerId(id);
         }
       }}
-      searchBarPlaceholder="Search history..."
+      searchBarPlaceholder="Search answer/question..."
       searchText={searchText}
       onSearchTextChange={setSearchText}
     >

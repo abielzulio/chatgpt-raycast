@@ -69,7 +69,7 @@ export default function Saved() {
           setSelectedAnswerId(id);
         }
       }}
-      searchBarPlaceholder="Search saved answers/questions..."
+      searchBarPlaceholder="Search saved answer/question..."
       searchText={searchText}
       onSearchTextChange={setSearchText}
     >
