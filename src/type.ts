@@ -49,11 +49,11 @@ interface BaseFunctionHook<T> {
 }
 
 interface BaseHook<T> {
-  data: T[];
+  data: T;
   isLoading: boolean;
 }
 
-type Hook<T> = BaseHook<T> & BaseFunctionHook<T>;
+type Hook<T> = BaseHook<T[]> & BaseFunctionHook<T>;
 
 export type HistoryHook = Hook<Chat>;
 
