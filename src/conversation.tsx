@@ -85,7 +85,7 @@ export default function Conversation() {
       isShowingDetail={false}
       isLoading={conversations.isLoading}
       filtering={false}
-      throttle={true}
+      throttle={false}
       navigationTitle={"Conversations"}
       selectedItemId={selectedConversationId || undefined}
       onSelectionChange={(id) => {
