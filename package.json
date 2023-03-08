@@ -82,6 +82,57 @@
       "title": "Text-to-Speech",
       "required": false,
       "default": false
+    },
+    {
+      "name": "useProxy",
+      "label": "Enable proxy for each request",
+      "description": "Each request will be passed through the proxy",
+      "type": "checkbox",
+      "title": "Use Proxy",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "proxyProtocol",
+      "description": "Each request will be passed through the proxy",
+      "type": "dropdown",
+      "title": "Proxy Protocol",
+      "data": [
+        { "title": "HTTP", "value": "http" },
+        { "title": "HTTPs", "value": "https" },
+        { "title": "Socks4", "value": "socks4" },
+        { "title": "Socks5", "value": "socks5" }
+      ],
+      "required": false,
+      "default": "http"
+    },
+    {
+      "name": "proxyHost",
+      "description": "Sever address of the proxy",
+      "type": "textfield",
+      "title": "Proxy Host",
+      "required": false
+    },
+    {
+      "name": "proxyPort",
+      "description": "Server port of the proxy",
+      "type": "textfield",
+      "title": "Proxy Port",
+      "required": false
+    },
+    {
+      "name": "proxyUsername",
+      "description": "Leave empty if doesn't have",
+      "type": "textfield",
+      "title": "Proxy Username",
+      "required": false
+    },
+    {
+      "name": "proxyPassword",
+      "description": "Leave empty if doesn't have",
+      "type": "password",
+      "title": "Proxy Password",
+      "required": false
     }
   ],
   "dependencies": {
