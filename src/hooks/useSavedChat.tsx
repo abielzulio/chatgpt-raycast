@@ -10,12 +10,10 @@ export function useSavedChat(): SavedChatHook {
     (async () => {
       const storedSavedChats = await LocalStorage.getItem<string>("savedChats");
 
-      if (!storedSavedChats) {
-        setData([]);
-      } else {
+      if (storedSavedChats) {
         setData((previous) => [...previous, ...JSON.parse(storedSavedChats)]);
+        setLoading(false);
       }
-      setLoading(false);
     })();
   }, []);
 
