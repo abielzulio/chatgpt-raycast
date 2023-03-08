@@ -7,7 +7,7 @@ import { PreferencesActionSection } from "../actions/preferences";
 import { SaveActionSection } from "../actions/save";
 import { DEFAULT_MODEL } from "../hooks/useModel";
 import { useSavedChat } from "../hooks/useSavedChat";
-import { Chat, ChatHook, Conversation, Model, Set } from "../type";
+import { Chat, ChatViewProps } from "../type";
 import { AnswerDetailView } from "./answer-detail";
 import { EmptyView } from "./empty";
 
@@ -17,13 +17,10 @@ export const ChatView = ({
   model,
   setConversation,
   use,
-}: {
-  data: Chat[];
-  question: string;
-  model: Model;
-  setConversation: Set<Conversation>;
-  use: { chats: ChatHook };
-}) => {
+  models,
+  selectedModel,
+  onModelChange,
+}: ChatViewProps) => {
   const savedChat = useSavedChat();
 
   const sortedChats = data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
@@ -44,6 +41,9 @@ export const ChatView = ({
       <FormInputActionSection
         initialQuestion={question}
         onSubmit={(question) => use.chats.getAnswer(question, model)}
+        models={models}
+        selectedModel={selectedModel}
+        onModelChange={onModelChange}
       />
       {use.chats.data.length > 0 && (
         <ActionPanel.Section title="Restart">
