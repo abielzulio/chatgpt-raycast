@@ -10,12 +10,10 @@ export function useHistory(): HistoryHook {
     (async () => {
       const storedHistory = await LocalStorage.getItem<string>("history");
 
-      if (!storedHistory) {
-        setData([]);
-      } else {
+      if (storedHistory) {
         setData((previous) => [...previous, ...JSON.parse(storedHistory)]);
+        setLoading(false);
       }
-      setLoading(false);
     })();
   }, []);
 

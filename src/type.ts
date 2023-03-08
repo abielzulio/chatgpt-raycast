@@ -78,3 +78,22 @@ export interface ChatHook {
   getAnswer: PromiseFunctionWithTwoArg<string, Model>;
   clear: PromiseFunctionNoArg;
 }
+
+export interface ChangeModelProp {
+  models: Model[];
+  selectedModel: string;
+  onModelChange: Set<string>;
+}
+
+export interface QuestionFormProps extends ChangeModelProp {
+  initialQuestion: string;
+  onSubmit: (question: string) => void;
+}
+
+export interface ChatViewProps extends ChangeModelProp {
+  data: Chat[];
+  question: string;
+  model: Model;
+  setConversation: Set<Conversation>;
+  use: { chats: ChatHook };
+}

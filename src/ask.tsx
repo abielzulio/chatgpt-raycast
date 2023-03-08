@@ -34,8 +34,6 @@ export default function Ask(props: { conversation?: Conversation }) {
     props.conversation ? props.conversation.model.id : "default"
   );
 
-  const USER_MODELS = models.data;
-
   useEffect(() => {
     if (props.conversation?.id !== conversation.id || conversations.data.length === 0) {
       conversations.add(conversation);
@@ -70,7 +68,13 @@ export default function Ask(props: { conversation?: Conversation }) {
   const getActionPanel = (question: string, model: Model) => (
     <ActionPanel>
       <PrimaryAction title="Get Answer" onAction={() => chats.getAnswer(question, model)} />
-      <FormInputActionSection initialQuestion={question} onSubmit={(question) => chats.getAnswer(question, model)} />
+      <FormInputActionSection
+        initialQuestion={question}
+        onSubmit={(question) => chats.getAnswer(question, model)}
+        models={models.data}
+        selectedModel={selectedModelId}
+        onModelChange={setSelectedModelId}
+      />
       <PreferencesActionSection />
     </ActionPanel>
   );
@@ -87,7 +91,7 @@ export default function Ask(props: { conversation?: Conversation }) {
       actions={question.data.length > 0 ? getActionPanel(question.data, conversation.model) : null}
       selectedItemId={chats.selectedChatId || undefined}
       searchBarAccessory={
-        <ModelDropdown models={USER_MODELS} onModelChange={setSelectedModelId} selectedModel={selectedModelId} />
+        <ModelDropdown models={models.data} onModelChange={setSelectedModelId} selectedModel={selectedModelId} />
       }
       onSelectionChange={(id) => {
         if (id !== chats.selectedChatId) {
@@ -102,6 +106,9 @@ export default function Ask(props: { conversation?: Conversation }) {
         setConversation={setConversation}
         use={{ chats }}
         model={conversation.model}
+        models={models.data}
+        selectedModel={selectedModelId}
+        onModelChange={setSelectedModelId}
       />
     </List>
   );
