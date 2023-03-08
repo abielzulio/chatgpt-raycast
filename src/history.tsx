@@ -47,15 +47,17 @@ export default function History() {
     (a, b) => new Date(b.created_at ?? 0).getTime() - new Date(a.created_at ?? 0).getTime()
   );
 
-  const filteredHistory = sortedHistory.filter((answer) => {
-    if (searchText === "") {
-      return true;
-    }
-    return (
-      answer.question.toLowerCase().includes(searchText.toLowerCase()) ||
-      answer.answer.toLowerCase().includes(searchText.toLowerCase())
-    );
-  });
+  const filteredHistory = sortedHistory
+    .filter((value, index, self) => index === self.findIndex((history) => history.id === value.id))
+    .filter((answer) => {
+      if (searchText === "") {
+        return true;
+      }
+      return (
+        answer.question.toLowerCase().includes(searchText.toLowerCase()) ||
+        answer.answer.toLowerCase().includes(searchText.toLowerCase())
+      );
+    });
 
   return (
     <List

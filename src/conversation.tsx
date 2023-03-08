@@ -25,15 +25,19 @@ export default function Conversation() {
     }
   }, [conversation]);
 
+  const uniqueConversations = conversations.data.filter(
+    (value, index, self) => index === self.findIndex((conversation) => conversation.id === value.id)
+  );
+
   const filteredConversations = searchText
-    ? conversations.data.filter((x) =>
+    ? uniqueConversations.filter((x) =>
         x.chats.some(
           (x) =>
             x.question.toLowerCase().includes(searchText.toLocaleLowerCase()) ||
             x.answer.toLowerCase().includes(searchText.toLocaleLowerCase())
         )
       )
-    : conversations.data;
+    : uniqueConversations;
 
   const sortedConversations = filteredConversations.sort(
     (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
