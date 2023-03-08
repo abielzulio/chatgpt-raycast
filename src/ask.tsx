@@ -1,4 +1,4 @@
-import { ActionPanel, List } from "@raycast/api";
+import { ActionPanel, getSelectedText, List } from "@raycast/api";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { PrimaryAction } from "./actions";
@@ -10,14 +10,17 @@ import { DEFAULT_MODEL, useModel } from "./hooks/useModel";
 import { useQuestion } from "./hooks/useQuestion";
 import { Chat, Conversation, Model } from "./type";
 import { ChatView } from "./views/chat";
-import { ModelDropdown } from "./views/model/dropdown";
+import PromptListItem from "./views/prompt-item";
 
 export default function Ask(props: { conversation?: Conversation }) {
   const conversations = useConversations();
   const models = useModel();
 
   const chats = useChat<Chat>(props.conversation ? props.conversation.chats : []);
-  const question = useQuestion({ initialQuestion: "", disableAutoLoad: props.conversation ? true : false });
+  const question = useQuestion({
+    initialQuestion: "",
+    disableAutoLoad: props.conversation ? true : false,
+  });
 
   const [conversation, setConversation] = useState<Conversation>(
     props.conversation ?? {
@@ -30,11 +33,25 @@ export default function Ask(props: { conversation?: Conversation }) {
     }
   );
 
-  const [selectedModelId, setSelectedModelId] = useState<string>(
-    props.conversation ? props.conversation.model.id : "default"
-  );
+  const [selectedText, setSelectedText] = useState("");
 
   const USER_MODELS = models.data;
+
+  useEffect(() => {
+    getSelectedText()
+      .then((text) => {
+        if (text) {
+          setSelectedText(text);
+        }
+      })
+      .catch(() => {
+        setSelectedText("");
+      });
+  }, []);
+
+  const filteredModels = USER_MODELS.filter((item) => {
+    return item.name.toLowerCase().includes(question.data.toLowerCase());
+  });
 
   useEffect(() => {
     if (props.conversation?.id !== conversation.id || conversations.data.length === 0) {
@@ -58,15 +75,6 @@ export default function Ask(props: { conversation?: Conversation }) {
     setConversation(updatedConversation);
   }, [chats.data]);
 
-  useEffect(() => {
-    const selectedModel = models.data.find((x) => x.id === selectedModelId);
-    setConversation({
-      ...conversation,
-      model: selectedModel ?? { ...conversation.model },
-      updated_at: new Date().toISOString(),
-    });
-  }, [selectedModelId]);
-
   const getActionPanel = (question: string, model: Model) => (
     <ActionPanel>
       <PrimaryAction title="Get Answer" onAction={() => chats.getAnswer(question, model)} />
@@ -78,7 +86,7 @@ export default function Ask(props: { conversation?: Conversation }) {
   return (
     <List
       searchText={question.data}
-      isShowingDetail={chats.data.length > 0 ? true : false}
+      isShowingDetail={true}
       filtering={false}
       isLoading={question.isLoading ? question.isLoading : chats.isLoading}
       onSearchTextChange={question.update}
@@ -86,16 +94,46 @@ export default function Ask(props: { conversation?: Conversation }) {
       navigationTitle={"Ask"}
       actions={question.data.length > 0 ? getActionPanel(question.data, conversation.model) : null}
       selectedItemId={chats.selectedChatId || undefined}
-      searchBarAccessory={
-        <ModelDropdown models={USER_MODELS} onModelChange={setSelectedModelId} selectedModel={selectedModelId} />
-      }
       onSelectionChange={(id) => {
         if (id !== chats.selectedChatId) {
           chats.setSelectedChatId(id);
         }
       }}
-      searchBarPlaceholder={chats.data.length > 0 ? "Ask another question..." : "Ask a question..."}
+      searchBarPlaceholder={chats.data.length > 0 ? "Ask another question..." : "Search prompt or directly ask..."}
     >
+      {chats.data.length === 0 && filteredModels.length === 0 && (
+        <>
+          <PromptListItem
+            title="Ask Question Directly"
+            subtitle=""
+            text={question.data}
+            actions={getActionPanel(question.data, DEFAULT_MODEL)}
+          />
+          {USER_MODELS.map((model) => {
+            return (
+              <PromptListItem
+                key={model.name}
+                title={model.name}
+                subtitle=""
+                text={`${model.prompt} \n\n ${question.data}`}
+                actions={getActionPanel(`${model.prompt} \n\n ${question.data}`, model)}
+              />
+            );
+          })}
+        </>
+      )}
+      {chats.data.length === 0 &&
+        filteredModels.map((model) => {
+          return (
+            <PromptListItem
+              key={model.name}
+              title={model.name}
+              subtitle={""}
+              text={`${model.prompt} \n\n ${selectedText}`}
+              actions={getActionPanel(`${model.prompt} \n\n ${selectedText}`, model)}
+            />
+          );
+        })}
       <ChatView
         data={chats.data}
         question={question.data}
