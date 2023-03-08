@@ -1,4 +1,4 @@
-import { ActionPanel, List } from "@raycast/api";
+import { ActionPanel, getPreferenceValues, List, useNavigation } from "@raycast/api";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { PrimaryAction } from "./actions";
@@ -11,6 +11,7 @@ import { useQuestion } from "./hooks/useQuestion";
 import { Chat, Conversation, Model } from "./type";
 import { ChatView } from "./views/chat";
 import { ModelDropdown } from "./views/model/dropdown";
+import { QuestionForm } from "./views/question/form";
 
 export default function Ask(props: { conversation?: Conversation }) {
   const conversations = useConversations();
@@ -30,9 +31,40 @@ export default function Ask(props: { conversation?: Conversation }) {
     }
   );
 
+  const [isLoading, setLoading] = useState<boolean>(true);
+
   const [selectedModelId, setSelectedModelId] = useState<string>(
     props.conversation ? props.conversation.model.id : "default"
   );
+
+  const [isAutoFullInput] = useState(() => {
+    return getPreferenceValues<{
+      isAutoFullInput: string;
+    }>().isAutoFullInput;
+  });
+
+  const { push, pop } = useNavigation();
+
+  useEffect(() => {
+    if (
+      isAutoFullInput &&
+      (conversation.chats.length === 0 || (conversation.chats.length > 0 && question.data.length > 0))
+    ) {
+      push(
+        <QuestionForm
+          initialQuestion={question.data}
+          onSubmit={(question) => {
+            chats.getAnswer(question, conversation.model), pop();
+          }}
+          models={models.data}
+          selectedModel={selectedModelId}
+          onModelChange={setSelectedModelId}
+        />
+      );
+    }
+
+    setLoading(false);
+  }, [question.data]);
 
   useEffect(() => {
     if (props.conversation?.id !== conversation.id || conversations.data.length === 0) {
@@ -84,11 +116,26 @@ export default function Ask(props: { conversation?: Conversation }) {
       searchText={question.data}
       isShowingDetail={chats.data.length > 0 ? true : false}
       filtering={false}
-      isLoading={question.isLoading ? question.isLoading : chats.isLoading}
+      isLoading={isLoading ? isLoading : question.isLoading ? question.isLoading : chats.isLoading}
       onSearchTextChange={question.update}
       throttle={false}
       navigationTitle={"Ask"}
-      actions={question.data.length > 0 ? getActionPanel(question.data, conversation.model) : null}
+      actions={
+        !question.data ? (
+          <ActionPanel>
+            <FormInputActionSection
+              initialQuestion={question.data}
+              onSubmit={(question) => chats.getAnswer(question, conversation.model)}
+              models={models.data}
+              selectedModel={selectedModelId}
+              onModelChange={setSelectedModelId}
+            />
+            <PreferencesActionSection />
+          </ActionPanel>
+        ) : (
+          getActionPanel(question.data, conversation.model)
+        )
+      }
       selectedItemId={chats.selectedChatId || undefined}
       searchBarAccessory={
         <ModelDropdown models={models.data} onModelChange={setSelectedModelId} selectedModel={selectedModelId} />
