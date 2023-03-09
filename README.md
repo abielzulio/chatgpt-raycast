@@ -22,7 +22,7 @@ Straight from your command bar, ask anything that you wanted and get an AI-gener
 
 Customize the model to your liking. Create and edit custom engines beyond your creativity.
 
-![Ask anything](metadata/3.png)
+![Custom model](metadata/3.png)
 
 ### Keep continue, with you
 
