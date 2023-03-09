@@ -75,6 +75,14 @@
       "default": false
     },
     {
+      "name": "isAutoFullInput",
+      "label": "Enable full text input initially",
+      "description": "Use full-text input form when asking question for the first time",
+      "type": "checkbox",
+      "title": "Use Full Text Input",
+      "default": false
+    },
+    {
       "name": "isAutoTTS",
       "label": "Enable text-to-speech for every response",
       "description": "Enable auto TTS everytime you get a generated answer",
@@ -98,10 +106,22 @@
       "type": "dropdown",
       "title": "Proxy Protocol",
       "data": [
-        { "title": "HTTP", "value": "http" },
-        { "title": "HTTPs", "value": "https" },
-        { "title": "Socks4", "value": "socks4" },
-        { "title": "Socks5", "value": "socks5" }
+        {
+          "title": "HTTP",
+          "value": "http"
+        },
+        {
+          "title": "HTTPs",
+          "value": "https"
+        },
+        {
+          "title": "Socks4",
+          "value": "socks4"
+        },
+        {
+          "title": "Socks5",
+          "value": "socks5"
+        }
       ],
       "required": false,
       "default": "http"
