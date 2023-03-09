@@ -1,5 +1,5 @@
 import { LocalStorage, showToast, Toast } from "@raycast/api";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Model, ModelHook } from "../type";
 
 export const DEFAULT_MODEL: Model = {
@@ -90,5 +90,8 @@ export function useModel(): ModelHook {
     toast.style = Toast.Style.Success;
   }, [setData]);
 
-  return { data, isLoading, option, add, update, remove, clear };
+  return useMemo(
+    () => ({ data, isLoading, option, add, update, remove, clear }),
+    [data, isLoading, option, add, update, remove, clear]
+  );
 }

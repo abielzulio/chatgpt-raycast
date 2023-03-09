@@ -1,5 +1,5 @@
 import { LocalStorage, showToast, Toast } from "@raycast/api";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Conversation, ConversationsHook } from "../type";
 
 export function useConversations(): ConversationsHook {
@@ -66,5 +66,8 @@ export function useConversations(): ConversationsHook {
     toast.style = Toast.Style.Success;
   }, [setData]);
 
-  return { data, isLoading, add, update, remove, clear };
+  return useMemo(
+    () => ({ data, isLoading, add, update, remove, clear }),
+    [data, isLoading, add, update, remove, clear]
+  );
 }
