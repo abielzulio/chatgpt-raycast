@@ -1,11 +1,11 @@
-import { clearSearchBar, getPreferenceValues, showToast, Toast } from "@raycast/api";
-import { Configuration, OpenAIApi } from "openai";
+import { clearSearchBar, showToast, Toast } from "@raycast/api";
 import { useCallback, useState } from "react";
 import say from "say";
 import { v4 as uuidv4 } from "uuid";
 import { Chat, ChatHook, Model } from "../type";
 import { chatTransfomer } from "../utils";
 import { useAutoTTS } from "./useAutoTTS";
+import { useChatGPT } from "./useChatGPT";
 import { useHistory } from "./useHistory";
 import { useProxy } from "./useProxy";
 
@@ -18,15 +18,7 @@ export function useChat<T extends Chat>(props: T[]): ChatHook {
   const isAutoTTS = useAutoTTS();
   const proxy = useProxy();
 
-  const [chatGPT] = useState(() => {
-    const apiKey = getPreferenceValues<{
-      api: string;
-    }>().api;
-
-    const config = new Configuration({ apiKey });
-
-    return new OpenAIApi(config);
-  });
+  const chatGPT = useChatGPT();
 
   async function getAnswer(question: string, model: Model) {
     setLoading(true);
@@ -51,13 +43,16 @@ export function useChat<T extends Chat>(props: T[]): ChatHook {
     }, 30);
 
     await chatGPT
-      .createChatCompletion({
-        model: model.option,
-        temperature: model.temperature,
-        messages: [...chatTransfomer(data, model.prompt), { role: "user", content: question }],
-      }, {
-        proxy,
-      })
+      .createChatCompletion(
+        {
+          model: model.option,
+          temperature: model.temperature,
+          messages: [...chatTransfomer(data, model.prompt), { role: "user", content: question }],
+        },
+        {
+          proxy,
+        }
+      )
       .then((res) => {
         chat = { ...chat, answer: res.data.choices.map((x) => x.message)[0]?.content ?? "" };
         if (typeof chat.answer === "string") {
