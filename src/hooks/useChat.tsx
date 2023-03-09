@@ -1,11 +1,11 @@
-import { clearSearchBar, getPreferenceValues, showToast, Toast } from "@raycast/api";
-import { Configuration, OpenAIApi } from "openai";
+import { clearSearchBar, showToast, Toast } from "@raycast/api";
 import { useCallback, useState } from "react";
-import say from "say";
+import { Stream } from "stream";
 import { v4 as uuidv4 } from "uuid";
 import { Chat, ChatHook, Model } from "../type";
-import { chatTransfomer } from "../utils";
+import { chatsTransfomer } from "../utils";
 import { useAutoTTS } from "./useAutoTTS";
+import { useChatGPT } from "./useChatGPT";
 import { useHistory } from "./useHistory";
 import { useProxy } from "./useProxy";
 
@@ -14,19 +14,11 @@ export function useChat<T extends Chat>(props: T[]): ChatHook {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [isLoading, setLoading] = useState<boolean>(false);
 
+  const api = useChatGPT();
+
   const history = useHistory();
   const isAutoTTS = useAutoTTS();
   const proxy = useProxy();
-
-  const [chatGPT] = useState(() => {
-    const apiKey = getPreferenceValues<{
-      api: string;
-    }>().api;
-
-    const config = new Configuration({ apiKey });
-
-    return new OpenAIApi(config);
-  });
 
   async function getAnswer(question: string, model: Model) {
     setLoading(true);
@@ -35,9 +27,10 @@ export function useChat<T extends Chat>(props: T[]): ChatHook {
       style: Toast.Style.Animated,
     });
 
-    let chat: Chat = {
+    const chat: Chat = {
       id: uuidv4(),
       question,
+      done: false,
       answer: "",
       created_at: new Date().toISOString(),
     };
@@ -51,38 +44,65 @@ export function useChat<T extends Chat>(props: T[]): ChatHook {
     }, 30);
 
     await chatGPT
-      .createChatCompletion({
-        model: model.option,
-        temperature: model.temperature,
-        messages: [...chatTransfomer(data, model.prompt), { role: "user", content: question }],
-      }, {
-        proxy,
-      })
+      .createChatCompletion(
+        {
+          model: model.option,
+          temperature: model.temperature,
+          stream: true,
+          messages: [...chatTransfomer(data, model.prompt), { role: "user", content: question }],
+        },
+        {
+          responseType: "stream",
+          proxy,
+        }
+      )
       .then((res) => {
-        chat = { ...chat, answer: res.data.choices.map((x) => x.message)[0]?.content ?? "" };
-        if (typeof chat.answer === "string") {
-          setLoading(false);
-          clearSearchBar();
-
-          toast.title = "Got your answer!";
-          toast.style = Toast.Style.Success;
-
-          if (isAutoTTS) {
-            say.stop();
-            say.speak(chat.answer);
-          }
+        (res.data as unknown as Stream).on("data", (data) => {
+          const lines = data
+            .toString()
+            .split("\n")
+            .filter((line: string) => line.trim() !== "");
 
           setData((prev) => {
             return prev.map((a) => {
               if (a.id === chat.id) {
-                return chat;
+                return { ...chat, done: false };
               }
               return a;
             });
           });
+          for (const line of lines) {
+            const message = line.replace(/^data: /, "");
+            if (message === "[DONE]") {
+              setData((prev) => {
+                return prev.map((a) => {
+                  if (a.id === chat.id) {
+                    return { ...chat, done: true };
+                  }
+                  return a;
+                });
+              });
 
-          history.add(chat);
-        }
+              setLoading(false);
+              clearSearchBar();
+
+              toast.title = "Got your answer!";
+              toast.style = Toast.Style.Success;
+
+              history.add(chat);
+
+              return; // Stream finished
+            }
+            try {
+              const parsed = JSON.parse(message);
+              const partialAnswer = parsed.choices[0].delta.content;
+            } catch (error) {
+              toast.title = "Error!";
+              (toast.message = "Could not JSON parse stream message"), message, error;
+              toast.style = Toast.Style.Failure;
+            }
+          }
+        });
       })
       .catch((err) => {
         toast.title = "Error";

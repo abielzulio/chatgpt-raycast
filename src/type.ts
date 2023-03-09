@@ -12,6 +12,8 @@ export interface Question {
 
 export interface Chat extends Question {
   answer: string;
+  partialAnswer?: string;
+  done?: boolean;
 }
 
 export interface SavedChat extends Chat {
