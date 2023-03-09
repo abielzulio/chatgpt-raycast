@@ -18,14 +18,14 @@ export function useProxy(): AxiosProxyConfig | undefined {
   const config: AxiosProxyConfig = {
     host: prefs.proxyHost,
     port: prefs.proxyPort,
-    protocol: prefs.proxyProtocol
+    protocol: prefs.proxyProtocol,
   };
 
   if (prefs.proxyUsername && prefs.proxyPassword) {
     config.auth = {
       username: prefs.proxyUsername,
-      password: prefs.proxyPassword
-    }
+      password: prefs.proxyPassword,
+    };
   }
 
   return config;

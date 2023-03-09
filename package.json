@@ -72,15 +72,17 @@
       "description": "Load selected text from your frontmost application to the question bar automatically",
       "type": "checkbox",
       "title": "Auto-load",
-      "default": false
+      "default": false,
+      "required": false
     },
     {
       "name": "isAutoFullInput",
       "label": "Enable full text input initially",
-      "description": "Use full-text input form when asking question for the first time",
+      "description": "Use full text input form when asking question for the first time",
       "type": "checkbox",
       "title": "Use Full Text Input",
-      "default": false
+      "default": false,
+      "required": false
     },
     {
       "name": "isAutoTTS",
