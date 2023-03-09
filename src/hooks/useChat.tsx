@@ -20,7 +20,7 @@ export function useChat<T extends Chat>(props: T[]): ChatHook {
 
   const chatGPT = useChatGPT();
 
-  async function getAnswer(question: string, model: Model) {
+  async function ask(question: string, model: Model) {
     setLoading(true);
     const toast = await showToast({
       title: "Getting your answer...",
@@ -92,5 +92,5 @@ export function useChat<T extends Chat>(props: T[]): ChatHook {
     setData([]);
   }, [setData]);
 
-  return { data, setData, isLoading, setLoading, selectedChatId, setSelectedChatId, getAnswer, clear };
+  return { data, setData, isLoading, setLoading, selectedChatId, setSelectedChatId, ask, clear };
 }

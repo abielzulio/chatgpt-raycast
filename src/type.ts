@@ -75,7 +75,7 @@ export interface ChatHook {
   setLoading: Set<boolean>;
   selectedChatId: string | null;
   setSelectedChatId: Set<string | null>;
-  getAnswer: PromiseFunctionWithTwoArg<string, Model>;
+  ask: PromiseFunctionWithTwoArg<string, Model>;
   clear: PromiseFunctionNoArg;
 }
 

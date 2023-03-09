@@ -28,7 +28,7 @@ export const ChatView = ({
   const getActionPanel = (selectedChat: Chat) => (
     <ActionPanel>
       {question.length > 0 ? (
-        <PrimaryAction title="Get Answer" onAction={() => use.chats.getAnswer(question, model)} />
+        <PrimaryAction title="Get Answer" onAction={() => use.chats.ask(question, model)} />
       ) : selectedChat.answer && use.chats.selectedChatId === selectedChat.id ? (
         <>
           <CopyActionSection answer={selectedChat.answer} question={selectedChat.question} />
@@ -40,7 +40,7 @@ export const ChatView = ({
       ) : null}
       <FormInputActionSection
         initialQuestion={question}
-        onSubmit={(question) => use.chats.getAnswer(question, model)}
+        onSubmit={(question) => use.chats.ask(question, model)}
         models={models}
         selectedModel={selectedModel}
         onModelChange={onModelChange}
