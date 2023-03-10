@@ -8,6 +8,10 @@
 Interact with OpenAI's ChatGPT right from your command bar
 </h3>
 
+<p align="center">
+(This extension is under Raycast's review (https://github.com/raycast/extensions/pull/5253))
+</p>
+
 ![Conversation View](metadata/1.png)
 
 # Features
