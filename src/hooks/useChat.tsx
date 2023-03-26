@@ -84,6 +84,9 @@ export function useChat<T extends Chat>(props: T[]): ChatHook {
         if (err instanceof Error) {
           toast.message = err?.message;
         }
+        if (err?.response?.data?.error?.message) {
+          toast.message = err.response.data.error.message;
+        }
         toast.style = Toast.Style.Failure;
       });
   }
