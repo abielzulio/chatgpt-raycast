@@ -9,7 +9,7 @@ Interact with OpenAI's ChatGPT right from your command bar
 </h3>
 
 <p align="center">
-(This extension is under Raycast's review (https://github.com/raycast/extensions/pull/5253))
+<a title="Install chatgpt Raycast Extension" href="https://www.raycast.com/abielzulio/chatgpt"><img src="https://www.raycast.com/abielzulio/chatgpt/install_button@2x.png" style="height: 64px;" alt="" height="64"></a>
 </p>
 
 ![Conversation View](metadata/1.png)
