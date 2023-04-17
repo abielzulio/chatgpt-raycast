@@ -69,6 +69,14 @@ GPT-4 model availability depends on your developer account. You need access to t
 This package requires a valid `Secret Key` from [OpenAI](https://platform.openai.com/account/api-keys) with a `pay-as-you-go` plan account (**you'll get a `429` error if you're on a `free-tier` account**).
 
 ![Initial set-up](metadata/6.png)
+## How to use Azure OpenAI
+
+1. Copy your Azure OpenAI Key and as API key.
+![Enter Azure OpenAI key](metadata/8.png)
+1. Copy your Azure OpenAI Endpoint and as Azure Endpoint. Also check the `Use Azure OpenAI` checkbox.
+![Enter Azure OpenAI Endpoint](metadata/9.png)
+1. COpy your Azure OpenAI Deployment and as Azure Deployment Name.
+![Enter Azure OpenAI Deployment](metadata/10.png)
 
 > All the preferences value will be stored locally using [Preferences API](https://developers.raycast.com/api-reference/preferences)
 
@@ -89,6 +97,9 @@ All preferences properties list that can be customize through `Raycast Settings 
 | `proxyHost`              | Proxy Host             | `string`                            | `false`  | `empty` | Proxy host value                                                                                                 |
 | `proxyUsername`          | Proxy Username         | `string`                            | `false`  | `empty` | Proxy username value                                                                                             |
 | `proxyPassword`          | Proxy Password         | `string`                            | `false`  | `empty` | Proxy password value                                                                                             |
+| `useAzure`               | Use Azure OpenAI       | `boolean`                           | `true`   | `false` | Use Azure OPENAI rather than OPENAI                                                                               |
+| `azureEndpoint`          | Azure OPENAI endpoint  | `string`                            | `false`  | `empty` | Azure OPENAI resource endpoint                                                                                    |
+| `azureDeploymentName`    | Azure OPENAI deplyment | `string`                            | `false`  | `empty` | Azure OPENAI resource deplyment                                                                                   |
 
 ---
 
