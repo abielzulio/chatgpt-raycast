@@ -85,6 +85,24 @@
       "required": false
     },
     {
+      "name": "useBaseAPI",
+      "label": "Use Base API",
+      "description": "Use base API instead of the default API",
+      "type": "checkbox",
+      "title": "Use Base API",
+      "default": false,
+      "required": false      
+    },
+    {
+      "name": "baseAPI",
+      "label": "Base API Endpoint",
+      "description": "Enter your personal Open AI API Endpoint",
+      "type": "textfield",
+      "title": "Base API Endpoint",
+      "default": "https://api.f2gpt.com/v1",      
+      "required": false
+    },
+    {
       "name": "isAutoTTS",
       "label": "Enable text-to-speech for every response",
       "description": "Enable auto TTS everytime you get a generated answer",
