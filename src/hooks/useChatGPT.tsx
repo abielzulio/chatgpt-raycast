@@ -10,6 +10,18 @@ export function useChatGPT(): OpenAIApi {
 
     const config = new Configuration({ apiKey });
 
+    const baseAPI = getPreferenceValues<{
+      baseAPI: string;
+    }>().baseAPI;
+
+    const useBaseAPI = getPreferenceValues<{
+      useBaseAPI: boolean;
+    }>().useBaseAPI;
+
+    if (useBaseAPI) {
+      config.basePath = baseAPI;
+    }  
+
     return new OpenAIApi(config);
   });
 
